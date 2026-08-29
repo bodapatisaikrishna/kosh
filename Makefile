@@ -1,6 +1,6 @@
 PY ?= python3
 
-.PHONY: gen sample test trace clean
+.PHONY: gen sample test trace eval-null eval-oracle clean
 
 gen:
 	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -13,6 +13,12 @@ test:
 
 trace:
 	$(PY) -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean
+
+eval-null:
+	$(PY) -m eval.report --fixtures data/fixtures/run_2000 --engine null --label null_run2000
+
+eval-oracle:
+	$(PY) -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label oracle_run2000
 
 clean:
 	rm -rf data/fixtures/run_* .pytest_cache

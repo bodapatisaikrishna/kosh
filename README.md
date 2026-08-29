@@ -4,7 +4,7 @@ Three-way payment settlement reconciliation for an Indian online merchant: **Ord
 
 Built for the Razorpay AI Buildathon 2026, Track 04.
 
-> **Status: Phase 1 of 7.** This repo currently ships the synthetic data generator and its ground truth — the foundation everything else measures against. See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+> **Status: Phase 2 of 7.** This repo currently ships the synthetic data generator, its ground truth, and the eval harness — before any real matching logic exists. See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
 
 ## Why we generate our own data
 
@@ -80,31 +80,56 @@ GST is 18% of the fee, and rounding is **integer half-up, applied at each step**
 
 Three of the twelve are marked *resolvable*: they exist specifically to test that a reconciliation engine is smart enough **not** to raise a false exception over ordinary rounding drift, a truncated bank narration, or a split settlement batch.
 
+## What's in Phase 2: the eval harness
+
+Before any matching logic exists, the harness that will grade it does — this is the whole point of leading with data generation. `engine/contract.py` defines the interface every future layer (L0–L3) and every baseline "engine" must emit: a list of asserted `Match`es (link_type + left/right IDs + confidence + evidence) and a list of `ReconException`s (category, severity, ₹ at risk, recommended action). `eval/metrics.py` scores any such output against `ground_truth.json`.
+
+Two baseline engines prove the harness itself is honest before it's asked to grade anything real:
+
+```bash
+python -m eval.report --fixtures data/fixtures/run_2000 --engine null   --label null_run2000
+python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label oracle_run2000
+```
+
+| Baseline | What it does | auto-match | precision / recall | false-match rate | exceptions |
+|---|---|---|---|---|---|
+| `null` | asserts nothing | 0.00% | 0.00% / 0.00% | 0.00% | 100% of records |
+| `oracle` | reads `ground_truth.json` directly | 97.85%* | 100.00% / 100.00% | **0.00%** | 133 (exactly the unresolvable defects) |
+
+\* Not 100%: payments hit by `missing_settlement` or `duplicate_payment` have no true settlement link to match — they correctly land on the exception ledger instead, which is what auto-match rate is supposed to show.
+
+**`false_match_rate` is the headline metric** — in finance a wrong match is worse than no match, because it silently corrupts the books where an unmatched item merely sits in a queue. Both baselines are frozen as a regression guard in `tests/baselines/*.json`: if `eval/metrics.py`'s scoring logic drifts, or a baseline's behavior drifts, `pytest` catches it immediately.
+
+`benchmarks/run_null_run2000.{json,html}` and `run_oracle_run2000.{json,html}` are the committed example reports — open the `.html` ones directly in a browser.
+
 ## Reproduce
 
 ```bash
 pip install -e ".[dev]"
 python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
 python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
+python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label oracle_run2000
 pytest
 ```
 
-`make gen`, `make sample`, `make test`, and `make trace` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, and `make eval-oracle` wrap the same commands.
 
 ## Repo layout
 
 ```
-data/generator/   synthetic dataset generator (this phase)
-engine/           reconciliation engine — L0 deterministic, L1 tolerance, L2 subset-sum, L3 Claude agent, L4 exceptions (not yet built)
-eval/             eval harness: metrics against ground truth, benchmark reports (not yet built)
+data/generator/   synthetic dataset generator (Phase 1)
+engine/           EngineOutput contract (Phase 2) + null/oracle baselines; L0-L4 matching layers not yet built
+eval/             eval harness: metrics against ground truth, benchmark reports (Phase 2)
 cash/             forward cash position (not yet built)
 api/              FastAPI layer (not yet built)
-tests/            pytest suite
-benchmarks/       frozen benchmark runs (not yet populated)
+tests/            pytest suite, incl. tests/baselines/ regression fixtures
+benchmarks/       committed example reports for the null/oracle baselines
 ```
 
-## Limitations (Phase 1)
+## Limitations (Phase 1–2)
 
-- No reconciliation logic yet — this is data generation only.
+- No real reconciliation logic yet (L0–L4) — only the data generator and the harness that will grade it.
+- `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py` module docstring) — a documented simplification that holds until Phase 3+ introduces partial/low-confidence matches that can diverge from full chain matches.
+- `false_match_rate` is computed against the engine's own asserted links (wrong / total asserted), not against total records — deliberate, so it can't be gamed by asserting very few links, but it means it must always be read next to auto-match rate, never alone.
 - Volume seasonality, ticket-size distributions, and defect rates are hand-tuned to look like a mid-size D2C merchant; they are not calibrated against any real portfolio.
 - The bank calendar covers 2025–2026 national holidays only, not state-specific ones.

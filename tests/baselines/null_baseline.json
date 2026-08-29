@@ -1,0 +1,103 @@
+{
+  "accuracy": {
+    "auto_match_rate": 0.0,
+    "defect_confusion": {
+      "duplicate_payment": {
+        "misclassified": 20
+      },
+      "fee_mismatch_wrong_tier": {
+        "misclassified": 19
+      },
+      "fx_variance": {
+        "misclassified": 8
+      },
+      "gst_variance": {
+        "misclassified": 15
+      },
+      "missing_settlement": {
+        "misclassified": 20
+      },
+      "orphan_chargeback": {
+        "missed": 14
+      },
+      "period_cutoff": {
+        "missed": 14
+      },
+      "refund_misallocation": {
+        "misclassified": 9
+      },
+      "rounding_drift": {
+        "false_exception_raised": 25
+      },
+      "settlement_split": {
+        "correctly_resolved": 10
+      },
+      "unidentified_credit": {
+        "missed": 14
+      },
+      "utr_mangled": {
+        "correctly_resolved": 20
+      }
+    },
+    "f1": 0.0,
+    "false_match_rate": 0.0,
+    "hands_off_rate": 0.0,
+    "layer_contribution": {},
+    "link_scoring": {
+      "f1": 0.0,
+      "false_match_rate": 0.0,
+      "per_link_type": {
+        "order_payment": {
+          "asserted_count": 0,
+          "correct_count": 0,
+          "missing_count": 2020,
+          "true_count": 2020,
+          "wrong_count": 0
+        },
+        "payment_settlement": {
+          "asserted_count": 0,
+          "correct_count": 0,
+          "missing_count": 1818,
+          "true_count": 1818,
+          "wrong_count": 0
+        },
+        "settlement_bank_txn": {
+          "asserted_count": 0,
+          "correct_count": 0,
+          "missing_count": 315,
+          "true_count": 315,
+          "wrong_count": 0
+        }
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "total_asserted_links": 0,
+      "total_correct_links": 0,
+      "total_true_links": 4153
+    },
+    "matched_records": 0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "total_records": 1858
+  },
+  "exceptions": {
+    "by_category": {
+      "UNRECONCILED": 1858
+    },
+    "by_severity": {
+      "REVIEW_REQUIRED": 79,
+      "STANDARD": 1779
+    },
+    "count": 1858,
+    "total_amount_at_risk_paise": 1391511716
+  },
+  "records_pct_exceptioned": 1.0,
+  "throughput": {
+    "cost_per_1000_records_micros": 0,
+    "cost_usd_micros": 0,
+    "input_tokens": 0,
+    "llm_calls": 0,
+    "output_tokens": 0,
+    "records_processed": 1858
+  }
+}

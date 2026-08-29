@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Kosh eval report - oracle</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 2rem; color: #1a1a1a; background: #fff; }
+  h1 { margin-bottom: 0.2rem; }
+  .subtitle { color: #666; margin-top: 0; }
+  .headline { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1.5rem 0; }
+  .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.5rem; min-width: 160px; }
+  .card .label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em; }
+  .card .value { font-size: 2rem; font-weight: 700; margin-top: 0.25rem; }
+  .card.risk .value { color: #b00020; }
+  table { border-collapse: collapse; margin: 0.5rem 0 1.5rem; width: 100%; max-width: 640px; }
+  th, td { border: 1px solid #ddd; padding: 0.4rem 0.7rem; text-align: left; font-size: 0.9rem; }
+  th { background: #f5f5f5; }
+  section { margin-bottom: 2rem; }
+</style>
+</head>
+<body>
+  <h1>Kosh reconciliation - eval report</h1>
+  <p class="subtitle">engine: <strong>oracle</strong> &middot; fixtures: <code>data/fixtures/run_2000</code></p>
+
+  <div class="headline">
+    <div class="card"><div class="label">Records processed</div><div class="value">1858</div></div>
+    <div class="card"><div class="label">Auto-match rate</div><div class="value">97.85%</div></div>
+    <div class="card risk"><div class="label">False-match rate</div><div class="value">0.00%</div></div>
+    <div class="card"><div class="label">Precision / Recall</div><div class="value">100.00% / 100.00%</div></div>
+    <div class="card"><div class="label">Wall clock</div><div class="value">0.003s</div></div>
+  </div>
+
+  <section>
+    <h2>Layer waterfall</h2>
+    <table><tr><th>Layer</th><th>Share of correct matches</th></tr><tr><td>ORACLE</td><td>100.00%</td></tr></table>
+  </section>
+
+  <section>
+    <h2>Exception queue</h2>
+    <p>133 exceptions &middot; ₹1,104,998.68 at risk</p>
+    <table><tr><th>Category</th><th>Count</th></tr><tr><td>DUPLICATE_PAYMENT</td><td>20</td></tr><tr><td>FEE_VARIANCE</td><td>19</td></tr><tr><td>FX_VARIANCE</td><td>8</td></tr><tr><td>MISSING_SETTLEMENT</td><td>20</td></tr><tr><td>ORPHAN_CHARGEBACK</td><td>14</td></tr><tr><td>PERIOD_CUTOFF</td><td>14</td></tr><tr><td>REFUND_MISALLOCATION</td><td>9</td></tr><tr><td>TAX_VARIANCE</td><td>15</td></tr><tr><td>UNIDENTIFIED_CREDIT</td><td>14</td></tr></table>
+  </section>
+
+  <section>
+    <h2>Per-defect-class confusion</h2>
+    <table><tr><th>Defect type</th><th>Outcome counts</th></tr><tr><td>duplicate_payment</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>fee_mismatch_wrong_tier</td><td>{&quot;detected&quot;: 19}</td></tr><tr><td>fx_variance</td><td>{&quot;detected&quot;: 8}</td></tr><tr><td>gst_variance</td><td>{&quot;detected&quot;: 15}</td></tr><tr><td>missing_settlement</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>orphan_chargeback</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>period_cutoff</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>refund_misallocation</td><td>{&quot;detected&quot;: 9}</td></tr><tr><td>rounding_drift</td><td>{&quot;correctly_resolved&quot;: 25}</td></tr><tr><td>settlement_split</td><td>{&quot;correctly_resolved&quot;: 10}</td></tr><tr><td>unidentified_credit</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>utr_mangled</td><td>{&quot;correctly_resolved&quot;: 20}</td></tr></table>
+  </section>
+</body>
+</html>

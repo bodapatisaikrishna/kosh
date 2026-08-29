@@ -54,8 +54,11 @@ def test_no_float_division_or_builtin_round_or_hash():
 
 
 def test_no_float_literals_outside_allowlist():
+    """Scoped to the same money-arithmetic files as the division/round/hash check -
+    non-money floats are legitimate elsewhere in engine/ (e.g. a match confidence
+    score or wall_clock_seconds timing), just never in a paise computation."""
     violations = []
-    for path in _iter_money_py_files():
+    for path in _iter_money_arithmetic_files():
         if path.name in FLOAT_LITERAL_ALLOWLIST:
             continue
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))

@@ -36,8 +36,8 @@ The agent never sees the ~97% that deterministic code already handled. That's th
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Synthetic data generator + ground truth | ✅ done (this repo) |
-| 2 | Eval harness (metrics vs. ground truth) | not started |
+| 1 | Synthetic data generator + ground truth | ✅ done |
+| 2 | Eval harness (metrics vs. ground truth) + null/oracle baselines | ✅ done (this repo) |
 | 3 | L0 deterministic + L1 tolerance matching | not started |
 | 4 | L2 combinatorial (subset-sum) solver | not started |
 | 5 | L3 Claude agent + L4 exception ledger | not started |
@@ -58,9 +58,23 @@ Key modules:
 
 See [README.md](README.md) for the reference-run numbers and reproduction steps.
 
-## Phases 2–7 (design intent, not yet built)
+## Phase 2: the eval harness
 
-- **Eval harness** (`eval/`): throughput (records/sec, LLM cost), accuracy (auto-match rate, per-layer contribution, false-match rate, precision/recall, per-defect-class confusion matrix), and an honest exception summary (count, ₹ at risk, category breakdown). Headline metric: **false-match rate** — in finance a wrong match is worse than no match, because it silently corrupts the books.
+`engine/contract.py` defines the interface every layer built in Phases 3–5 must speak: an `EngineOutput` of `Match`es (`link_type`, `left_id`/`right_id`, `layer`, `confidence`, `evidence`) and `ReconException`s (`category`, `severity`, `amount_at_risk_paise`, `affected`, `recommended_action`). Nothing downstream — `eval/`, the future dashboard, Phase 5's agent tools — touches raw CSV rows directly; everything speaks this contract.
+
+`eval/metrics.py` scores an `EngineOutput` against `ground_truth.json`: throughput (records/sec, LLM cost in integer micro-dollars), accuracy (auto-match rate, per-layer contribution, false-match rate, precision/recall, per-defect-class confusion matrix), and an honest exception summary (count, ₹ at risk, category/severity breakdown). `eval/report.py` emits a timestamped JSON + a self-contained `report.html` per run.
+
+Two baseline "engines" (`engine/baselines.py`) exist purely to validate the harness before any real matching logic is written:
+
+- **`null_baseline`** asserts nothing and raises one exception per captured payment → must score 0% auto-match, 0% recall, 0.00% false-match, 100% of records exceptioned.
+- **`oracle_baseline`** reads `ground_truth.json` directly and asserts exactly the true link graph → must score ~100% precision/recall, 0.00% false-match, and an exception ledger that exactly matches the unresolvable defects (no misses, no misclassifications, and — critically — no false exceptions raised over the 3 defect types that should resolve silently).
+
+Both are frozen in `tests/baselines/*.json` as a regression guard: if the scoring logic in `eval/metrics.py` drifts, or a baseline's own behavior drifts, `pytest` fails immediately. **`false_match_rate` is the metric this whole harness is built to protect** — it's computed against the engine's own assertions (wrong ÷ total asserted), not against total records, specifically so it can't be gamed by asserting fewer links.
+
+Key design point an engine must respect from Phase 3 onward: **`engine/io.py` never reads `ground_truth.json`.** Only `eval/io.py` and the oracle baseline do — the oracle exists to test the scorer, not to reconcile anything, and a real engine that read ground truth would invalidate every accuracy number this project exists to produce.
+
+## Phases 3–7 (design intent, not yet built)
+
 - **L0/L1** (`engine/`): exact-key cascade (order→payment→settlement→UTR), then amount/date/narration-similarity tolerance matching with an ambiguity guard — ties escalate, they are never guessed.
 - **L2**: subset-sum solver over same-day/T+1 candidate payments for a bank credit, with an explicit `AMBIGUOUS` result when more than one subset satisfies the target — refused, not picked.
 - **L3**: a Claude agent restricted to a fixed toolset (`get_record`, `find_candidates`, `compute_expected_fee`, `explain_variance`, `solve_subset`, `propose_match`, `raise_exception`), structurally forbidden from asserting an ID it wasn't handed by a tool, and forbidden from doing its own arithmetic.
