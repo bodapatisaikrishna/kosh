@@ -1,0 +1,42 @@
+{
+  "defect_counts": {
+    "duplicate_payment": 2,
+    "fx_variance": 1,
+    "gst_variance": 1,
+    "missing_settlement": 2,
+    "orphan_chargeback": 3,
+    "period_cutoff": 3,
+    "refund_misallocation": 1,
+    "rounding_drift": 2,
+    "settlement_split": 1,
+    "unidentified_credit": 3,
+    "utr_mangled": 4
+  },
+  "defect_rate_pct_of_orders": "11.5",
+  "defect_total": 23,
+  "files": {
+    "bank_statement.csv": "197941dfe30c82baa91277c2591756dd2a0c571043c517cf7c8b59108a709268",
+    "ground_truth.json": "b590989913ca040cb65d4e290ae06b1cf70a02662ec2202f5f3402317e9ca783",
+    "orders.csv": "dbf480cc68d36e9a6f9e8f3a972950b0304230374332b5203e63c14aabe9587f",
+    "pg_payments.csv": "a2d7b78bc76a7a43d4a503a519f4abdc128d2834eb7d6d50b80660eabc4bf18d",
+    "pg_settlements.csv": "485b35b28ea0535d49ed288d408abb30bb730f849f5f90aabbbefe20b36249e4"
+  },
+  "generator": {
+    "end_date": "2026-08-31",
+    "months": 1,
+    "records": 200,
+    "seed": 7
+  },
+  "row_counts": {
+    "bank_statement": 79,
+    "orders": 200,
+    "pg_payments": 202,
+    "pg_settlements": 71
+  },
+  "totals": {
+    "bank_credit_paise": 150441011,
+    "bank_debit_paise": 331928,
+    "gmv_paise": 163047453,
+    "settled_net_paise": 147841711
+  }
+}

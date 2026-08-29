@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+.DS_Store
+traces/
+
+# Generated fixtures are reproducible from the seed - only the small sample is committed.
+data/fixtures/*
+!data/fixtures/sample_200/
