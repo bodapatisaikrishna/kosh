@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import os
 
-from .base import AssistantTurn, LLMClient, Message, RateLimitedError, ToolCall, ToolSpec
+from .base import AssistantTurn, LLMClient, Message, RateLimitedError, ToolCall, ToolSpec, TransientBackendError
 
 DEFAULT_BASE_URL = "https://integrate.api.nvidia.com/v1"
 DEFAULT_MODEL = "meta/llama-3.3-70b-instruct"
@@ -64,6 +64,11 @@ class NimClient(LLMClient):
             )
         except openai.RateLimitError as exc:
             raise RateLimitedError(str(exc)) from exc
+        except (openai.InternalServerError, openai.APITimeoutError, openai.APIConnectionError) as exc:
+            # 5xx / timeout / connection drop: the request never produced a
+            # decision, so retrying is safe. Observed for real against this
+            # endpoint (a 504 mid-batch), which is what motivated handling it.
+            raise TransientBackendError(str(exc)) from exc
 
         choice = response.choices[0]
         raw_tool_calls = choice.message.tool_calls or []

@@ -17,11 +17,11 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from .contract import EngineMeta, EngineOutput, Match, ReconException
+from .contract import RECOMMENDED_ACTIONS, EngineMeta, EngineOutput, Match, ReconException, severity_for_amount
 from .fees import compute_expected_fee
 from .io import Dataset
 from .l3_tools import TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
-from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError
+from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError, TransientBackendError
 
 PROMPT_VERSION = 1
 DEFAULT_MAX_TURNS = 8
@@ -89,11 +89,15 @@ def _cache_key(record_id: str, dataset: Dataset, source: str, model: str) -> str
 
 
 def _call_with_backoff(client: LLMClient, messages: list[Message], tools) -> AssistantTurn:
+    """Retries the two failure modes that are safe to retry: a rate limit ("slow
+    down") and a transient backend error ("try again" - 5xx/timeout, where the
+    request never produced a decision). Anything else propagates immediately,
+    because retrying a genuine bad request just wastes budget."""
     delay = BASE_BACKOFF_SECONDS
     for attempt in range(MAX_BACKOFF_RETRIES):
         try:
             return client.complete(messages, tools)
-        except RateLimitedError:
+        except (RateLimitedError, TransientBackendError):
             if attempt == MAX_BACKOFF_RETRIES - 1:
                 raise
             time.sleep(delay + random.uniform(0, delay * 0.25))
@@ -219,9 +223,33 @@ async def run_l3_async(
 
     async def run_one(record_id: str, source: str) -> AgentTrace:
         async with semaphore:
-            return await asyncio.to_thread(
-                run_agent_on_record, record_id, source, dataset, client, max_turns, cache_dir, traces_dir, model_name, backend_name,
-            )
+            try:
+                return await asyncio.to_thread(
+                    run_agent_on_record, record_id, source, dataset, client, max_turns, cache_dir, traces_dir, model_name, backend_name,
+                )
+            except Exception as exc:  # noqa: BLE001 - deliberately broad, see below
+                # One record's upstream failure must never destroy the whole
+                # batch. asyncio.gather propagates the first exception and
+                # discards every sibling result, so a single 504 on record 4
+                # would throw away five completed investigations. Instead the
+                # failure becomes its own honest ledger entry - the record is
+                # visibly unresolved with the reason attached, which is the
+                # same contract as constraint 6's AGENT_INCOMPLETE.
+                amount = _amount_hint(dataset, source, record_id)
+                failed = AgentTrace(
+                    record_id=record_id, source=source, model=model_name, backend=backend_name,
+                    final_decision="exception",
+                    result={"exception": json_safe(ReconException(
+                        category="AGENT_INCOMPLETE",
+                        severity=severity_for_amount(amount),
+                        amount_at_risk_paise=amount,
+                        affected={"record_id": record_id, "source": source},
+                        recommended_action=RECOMMENDED_ACTIONS["AGENT_INCOMPLETE"],
+                        evidence_chain=(f"agent run failed against {backend_name}: {type(exc).__name__}: {exc}",),
+                    ))},
+                )
+                _persist_trace(traces_dir, failed)
+                return failed
 
     traces = await asyncio.gather(*(run_one(rid, src) for rid, src in residual_items))
     elapsed = time.perf_counter() - start

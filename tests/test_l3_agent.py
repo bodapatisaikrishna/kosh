@@ -11,7 +11,7 @@ from pathlib import Path
 from engine.fees import compute_expected_fee
 from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
 from engine.l3_agent import run_agent_on_record, run_l3
-from engine.llm.base import AssistantTurn, ToolCall
+from engine.llm.base import AssistantTurn, ToolCall, TransientBackendError
 from engine.llm.fake_client import FakeClient
 
 
@@ -160,3 +160,60 @@ def test_run_l3_aggregates_matches_and_exceptions_across_records(tmp_path):
     assert {e.category for e in output.exceptions} == {"UNEXPLAINED_VARIANCE", "HIGH_VALUE_MATCH_REVIEW"}
     assert len(output.matches) == 1
     assert output.meta.llm_calls == 3
+
+
+# --- transient backend failures (found by a real 504 mid-run) -----------------
+
+def test_transient_backend_error_is_retried(tmp_path, monkeypatch):
+    """A 5xx/timeout means the request never produced a decision, so retrying is
+    safe and correct. A real NIM 504 mid-batch is what motivated this."""
+    import engine.l3_agent as l3_agent
+    monkeypatch.setattr(l3_agent.time, "sleep", lambda s: None)
+
+    class FlakyThenFine:
+        def __init__(self):
+            self.call_count = 0
+
+        def complete(self, messages, tools):
+            self.call_count += 1
+            if self.call_count == 1:
+                raise TransientBackendError("Error code: 504")
+            return AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+                "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
+                "recommended_action": "x", "rationale": "resolved after the 504 retry",
+            }),), stop_reason="tool_use")
+
+    client = FlakyThenFine()
+    trace = run_agent_on_record("pay_1", "payments", _dataset(), client, model_name="fake", backend_name="fake", **_dirs(tmp_path))
+    assert trace.final_decision == "exception"
+    assert client.call_count == 2  # failed once, retried, succeeded
+
+
+def test_one_records_failure_does_not_destroy_the_whole_batch(tmp_path, monkeypatch):
+    """asyncio.gather propagates the first exception and discards every sibling
+    result - so without isolation a single upstream failure on one record throws
+    away every completed investigation in the batch."""
+    import engine.l3_agent as l3_agent
+    monkeypatch.setattr(l3_agent.time, "sleep", lambda s: None)
+
+    class FailsOnlyForBtxn:
+        def complete(self, messages, tools):
+            text = " ".join(m.content or "" for m in messages if m.role == "user")
+            if "btxn_1" in text:
+                raise TransientBackendError("Error code: 504")  # never recovers
+            return AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+                "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
+                "recommended_action": "x", "rationale": "this record succeeded",
+            }),), stop_reason="tool_use")
+
+    output = run_l3(
+        _dataset(), [("pay_1", "payments"), ("btxn_1", "bank")], FailsOnlyForBtxn(),
+        model_name="fake", backend_name="fake", **_dirs(tmp_path),
+    )
+    # the good record's result survives, and the failed one is visibly on the
+    # ledger with its reason rather than silently vanishing
+    categories = [e.category for e in output.exceptions]
+    assert "UNEXPLAINED_VARIANCE" in categories, "the succeeding record's result was lost"
+    assert "AGENT_INCOMPLETE" in categories, "the failed record vanished instead of being reported"
+    failed = next(e for e in output.exceptions if e.category == "AGENT_INCOMPLETE")
+    assert "504" in " ".join(failed.evidence_chain)

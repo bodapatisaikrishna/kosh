@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 
-from .base import AssistantTurn, LLMClient, Message, RateLimitedError, ToolCall, ToolSpec
+from .base import AssistantTurn, LLMClient, Message, RateLimitedError, ToolCall, ToolSpec, TransientBackendError
 
 DEFAULT_MODEL = "claude-sonnet-5"
 MAX_TOKENS = 4096
@@ -71,6 +71,8 @@ class AnthropicClient(LLMClient):
             )
         except anthropic.RateLimitError as exc:
             raise RateLimitedError(str(exc)) from exc
+        except (anthropic.InternalServerError, anthropic.APITimeoutError, anthropic.APIConnectionError) as exc:
+            raise TransientBackendError(str(exc)) from exc
 
         text = None
         tool_calls = []

@@ -56,3 +56,12 @@ class RateLimitedError(Exception):
     """Raised by a client when the backend signals a rate limit (HTTP 429 or
     equivalent) - the agent loop backs off and retries on this specific error,
     not on any other failure."""
+
+
+class TransientBackendError(Exception):
+    """A 5xx / timeout / connection failure from the provider - the request was
+    never meaningfully processed, so retrying it is safe and correct. Kept
+    separate from RateLimitedError because the two mean different things even
+    though both are retryable: a 429 says "slow down", a 504 says "try again".
+    A real 550B-parameter endpoint returns these under load, so an agent batch
+    that dies on the first one is not production-shaped."""
