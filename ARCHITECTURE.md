@@ -41,8 +41,8 @@ The agent never sees the ~97% that deterministic code already handled. That's th
 | 3 | L0 deterministic + L1 tolerance matching | ✅ done |
 | 4 | L2 subset-sum solver | ✅ done |
 | 5 | L3 agent (provider-agnostic) + L4 exception ledger | ✅ done |
-| 6 | Cash position + dashboard + benchmark freeze | ✅ done (this repo) |
-| 7 | README/architecture/demo polish for submission | not started |
+| 6 | Cash position + dashboard + benchmark freeze | ✅ done |
+| 7 | README/architecture/demo polish for submission | ✅ done (this repo) |
 
 ## Phase 1: the data generator
 
@@ -52,11 +52,56 @@ Key modules:
 
 - `fees.py` — the single MDR + GST model, integer-only, imported unchanged by `engine/` in later phases so a fee bug shows up as a failing test, not a silently-accepted false match.
 - `world.py` — builds the clean, defect-free dataset.
-- `defects.py` — the 12 injectors; see [README.md](README.md#the-12-injected-defect-types).
+- `defects.py` — the 12 injectors, detailed below.
 - `emit.py` — serializes to the four CSV schemas + `ground_truth.json` + `manifest.json`.
 - `trace.py` — hand-verification CLI: bank credit → settlement → payments → orders, with a `TIES OUT` / `OFF BY` verdict.
 
-See [README.md](README.md) for the reference-run numbers and reproduction steps.
+### Reference run (`data/fixtures/run_2000`, seed 42, 3 months)
+
+| Metric | Value |
+|---|---|
+| Orders | 2,000 |
+| PG payments (incl. injected duplicates) | 2,020 |
+| Settlements | 305 |
+| Bank statement rows | 351 |
+| GMV | ₹14,779,996.39 |
+| Injected defects | 188 (~9.4% of orders), all 12 types present |
+
+A small companion fixture, `data/fixtures/sample_200` (seed 7, 1 month), is committed to the repo so real output is inspectable without running the generator.
+
+### The fee model
+
+Realistic Indian PG economics, so failures concentrate where they should:
+
+| Method | MDR |
+|---|---|
+| UPI | 0.00% (zero-MDR P2M — real regulatory position) |
+| RuPay debit | 0.00% |
+| Card (domestic) | 2.00% |
+| Netbanking | 1.90% |
+| Wallet | 2.00% |
+| Card (international) | 3.00% |
+
+Zero-MDR UPI/RuPay means most of that volume reconciles trivially (`net == gross`), which is intentional, not a shortcut: the interesting defects (fee-tier errors, GST variance, FX drift) concentrate in card and international volume, exactly like a real merchant's exception queue. GST is 18% of the fee, and rounding is integer half-up applied at each step (fee first, then GST on the rounded fee), not once at the end — that ordering produces genuine ±1 paisa drift, one of the 12 defect types and also just how real gateways compute it. All money is integer paise, enforced by an AST-level lint (`tests/test_no_floats.py`) that fails the build on a stray `/`, `round()`, or float literal in the fee/settlement arithmetic.
+
+### The 12 injected defect types
+
+| # | Defect | Expected exception category |
+|---|---|---|
+| 1 | Payment captured but never settled | `MISSING_SETTLEMENT` |
+| 2 | Duplicate payment row | `DUPLICATE_PAYMENT` |
+| 3 | Paisa rounding drift (±1–3p) | *resolvable — not an exception* |
+| 4 | Wrong MDR tier applied | `FEE_VARIANCE` |
+| 5 | GST ≠ 18% of fee | `TAX_VARIANCE` |
+| 6 | Refund booked against wrong order | `REFUND_MISALLOCATION` |
+| 7 | Chargeback debit with no linked payment | `ORPHAN_CHARGEBACK` |
+| 8 | Settlement lands after month-end cutoff | `PERIOD_CUTOFF` |
+| 9 | UTR truncated/mangled in narration | *resolvable via subset-sum — not an exception* |
+| 10 | International payment with FX rate drift | `FX_VARIANCE` |
+| 11 | Non-PG bank credit (direct customer NEFT) | `UNIDENTIFIED_CREDIT` |
+| 12 | One settlement split across two bank credits | *resolvable via subset-sum* |
+
+Three of the twelve are marked *resolvable*: they exist specifically to test that a reconciliation engine is smart enough **not** to raise a false exception over ordinary rounding drift, a truncated bank narration, or a split settlement batch.
 
 ## Phase 2: the eval harness
 
@@ -65,6 +110,13 @@ See [README.md](README.md) for the reference-run numbers and reproduction steps.
 `eval/metrics.py` scores an `EngineOutput` against `ground_truth.json`: throughput (records/sec, LLM cost in integer micro-dollars), accuracy (auto-match rate, per-layer contribution, false-match rate, precision/recall, per-defect-class confusion matrix), and an honest exception summary (count, ₹ at risk, category/severity breakdown). `eval/report.py` emits a timestamped JSON + a self-contained `report.html` per run.
 
 Two baseline "engines" (`engine/baselines.py`) exist purely to validate the harness before any real matching logic is written:
+
+| Baseline | What it does | auto-match | precision / recall | false-match | exceptions |
+|---|---|---|---|---|---|
+| `null` | asserts nothing | 0.00% | 0.00% / 0.00% | 0.00% | 100% of records |
+| `oracle` | reads `ground_truth.json` directly | 97.85%* | 100.00% / 100.00% | **0.00%** | 133 (exactly the unresolvable defects) |
+
+\* Not 100%: payments hit by `missing_settlement` or `duplicate_payment` have no true settlement link to match — they correctly land on the exception ledger instead.
 
 - **`null_baseline`** asserts nothing and raises one exception per captured payment → must score 0% auto-match, 0% recall, 0.00% false-match, 100% of records exceptioned.
 - **`oracle_baseline`** reads `ground_truth.json` directly and asserts exactly the true link graph → must score ~100% precision/recall, 0.00% false-match, and an exception ledger that exactly matches the unresolvable defects (no misses, no misclassifications, and — critically — no false exceptions raised over the 3 defect types that should resolve silently).
@@ -153,8 +205,11 @@ Verified interactively in the browser, not just by reading the HTML source: bar 
 
 **Fresh-clone checkpoint verified for real**: cloned into an isolated temp directory, `pip install -e .` into a brand-new venv, `make demo` ran clean. That same run caught a real gap — `pytest` crashed at *collection* (not just failed) because `test_anthropic_client.py`/`test_nim_client.py` import `anthropic`/`openai` unconditionally, and those packages live in the optional `llm` extra, not the base install. Fixed with `pytest.importorskip`: a bare install now gets 2 graceful skips (140 passed, 2 skipped) instead of an interrupted run; the dev environment with the `llm` extra is unaffected (151/151).
 
-## Phase 7 (not yet built)
+## Phase 7: submission polish
 
-README, this file, and the demo video — polish for submission, no new engine code. Per the schedule's own rule: never cut the generator's ground truth, the eval harness, or the exception ledger; everything else is presentation.
+No new engine code, per the schedule's own rule — never cut the generator's ground truth, the eval harness, or the exception ledger; everything else is presentation.
+
+- **`README.md`** restructured to the brief's own mandated order: one-line description, results above the fold, reproduce in 3 commands (`git clone && pip install -e . && make demo`), an architecture summary + link here, then limitations. The per-phase deep-dive narrative that used to live in README (fee model, defect list, reference-run stats, baseline table) moved into this file's Phase 1/2 sections instead, so there's exactly one place each fact lives rather than two copies drifting apart — fixed one stale cross-reference (`ARCHITECTURE.md` linking to a README anchor that no longer existed) while doing it.
+- **`DEMO_SCRIPT.md`**: the 5-minute demo script from the brief's own timing breakdown, filled in with this repo's actual committed numbers and commands rather than placeholders — including an honest staging note for the "click an exception → agent trace" beat, since `run_2000`'s own exception ledger has no agent traces to click (by design — see Phase 5/6 above) and the real traces live in `benchmarks/sample_traces/` instead.
 
 Full detail in [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md).
