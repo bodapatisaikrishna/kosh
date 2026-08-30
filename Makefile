@@ -1,6 +1,6 @@
 PY ?= python3
 
-.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile clean
+.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo clean
 
 gen:
 	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -34,6 +34,12 @@ l2-profile:
 
 l3-profile:
 	$(PY) -m engine.l3_agent --profile --backend nim --out benchmarks/phase5_synthetic.json
+
+demo:
+	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
+	$(PY) -m eval.report --fixtures data/fixtures/run_2000 --engine full --label demo
+	@echo ""
+	@echo "Demo complete. Open benchmarks/run_demo.html for the full dashboard."
 
 clean:
 	rm -rf data/fixtures/run_* .pytest_cache

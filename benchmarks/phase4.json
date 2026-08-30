@@ -1,7 +1,122 @@
 {
+  "cash": {
+    "as_of_date": "2026-08-31",
+    "at_risk_paise": 0,
+    "book_cash_paise": 1420076583,
+    "inflow_curve": [
+      {
+        "date": "2026-08-31",
+        "expected_inflow_paise": 298100
+      },
+      {
+        "date": "2026-09-01",
+        "expected_inflow_paise": 200900
+      },
+      {
+        "date": "2026-09-02",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-03",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-04",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-05",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-06",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-07",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-08",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-09",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-10",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-11",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-12",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-13",
+        "expected_inflow_paise": 0
+      }
+    ],
+    "reconciled_cash_paise": 1330904836,
+    "reconciliation": {
+      "adjustments_paise": 125800,
+      "legitimate_chargeback_paise": 1303074,
+      "orphan_chargeback_paise": 0,
+      "settled_gross_minus_net_paise": 27471604,
+      "settled_refunds_paise": 23823152,
+      "unidentified_credit_paise": 0,
+      "unsettled_gross_paise": 50763017
+    },
+    "stuck_paise": 49170754,
+    "stuck_payment_ids": [
+      "pay_1A8JYY7GkAqBkC",
+      "pay_1VQyaLmF12PBP9",
+      "pay_321mSm7DcDg6NM",
+      "pay_4EJCfyNzpAa2aw",
+      "pay_4EM6X3L2b7Kecc",
+      "pay_5ZlJytatQrzR7t",
+      "pay_6x7P7wj1TOivjb",
+      "pay_8qDpOZBABEDLwt",
+      "pay_ABjv6W8WCmseUh",
+      "pay_CFFSqf1pRrtIKI",
+      "pay_DduEh3pwNje2Fg",
+      "pay_DiEFR2BDn2DOA7",
+      "pay_GwNFILXcMWMKHE",
+      "pay_KeTpm6rjstiLv9",
+      "pay_Ku6uo8uuBsHFyF",
+      "pay_MhzjPuYMvuM1XG",
+      "pay_N4Kw6VnqSOsr8s",
+      "pay_NoNOG9wQHaPGQR",
+      "pay_SlE3QiXiIgfNWi",
+      "pay_UalvMn0JQtVKLz",
+      "pay_VPF1xnIskKBf39",
+      "pay_WpncI2FGAwSpFK",
+      "pay_X7FAjKOYOLSuWY",
+      "pay_Xlhdv6G3KrBdAj",
+      "pay_XutKSS6Yiz1cEV",
+      "pay_Z2TqH9tGgzx5Uk",
+      "pay_avcU1qjyghbZf1",
+      "pay_bMqiwDFZ2Uq0aO",
+      "pay_cjGyHB8wgnBGyx",
+      "pay_l5R1Um1OKyZRxF",
+      "pay_mSRVB6ceKEiZOr",
+      "pay_okN5AJZ1OIc3Fi",
+      "pay_pPwXAHt49tyNXJ",
+      "pay_prMCLfLHnmT3xM",
+      "pay_sTD3yhPopbEzHP",
+      "pay_svotmeI4C4vXY3",
+      "pay_u2cCQXnvH3Y11S",
+      "pay_zbyBhmiCi3mABg"
+    ]
+  },
   "engine": "l0l1l2",
+  "exceptions_detail": [],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788068150.1848462,
+  "generated_at_unix": 1788083174.469337,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9784714747039828,
@@ -107,9 +222,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 407627.41459644743,
+      "records_per_second": 433449.6186552523,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.004558084008749574
+      "wall_clock_seconds": 0.004286542010959238
     }
   }
 }

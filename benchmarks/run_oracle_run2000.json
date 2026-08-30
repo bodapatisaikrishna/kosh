@@ -1,7 +1,1932 @@
 {
+  "cash": {
+    "as_of_date": "2026-08-31",
+    "at_risk_paise": 110499868,
+    "book_cash_paise": 1420076583,
+    "inflow_curve": [
+      {
+        "date": "2026-08-31",
+        "expected_inflow_paise": 298100
+      },
+      {
+        "date": "2026-09-01",
+        "expected_inflow_paise": 200900
+      },
+      {
+        "date": "2026-09-02",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-03",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-04",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-05",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-06",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-07",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-08",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-09",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-10",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-11",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-12",
+        "expected_inflow_paise": 0
+      },
+      {
+        "date": "2026-09-13",
+        "expected_inflow_paise": 0
+      }
+    ],
+    "reconciled_cash_paise": 1330904836,
+    "reconciliation": {
+      "adjustments_paise": 125800,
+      "legitimate_chargeback_paise": 1303074,
+      "orphan_chargeback_paise": 397000,
+      "settled_gross_minus_net_paise": 27471604,
+      "settled_refunds_paise": 23823152,
+      "unidentified_credit_paise": -14711900,
+      "unsettled_gross_paise": 50763017
+    },
+    "stuck_paise": 49170754,
+    "stuck_payment_ids": [
+      "pay_1A8JYY7GkAqBkC",
+      "pay_1VQyaLmF12PBP9",
+      "pay_321mSm7DcDg6NM",
+      "pay_4EJCfyNzpAa2aw",
+      "pay_4EM6X3L2b7Kecc",
+      "pay_5ZlJytatQrzR7t",
+      "pay_6x7P7wj1TOivjb",
+      "pay_8qDpOZBABEDLwt",
+      "pay_ABjv6W8WCmseUh",
+      "pay_CFFSqf1pRrtIKI",
+      "pay_DduEh3pwNje2Fg",
+      "pay_DiEFR2BDn2DOA7",
+      "pay_GwNFILXcMWMKHE",
+      "pay_KeTpm6rjstiLv9",
+      "pay_Ku6uo8uuBsHFyF",
+      "pay_MhzjPuYMvuM1XG",
+      "pay_N4Kw6VnqSOsr8s",
+      "pay_NoNOG9wQHaPGQR",
+      "pay_SlE3QiXiIgfNWi",
+      "pay_UalvMn0JQtVKLz",
+      "pay_VPF1xnIskKBf39",
+      "pay_WpncI2FGAwSpFK",
+      "pay_X7FAjKOYOLSuWY",
+      "pay_Xlhdv6G3KrBdAj",
+      "pay_XutKSS6Yiz1cEV",
+      "pay_Z2TqH9tGgzx5Uk",
+      "pay_avcU1qjyghbZf1",
+      "pay_bMqiwDFZ2Uq0aO",
+      "pay_cjGyHB8wgnBGyx",
+      "pay_l5R1Um1OKyZRxF",
+      "pay_mSRVB6ceKEiZOr",
+      "pay_okN5AJZ1OIc3Fi",
+      "pay_pPwXAHt49tyNXJ",
+      "pay_prMCLfLHnmT3xM",
+      "pay_sTD3yhPopbEzHP",
+      "pay_svotmeI4C4vXY3",
+      "pay_u2cCQXnvH3Y11S",
+      "pay_zbyBhmiCi3mABg"
+    ]
+  },
   "engine": "oracle",
+  "exceptions_detail": [
+    {
+      "affected": {
+        "payment_id": "pay_sTD3yhPopbEzHP"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 256200,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_Z2TqH9tGgzx5Uk"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6178073,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_pPwXAHt49tyNXJ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 304800,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_GwNFILXcMWMKHE"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6682444,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_UalvMn0JQtVKLz"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 616658,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_N4Kw6VnqSOsr8s"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 551942,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_X7FAjKOYOLSuWY"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 60400,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_WQRMWgetkP62eF"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 200900,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_avcU1qjyghbZf1"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1071600,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_1VQyaLmF12PBP9"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 18000,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_SlE3QiXiIgfNWi"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 38839,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_zbyBhmiCi3mABg"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 81000,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_prMCLfLHnmT3xM"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 291416,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_CFFSqf1pRrtIKI"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 49100,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_Xlhdv6G3KrBdAj"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1476243,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_4EM6X3L2b7Kecc"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 27600,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_Ku6uo8uuBsHFyF"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1793664,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_cjGyHB8wgnBGyx"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 231407,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_svotmeI4C4vXY3"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 272732,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_LZSnpadz8i3Z3O"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 298100,
+      "category": "MISSING_SETTLEMENT",
+      "evidence_chain": [],
+      "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_NoNOG9wQHaPGQR",
+        "payment_id": "pay_vzZ7vPRq5INeUa"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 211391,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_4EJCfyNzpAa2aw",
+        "payment_id": "pay_oDgP9C0e7BBopG"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 2269993,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_8qDpOZBABEDLwt",
+        "payment_id": "pay_UXQkfbWodUVdLI"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 16300,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_XutKSS6Yiz1cEV",
+        "payment_id": "pay_t25iL6bZ58rW57"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 59660,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_6x7P7wj1TOivjb",
+        "payment_id": "pay_P0SgICIlXEUlV5"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 29500,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_WpncI2FGAwSpFK",
+        "payment_id": "pay_Wu8xXjz0IcgW5u"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 949290,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_MhzjPuYMvuM1XG",
+        "payment_id": "pay_qkZlUxWH3n4MxQ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 32000,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_321mSm7DcDg6NM",
+        "payment_id": "pay_2cY9W3brRa8q5n"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 28769,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_DiEFR2BDn2DOA7",
+        "payment_id": "pay_58KPm8xKjbMpik"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 247282,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_5ZlJytatQrzR7t",
+        "payment_id": "pay_3L1GbsHg6fx9Ys"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5528279,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_VPF1xnIskKBf39",
+        "payment_id": "pay_X7IHmOI9gv0JSk"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 91100,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_1A8JYY7GkAqBkC",
+        "payment_id": "pay_PqNCJlPWwC2g5d"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 128006,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_l5R1Um1OKyZRxF",
+        "payment_id": "pay_fPA8tZ8dDxO6wf"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 18300,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_u2cCQXnvH3Y11S",
+        "payment_id": "pay_zBSqHvme8Fwaob"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 529000,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_KeTpm6rjstiLv9",
+        "payment_id": "pay_ZbLUftjSl6JZHf"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 9197366,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_mSRVB6ceKEiZOr",
+        "payment_id": "pay_XtJKhIl8tQDhiN"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 167700,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_okN5AJZ1OIc3Fi",
+        "payment_id": "pay_hvji0QBaNmKjKO"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 286000,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_DduEh3pwNje2Fg",
+        "payment_id": "pay_6D5rrWYd99vbAx"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 254800,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_bMqiwDFZ2Uq0aO",
+        "payment_id": "pay_W0vcjIXzCwA8R4"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 654440,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "duplicate_payment_id": "pay_ABjv6W8WCmseUh",
+        "payment_id": "pay_X3hqpkgqo4pbwV"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 8469460,
+      "category": "DUPLICATE_PAYMENT",
+      "evidence_chain": [],
+      "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_BRlcbvxLtkeoOl",
+        "settlement_id": "setl_z5d7bgDPtehIKm"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6011,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_8vuGH4GmFtGSq6",
+        "settlement_id": "setl_wzoX76GkVSNoMS"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 2815,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_SugYEjvM1c4mpq",
+        "settlement_id": "setl_dhFa91amjOcQyE"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 10252,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_gumcGFOQDqu9W3",
+        "settlement_id": "setl_wzoX76GkVSNoMS"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 16027,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_XssP76lkMHFFaU",
+        "settlement_id": "setl_oTy2VVmqp2QMGR"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 7094,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_xu864hTlDamoOC",
+        "settlement_id": "setl_jAHGWBSW6jxKI4"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 161,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_ycgipNNk1ctJYx",
+        "settlement_id": "setl_2Yx5FmTgpVciO6"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 15795,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_JjUt3bRCdrGMIp",
+        "settlement_id": "setl_QTZThS1HN8MluG"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 157,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_jynyzIVmBanl6s",
+        "settlement_id": "setl_9HYHEAN48LlsV7"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 446,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_wBIBuJPpZkfnNy",
+        "settlement_id": "setl_QTZThS1HN8MluG"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1775,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_mh57w0GfDrKBza",
+        "settlement_id": "setl_7Hylr8kmXwy958"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 7023,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_0zXCv4Cbro1Y0W",
+        "settlement_id": "setl_fAyNW41Mr0i4iW"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 152,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_kozgW2lBlBnTk8",
+        "settlement_id": "setl_GfyyaPopkXFa6r"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1260,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_xotonczqqMXmMa",
+        "settlement_id": "setl_5nmMpzwfRfjPAo"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 4017,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_XrR0om6jW6bMZz",
+        "settlement_id": "setl_CI0DdUcm9SevW9"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5081,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_JVN2MlnOxQdBLq",
+        "settlement_id": "setl_M7XC4Wp9QorH42"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 4718,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_a9fzWJlQMxRnbH",
+        "settlement_id": "setl_xn4nLtJhj8sY2Z"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 649,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_GN6FAPAyxfNafc",
+        "settlement_id": "setl_I1AksinXcwF6Fm"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 149,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_KjfTy3kZDfR7yM",
+        "settlement_id": "setl_xn4nLtJhj8sY2Z"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1659,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_jlsYzsfP2zavT1",
+        "settlement_id": "setl_JsokcIssfX8dlE"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 808,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_gcx8r2sWYscJ6y",
+        "settlement_id": "setl_W38ZLto1t6J4eS"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5738,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_iP3ii9u5hmly1g",
+        "settlement_id": "setl_plYULQNWXCOzvZ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5932,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_a7eJ1gseDhP4zL",
+        "settlement_id": "setl_PbhUdB6RBB0cOw"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 55092,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_8KGz9ccaFOsnNu",
+        "settlement_id": "setl_Z9MpgQluW1WbM0"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 3167,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_de7oBxQK1c6IUK",
+        "settlement_id": "setl_8zu5KcbxIQH71E"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1833,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_IKLrael3ArDNCP",
+        "settlement_id": "setl_qB4spME3K3AnjZ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 414,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_jpVQ0Fa4MT1YN1",
+        "settlement_id": "setl_w87xSMzSXTcXDX"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 128,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_LyMZEWnQZA6G17",
+        "settlement_id": "setl_YpKF4tYzobO3Nl"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 228,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_cER3wxQMI9IGs0",
+        "settlement_id": "setl_0HOYm6CA19EZJG"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 288,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_L43FqlTsZId613",
+        "settlement_id": "setl_JNoJqWUR3BO1Tp"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_4xFCIlZ2l0DxfR",
+        "settlement_id": "setl_P65ExMApYLxX4s"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 841,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_UU1N3Wv2HOYpXQ",
+        "settlement_id": "setl_CM0jNAb6J3UOKG"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 13457,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_Rv93Am0vjS7XQo",
+        "settlement_id": "setl_ktWJLloa4rSQJd"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1923,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_r5wY85diB18Frb",
+        "settlement_id": "setl_Zfz63V77U1Y3ft"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 445,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_gQhEeVNxyxgyHy",
+        "correct_order_id": "order_umrHTQnu6N1aij",
+        "payment_id": "pay_ZGMbMw0vospNrk"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6900,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_zl9EgadEe7JfW5",
+        "correct_order_id": "order_lBhnDNXfcsmCEU",
+        "payment_id": "pay_81LIenFUp3uRGi"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 22500,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_438zTIiugmvAe8",
+        "correct_order_id": "order_cjcUnZQKZ53XyG",
+        "payment_id": "pay_E64baSzJwFcZsy"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1138400,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_HIN8hTxkDVGKTU",
+        "correct_order_id": "order_wS4shRLkvXHQiB",
+        "payment_id": "pay_Dv3TsKTeZBzJQM"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 10500,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_N0mZMUilaySiMH",
+        "correct_order_id": "order_OEYSHUpe9U0ITY",
+        "payment_id": "pay_93WvwfkelNgxDG"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 131600,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_eBF2l883S2Yr6m",
+        "correct_order_id": "order_JIdlvcGbUrDpC3",
+        "payment_id": "pay_t3PpStwBXwSJuE"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1200000,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_noKdKedVhc3fec",
+        "correct_order_id": "order_W2L1LrryTW1Iaw",
+        "payment_id": "pay_Vn7dFZMAH8WKaW"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1089800,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_YSfjsQ3reIFGyB",
+        "correct_order_id": "order_a4gru4QeCdkB0k",
+        "payment_id": "pay_MBhhrtH82dAw61"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 237100,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_Kd4HjfV1oy3JRu",
+        "correct_order_id": "order_WfX4gyjCH8wKTj",
+        "payment_id": "pay_g2vcLAyH8JDQIA"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 40900,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_6qSKRkaAbdhA"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 8300,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_3Mvzw3V164bY"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 28900,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_VZkrVFpYPKkQ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 28900,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_H7Oi0lYf0DPw"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 47400,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_RwOBoZlB8SJX"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 41700,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_5EUfLXfsgbPN"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 14000,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_UNTwgPCLONJK"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 40300,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_CVrQqFjBzCKl"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 43000,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_d8dd3s7ylV7i"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 19700,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_p5CdSXW9d5VC"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 22500,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_2LVr4GnnzCfe"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 23100,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_jipQV2DfDqmf"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 29400,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_LQ9JksYkqx6R"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 36800,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_O3r7Zie4gH1w"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 13000,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_iprFzDkvEbfgSn"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5213747,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_4S4yx4NIPpGBhx"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1851570,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_ZFfJ7wXmfcgeoj"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 298100,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_y3CAweOspZ8CWU"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6080900,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_Zfz63V77U1Y3ft"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 2213184,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_xyFPHBW5czpIad"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 0,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_XeeiYPZSbr8Og3"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 2067905,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_WXU61N77MegxN9"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6367690,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_5gHWa3iFPUvzrP"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 6263448,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_CXVJo1FFMKgVyR"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 75565,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_P65ExMApYLxX4s"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1358308,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_ugrDCYYI3SV1Ya"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 4444768,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_MOoQjOSMv7vg5Y"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 4075140,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_CNeUC363a0jlhO"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 400981,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_qoYbO7CQcmz7gi",
+        "payment_id": "pay_P5bWXosFOdm5oe"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 177668,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_V4JDtN6RSQCiA1",
+        "payment_id": "pay_SVM3vm6ZbymPkw"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 19340,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_YMLC8Fu0k5Z85J",
+        "payment_id": "pay_CGxRElAtCdcEK3"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 140604,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_28Mu2hyrBQ4CA6",
+        "payment_id": "pay_7S9wNSx5tGtUIr"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 59885,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_09Ygk7RIQCC4xO",
+        "payment_id": "pay_cwlxvwluUHDrTp"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 27282,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_GTnKTFNdR7lV8K",
+        "payment_id": "pay_4fxmslUcMOza0D"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 78213,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_897GvAMvpVAesg",
+        "payment_id": "pay_0D7tiJVT0gtNOg"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 94348,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_ZRCXBSi16WcJs6",
+        "payment_id": "pay_acp0P4vDywwJ2Q"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 359328,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_gkhPApohVGVZ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 945700,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_54c4HFf3Yojl"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1416300,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_xv5YyiRpQk3V"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 957800,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_iNUm1Hnwpwmz"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 893600,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_PBXpipaUlUzX"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1000400,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_n8enG7j6CRI9"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1524900,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_wy9KLBrF6UJ1"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 496500,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_nYU3ELM8kY5K"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1167100,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_ZwH13fdPdURD"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 175500,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_GV7ZfTfUMhnZ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 359800,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_s6ZCivtn9rOK"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1820200,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_PmMX9oUJ4qqc"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1853900,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_LVreOkbpJ1qh"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 609800,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_hbqcLFHc3LQ8"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1490400,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    }
+  ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788068150.357564,
+  "generated_at_unix": 1788083174.289579,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9784714747039828,
@@ -119,9 +2044,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 531363.1536347092,
+      "records_per_second": 739134.7615867922,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.0034966669918503612
+      "wall_clock_seconds": 0.0025137499906122684
     }
   }
 }

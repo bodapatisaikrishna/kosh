@@ -6,16 +6,32 @@
 <style>
   body { font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 2rem; color: #1a1a1a; background: #fff; }
   h1 { margin-bottom: 0.2rem; }
+  h2 { margin-bottom: 0.3rem; }
   .subtitle { color: #666; margin-top: 0; }
+  .muted { color: #888; font-size: 0.85rem; }
   .headline { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1.5rem 0; }
   .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.5rem; min-width: 160px; }
   .card .label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em; }
   .card .value { font-size: 2rem; font-weight: 700; margin-top: 0.25rem; }
   .card.risk .value { color: #b00020; }
-  table { border-collapse: collapse; margin: 0.5rem 0 1.5rem; width: 100%; max-width: 640px; }
+  table { border-collapse: collapse; margin: 0.5rem 0 1.5rem; width: 100%; max-width: 720px; }
   th, td { border: 1px solid #ddd; padding: 0.4rem 0.7rem; text-align: left; font-size: 0.9rem; }
-  th { background: #f5f5f5; }
-  section { margin-bottom: 2rem; }
+  th { background: #f5f5f5; cursor: pointer; user-select: none; }
+  th.sortable:hover { background: #e8e8e8; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  section { margin-bottom: 2.5rem; }
+  .exc-row { cursor: pointer; }
+  .exc-row:hover { background: #fafafa; }
+  .exc-detail { display: none; }
+  .exc-detail.open { display: table-row; }
+  .detail-box { background: #f9f9f9; border-left: 3px solid #b00020; padding: 0.6rem 1rem; font-size: 0.85rem; }
+  .pill { display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .pill-standard { background: #eee; color: #444; }
+  .pill-review_required { background: #fde3e3; color: #b00020; }
+  .inflow-chart { display: flex; align-items: flex-end; gap: 4px; height: 120px; max-width: 720px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+  .bar { width: 100%; background: #2b6cb0; border-radius: 2px 2px 0 0; min-height: 2px; }
+  .bar-label { font-size: 0.65rem; color: #888; margin-top: 4px; writing-mode: vertical-rl; }
 </style>
 </head>
 <body>
@@ -26,24 +42,98 @@
     <div class="card"><div class="label">Records processed</div><div class="value">1858</div></div>
     <div class="card"><div class="label">Auto-match rate</div><div class="value">97.85%</div></div>
     <div class="card risk"><div class="label">False-match rate</div><div class="value">0.00%</div></div>
-    <div class="card"><div class="label">Precision / Recall</div><div class="value">100.00% / 100.00%</div></div>
-    <div class="card"><div class="label">Wall clock</div><div class="value">0.005s</div></div>
+    <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">₹13,309,048.36</div></div>
+    <div class="card"><div class="label">Wall clock</div><div class="value">0.004s</div></div>
   </div>
 
   <section>
     <h2>Layer waterfall</h2>
+    <p class="muted">Share of correctly-matched links contributed by each layer.</p>
     <table><tr><th>Layer</th><th>Share of correct matches</th></tr><tr><td>L0</td><td>99.74%</td></tr><tr><td>L1</td><td>0.26%</td></tr></table>
   </section>
 
   <section>
     <h2>Exception queue</h2>
-    <p>0 exceptions &middot; ₹0.00 at risk</p>
-    <table><tr><th>Category</th><th>Count</th></tr><tr><td colspan="2">none</td></tr></table>
+    <p>0 exceptions &middot; ₹0.00 at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
+    <table>
+      <tr><th class="sortable" onclick="sortExceptions()">Category</th><th>Severity</th><th class="num">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
+      <tr><td colspan="5">no exceptions</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Cash position</h2>
+    <p class="muted">As of 2026-08-31 &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹0.00</strong></p>
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">14-day expected inflow</h3>
+    <div class="inflow-chart"><div class="bar-col">
+              <div class="bar" style="height:100%"></div>
+              <div class="bar-label">08-31</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:67%"></div>
+              <div class="bar-label">09-01</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-02</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-03</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-04</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-05</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-06</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-07</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-08</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-09</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-10</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-11</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-12</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">09-13</div>
+            </div></div>
+    <h3 style="font-size:0.95rem;margin:1.2rem 0 0.3rem;">Book cash vs. reconciled cash</h3>
+    <p class="muted">Book: ₹14,200,765.83 &middot; Reconciled: ₹13,309,048.36 &middot; every paisa of the gap is named below</p>
+    <table><tr><th>Component</th><th class="num">Amount</th></tr><tr><td>unsettled_gross_paise</td><td class='num'>₹507,630.17</td></tr><tr><td>settled_gross_minus_net_paise</td><td class='num'>₹274,716.04</td></tr><tr><td>settled_refunds_paise</td><td class='num'>₹238,231.52</td></tr><tr><td>adjustments_paise</td><td class='num'>₹1,258.00</td></tr><tr><td>legitimate_chargeback_paise</td><td class='num'>₹13,030.74</td></tr><tr><td>orphan_chargeback_paise</td><td class='num'>₹0.00</td></tr><tr><td>unidentified_credit_paise</td><td class='num'>₹0.00</td></tr></table>
   </section>
 
   <section>
     <h2>Per-defect-class confusion</h2>
     <table><tr><th>Defect type</th><th>Outcome counts</th></tr><tr><td>duplicate_payment</td><td>{&quot;missed&quot;: 20}</td></tr><tr><td>fee_mismatch_wrong_tier</td><td>{&quot;missed&quot;: 19}</td></tr><tr><td>fx_variance</td><td>{&quot;missed&quot;: 8}</td></tr><tr><td>gst_variance</td><td>{&quot;missed&quot;: 15}</td></tr><tr><td>missing_settlement</td><td>{&quot;missed&quot;: 20}</td></tr><tr><td>orphan_chargeback</td><td>{&quot;missed&quot;: 14}</td></tr><tr><td>period_cutoff</td><td>{&quot;missed&quot;: 14}</td></tr><tr><td>refund_misallocation</td><td>{&quot;missed&quot;: 9}</td></tr><tr><td>rounding_drift</td><td>{&quot;correctly_resolved&quot;: 25}</td></tr><tr><td>settlement_split</td><td>{&quot;correctly_resolved&quot;: 10}</td></tr><tr><td>unidentified_credit</td><td>{&quot;missed&quot;: 14}</td></tr><tr><td>utr_mangled</td><td>{&quot;correctly_resolved&quot;: 20}</td></tr></table>
   </section>
+
+<script>
+  let sortAsc = true;
+  function sortExceptions() {
+    const table = document.querySelectorAll("table")[1];
+    const rows = Array.from(table.querySelectorAll("tr.exc-row"));
+    rows.sort((a, b) => {
+      const diff = Number(a.dataset.amount) - Number(b.dataset.amount);
+      return sortAsc ? diff : -diff;
+    });
+    sortAsc = !sortAsc;
+    for (const row of rows) {
+      const detail = row.nextElementSibling;
+      table.appendChild(row);
+      table.appendChild(detail);
+    }
+  }
+</script>
 </body>
 </html>

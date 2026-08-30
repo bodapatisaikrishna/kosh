@@ -8,6 +8,12 @@
 The JSON output separates "timing" (wall-clock, inherently non-deterministic) from
 "metrics" (deterministic given the same engine + fixtures) so a regression test can
 freeze the metrics half without fighting the clock.
+
+This is the Phase 6 dashboard: per the brief's own fallback rule ("a working CLI
+beats a broken dashboard, judges grade accuracy not CSS"), the four panels live
+here as a self-contained static HTML report rather than a separate Next.js app -
+headline strip, layer waterfall, a sortable exception queue with evidence-chain
+and agent-trace drill-down, and the cash position.
 """
 
 from __future__ import annotations
@@ -16,8 +22,10 @@ import argparse
 import html
 import json
 import time
+from dataclasses import asdict
 from pathlib import Path
 
+from cash.forecast import compute_forecast
 from engine.baselines import null_baseline, oracle_baseline
 from engine.io import load_dataset
 from engine.pipeline import run_full, run_l0_l1, run_l0_l1_l2
@@ -32,6 +40,20 @@ ENGINES = {
     "full": lambda dataset, ground_truth: run_full(dataset, client=None),
 }
 
+# Where committed L3 traces live - an exception whose `affected` dict names a
+# record with a trace here gets a drill-down link in the exception queue.
+SAMPLE_TRACES_DIR = Path("benchmarks/sample_traces")
+
+
+def _exception_dicts(engine_output) -> list[dict]:
+    out = []
+    for e in engine_output.exceptions:
+        d = asdict(e)
+        trace_id = next((v for v in e.affected.values() if (SAMPLE_TRACES_DIR / f"{v}.json").exists()), None)
+        d["trace_file"] = f"sample_traces/{trace_id}.json" if trace_id else None
+        out.append(d)
+    return out
+
 
 def run_eval(fixtures_dir: Path, engine_name: str) -> dict:
     dataset = load_dataset(fixtures_dir)
@@ -43,11 +65,15 @@ def run_eval(fixtures_dir: Path, engine_name: str) -> dict:
     generated_at = started
 
     metrics = compute_metrics(dataset, engine_output, ground_truth)
+    forecast = compute_forecast(dataset, engine_output.matches, engine_output.exceptions)
+
     return {
         "engine": engine_name,
         "fixtures": str(fixtures_dir),
         "generated_at_unix": generated_at,
         "metrics": metrics,
+        "exceptions_detail": _exception_dicts(engine_output),
+        "cash": asdict(forecast),
     }
 
 
@@ -55,11 +81,17 @@ def _pct(x: float) -> str:
     return f"{x * 100:.2f}%"
 
 
+def _rupees(paise: int) -> str:
+    sign = "-" if paise < 0 else ""
+    return f"{sign}₹{abs(paise) / 100:,.2f}"
+
+
 def render_html(report: dict) -> str:
     m = report["metrics"]
     acc = m["accuracy"]
     thr = m["throughput"]
     exc = m["exceptions"]
+    cash = report["cash"]
 
     def esc(s: object) -> str:
         return html.escape(str(s))
@@ -68,11 +100,48 @@ def render_html(report: dict) -> str:
         f"<tr><td>{esc(dtype)}</td><td>{esc(json.dumps(counts))}</td></tr>"
         for dtype, counts in acc["defect_confusion"].items()
     )
-    category_rows = "".join(
-        f"<tr><td>{esc(cat)}</td><td>{count}</td></tr>" for cat, count in exc["by_category"].items()
-    )
     layer_rows = "".join(
         f"<tr><td>{esc(layer)}</td><td>{_pct(share)}</td></tr>" for layer, share in acc["layer_contribution"].items()
+    )
+
+    exception_rows = []
+    for i, e in enumerate(sorted(report["exceptions_detail"], key=lambda x: x["amount_at_risk_paise"], reverse=True)):
+        evidence_html = "".join(f"<li>{esc(line)}</li>" for line in e["evidence_chain"]) or "<li><em>no evidence recorded</em></li>"
+        trace_html = (
+            f'<a href="{esc(e["trace_file"])}" target="_blank">view agent trace &rarr;</a>'
+            if e.get("trace_file") else '<span class="muted">no agent trace (deterministically classified)</span>'
+        )
+        exception_rows.append(f"""
+        <tr class="exc-row" data-amount="{e['amount_at_risk_paise']}" onclick="document.getElementById('detail-{i}').classList.toggle('open')">
+          <td>{esc(e['category'])}</td>
+          <td><span class="pill pill-{esc(e['severity'].lower())}">{esc(e['severity'])}</span></td>
+          <td class="num">{_rupees(e['amount_at_risk_paise'])}</td>
+          <td>{esc(e['suggested_owner'])}</td>
+          <td>{esc(e['aging_days'])}d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-{i}">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {esc(json.dumps(e['affected']))}<br>
+              <strong>Recommended action:</strong> {esc(e['recommended_action'])}<br>
+              <strong>Evidence chain:</strong>
+              <ul>{evidence_html}</ul>
+              {trace_html}
+            </div>
+          </td>
+        </tr>""")
+    exception_table_body = "".join(exception_rows) or '<tr><td colspan="5">no exceptions</td></tr>'
+
+    max_inflow = max((row["expected_inflow_paise"] for row in cash["inflow_curve"]), default=0) or 1
+    inflow_bars = "".join(
+        f"""<div class="bar-col">
+              <div class="bar" style="height:{max(2, (row['expected_inflow_paise'] * 100) // max_inflow)}%"></div>
+              <div class="bar-label">{esc(row['date'][5:])}</div>
+            </div>"""
+        for row in cash["inflow_curve"]
+    )
+    reconciliation_rows = "".join(
+        f"<tr><td>{esc(name)}</td><td class='num'>{_rupees(val)}</td></tr>" for name, val in cash["reconciliation"].items()
     )
 
     return f"""<!doctype html>
@@ -83,16 +152,32 @@ def render_html(report: dict) -> str:
 <style>
   body {{ font-family: -apple-system, Helvetica, Arial, sans-serif; margin: 2rem; color: #1a1a1a; background: #fff; }}
   h1 {{ margin-bottom: 0.2rem; }}
+  h2 {{ margin-bottom: 0.3rem; }}
   .subtitle {{ color: #666; margin-top: 0; }}
+  .muted {{ color: #888; font-size: 0.85rem; }}
   .headline {{ display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1.5rem 0; }}
   .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.5rem; min-width: 160px; }}
   .card .label {{ font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.04em; }}
   .card .value {{ font-size: 2rem; font-weight: 700; margin-top: 0.25rem; }}
   .card.risk .value {{ color: #b00020; }}
-  table {{ border-collapse: collapse; margin: 0.5rem 0 1.5rem; width: 100%; max-width: 640px; }}
+  table {{ border-collapse: collapse; margin: 0.5rem 0 1.5rem; width: 100%; max-width: 720px; }}
   th, td {{ border: 1px solid #ddd; padding: 0.4rem 0.7rem; text-align: left; font-size: 0.9rem; }}
-  th {{ background: #f5f5f5; }}
-  section {{ margin-bottom: 2rem; }}
+  th {{ background: #f5f5f5; cursor: pointer; user-select: none; }}
+  th.sortable:hover {{ background: #e8e8e8; }}
+  td.num {{ text-align: right; font-variant-numeric: tabular-nums; }}
+  section {{ margin-bottom: 2.5rem; }}
+  .exc-row {{ cursor: pointer; }}
+  .exc-row:hover {{ background: #fafafa; }}
+  .exc-detail {{ display: none; }}
+  .exc-detail.open {{ display: table-row; }}
+  .detail-box {{ background: #f9f9f9; border-left: 3px solid #b00020; padding: 0.6rem 1rem; font-size: 0.85rem; }}
+  .pill {{ display: inline-block; padding: 0.1rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }}
+  .pill-standard {{ background: #eee; color: #444; }}
+  .pill-review_required {{ background: #fde3e3; color: #b00020; }}
+  .inflow-chart {{ display: flex; align-items: flex-end; gap: 4px; height: 120px; max-width: 720px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }}
+  .bar-col {{ flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }}
+  .bar {{ width: 100%; background: #2b6cb0; border-radius: 2px 2px 0 0; min-height: 2px; }}
+  .bar-label {{ font-size: 0.65rem; color: #888; margin-top: 4px; writing-mode: vertical-rl; }}
 </style>
 </head>
 <body>
@@ -103,25 +188,57 @@ def render_html(report: dict) -> str:
     <div class="card"><div class="label">Records processed</div><div class="value">{thr['records_processed']}</div></div>
     <div class="card"><div class="label">Auto-match rate</div><div class="value">{_pct(acc['auto_match_rate'])}</div></div>
     <div class="card risk"><div class="label">False-match rate</div><div class="value">{_pct(acc['false_match_rate'])}</div></div>
-    <div class="card"><div class="label">Precision / Recall</div><div class="value">{_pct(acc['precision'])} / {_pct(acc['recall'])}</div></div>
+    <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">{_rupees(cash['reconciled_cash_paise'])}</div></div>
     <div class="card"><div class="label">Wall clock</div><div class="value">{thr['wall_clock_seconds']:.3f}s</div></div>
   </div>
 
   <section>
     <h2>Layer waterfall</h2>
+    <p class="muted">Share of correctly-matched links contributed by each layer.</p>
     <table><tr><th>Layer</th><th>Share of correct matches</th></tr>{layer_rows or '<tr><td colspan="2">no matches</td></tr>'}</table>
   </section>
 
   <section>
     <h2>Exception queue</h2>
-    <p>{exc['count']} exceptions &middot; ₹{exc['total_amount_at_risk_paise'] / 100:,.2f} at risk</p>
-    <table><tr><th>Category</th><th>Count</th></tr>{category_rows or '<tr><td colspan="2">none</td></tr>'}</table>
+    <p>{exc['count']} exceptions &middot; {_rupees(exc['total_amount_at_risk_paise'])} at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
+    <table>
+      <tr><th class="sortable" onclick="sortExceptions()">Category</th><th>Severity</th><th class="num">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
+      {exception_table_body}
+    </table>
+  </section>
+
+  <section>
+    <h2>Cash position</h2>
+    <p class="muted">As of {esc(cash['as_of_date'])} &middot; Rs stuck: <strong>{_rupees(cash['stuck_paise'])}</strong> ({len(cash['stuck_payment_ids'])} payments) &middot; Rs at risk: <strong>{_rupees(cash['at_risk_paise'])}</strong></p>
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">14-day expected inflow</h3>
+    <div class="inflow-chart">{inflow_bars}</div>
+    <h3 style="font-size:0.95rem;margin:1.2rem 0 0.3rem;">Book cash vs. reconciled cash</h3>
+    <p class="muted">Book: {_rupees(cash['book_cash_paise'])} &middot; Reconciled: {_rupees(cash['reconciled_cash_paise'])} &middot; every paisa of the gap is named below</p>
+    <table><tr><th>Component</th><th class="num">Amount</th></tr>{reconciliation_rows}</table>
   </section>
 
   <section>
     <h2>Per-defect-class confusion</h2>
     <table><tr><th>Defect type</th><th>Outcome counts</th></tr>{confusion_rows}</table>
   </section>
+
+<script>
+  let sortAsc = true;
+  function sortExceptions() {{
+    const table = document.querySelectorAll("table")[1];
+    const rows = Array.from(table.querySelectorAll("tr.exc-row"));
+    rows.sort((a, b) => {{
+      const diff = Number(a.dataset.amount) - Number(b.dataset.amount);
+      return sortAsc ? diff : -diff;
+    }});
+    sortAsc = !sortAsc;
+    for (const row of rows) {{
+      const detail = row.nextElementSibling;
+      table.appendChild(row);
+      table.appendChild(detail);
+    }}
+  }}
+</script>
 </body>
 </html>
 """
