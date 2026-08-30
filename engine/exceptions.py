@@ -231,6 +231,27 @@ def classify_deterministic(
     return exceptions, unexplained
 
 
+def unexplained_to_fallback_exceptions(dataset: Dataset, unexplained_payment_ids: set[str]) -> list[ReconException]:
+    """When no L3 client is configured, a genuinely unexplained payment must
+    still never be silently dropped - it becomes an honest UNEXPLAINED_VARIANCE
+    exception saying exactly that, rather than vanishing from the ledger
+    entirely. When a client IS configured, the pipeline routes these to the
+    agent instead of calling this function - see engine/pipeline.py::run_full.
+    """
+    payments_by_id = {p.payment_id: p for p in dataset.payments}
+    exceptions_out = []
+    for payment_id in sorted(unexplained_payment_ids):
+        p = payments_by_id.get(payment_id)
+        if p is None:
+            continue
+        exceptions_out.append(_exc(
+            "UNEXPLAINED_VARIANCE", abs(p.net_paise), {"payment_id": payment_id},
+            (f"payment {payment_id}'s booked net ({p.net_paise}p) does not match any known fee-tier, "
+             f"GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further",),
+        ))
+    return exceptions_out
+
+
 def build_ledger(exceptions: list[ReconException]) -> list[ReconException]:
     """The exception ledger: sorted by rupees at risk, descending. Nothing is
     ever dropped here - a shorter list with a suppressed item is a worse

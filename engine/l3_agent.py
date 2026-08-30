@@ -18,6 +18,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from .contract import EngineMeta, EngineOutput, Match, ReconException
+from .fees import compute_expected_fee
 from .io import Dataset
 from .l3_tools import TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
 from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError
@@ -252,3 +253,142 @@ def run_l3(dataset: Dataset, residual_items: list[tuple[str, str]], client: LLMC
     """Sync wrapper for callers not already inside an event loop (the eval CLI,
     the pipeline's non-async entry points)."""
     return asyncio.run(run_l3_async(dataset, residual_items, client, **kwargs))
+
+
+def _synthetic_exercise_dataset():
+    """A small, hand-built dataset covering every hard constraint and every
+    tool at least once - NOT run_2000 residual (which is empty; see
+    ARCHITECTURE.md). Five records, each engineered to need a different kind
+    of investigation:
+
+      pay_unexplained  - net doesn't fit any deterministic hypothesis
+      pay_high_value   - a clean, high-confidence, >Rs 50,000 match
+      pay_weak_evidence - only a loosely-plausible candidate exists
+      btxn_batch       - a bank credit that is a genuine 2-settlement batch
+      pay_ambiguous    - two equally plausible settlement candidates
+    """
+    from .io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
+
+    orders, payments, settlements, bank = [], [], [], []
+
+    # 1. pay_unexplained: booked net is off by an arbitrary amount.
+    fee, gst, correct_net = compute_expected_fee(200_000_00, "upi", False)
+    orders.append(OrderRow("order_unexplained", "2026-08-01", "cust_1", 200_000_00, "INR", "upi", "paid", "INV-1"))
+    payments.append(PaymentRow("pay_unexplained", "order_unexplained", "2026-08-01T10:00:00", "upi", False,
+                                200_000_00, fee, gst, correct_net - 7_777, "captured", "setl_unexplained", None, 0))
+    settlements.append(SettlementRow("setl_unexplained", "2026-08-03", "HDFCN00000000101", 1, 200_000_00, fee, gst, 0, correct_net - 7_777))
+    bank.append(BankRow("btxn_unexplained", "2026-08-03", "NEFT-HDFCN00000000101-RAZORPAY SOFTWARE PVT LTD", correct_net - 7_777, 0, 0))
+
+    # 2. pay_high_value: clean candidate, gross > Rs 50,000 net at zero-MDR UPI.
+    fee2, gst2, net2 = compute_expected_fee(600_000_00, "upi", False)
+    orders.append(OrderRow("order_high_value", "2026-08-05", "cust_2", 600_000_00, "INR", "upi", "paid", "INV-2"))
+    payments.append(PaymentRow("pay_high_value", "order_high_value", "2026-08-05T11:00:00", "upi", False,
+                                600_000_00, fee2, gst2, net2, "captured", None, None, 0))
+    settlements.append(SettlementRow("setl_high_value", "2026-08-07", "ICICN00000000102", 1, 600_000_00, fee2, gst2, 0, net2))
+    bank.append(BankRow("btxn_high_value", "2026-08-07", "NEFT-ICICN00000000102-RAZORPAY SOFTWARE PVT LTD", net2, 0, 0))
+
+    # 3. pay_weak_evidence: a same-day settlement exists whose net is close
+    # (within ~Rs 500) but not exact, AND it aggregates 3 payments, not 1 - a
+    # genuine "this could plausibly be it, but the evidence doesn't cleanly
+    # support a single-payment match" case.
+    fee3, gst3, net3 = compute_expected_fee(80_000_00, "card", False)
+    orders.append(OrderRow("order_weak", "2026-08-10", "cust_3", 80_000_00, "INR", "card", "paid", "INV-3"))
+    payments.append(PaymentRow("pay_weak_evidence", "order_weak", "2026-08-10T09:00:00", "card", False,
+                                80_000_00, fee3, gst3, net3, "captured", None, None, 0))
+    settlements.append(SettlementRow("setl_weak_maybe", "2026-08-12", "UTIBN00000000103", 3, 240_000_00, 4_800_00, 864_00, 0, net3 + 500_00))
+    bank.append(BankRow("btxn_weak_maybe", "2026-08-12", "NEFT-UTIBN00000000103-RAZORPAY SOFTWARE PVT LTD", net3 + 500_00, 0, 0))
+
+    # 4. btxn_batch: one bank credit that is the sum of two settlements neither
+    # of which alone matches it - a genuine multi-settlement batch.
+    fee4a, gst4a, net4a = compute_expected_fee(150_000_00, "upi", False)
+    fee4b, gst4b, net4b = compute_expected_fee(250_000_00, "upi", False)
+    settlements.append(SettlementRow("setl_batch_a", "2026-08-15", "KKBKN00000000104", 1, 150_000_00, fee4a, gst4a, 0, net4a))
+    settlements.append(SettlementRow("setl_batch_b", "2026-08-15", "SBINN00000000105", 1, 250_000_00, fee4b, gst4b, 0, net4b))
+    batch_total = net4a + net4b
+    bank.append(BankRow("btxn_batch", "2026-08-15", "BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES", batch_total, 0, 0))
+
+    # 5. pay_ambiguous: two settlements equally plausible (same amount, same date).
+    fee5, gst5, net5 = compute_expected_fee(45_000_00, "netbanking", False)
+    orders.append(OrderRow("order_ambiguous", "2026-08-20", "cust_5", 45_000_00, "INR", "netbanking", "paid", "INV-5"))
+    payments.append(PaymentRow("pay_ambiguous", "order_ambiguous", "2026-08-20T14:00:00", "netbanking", False,
+                                45_000_00, fee5, gst5, net5, "captured", None, None, 0))
+    settlements.append(SettlementRow("setl_ambiguous_a", "2026-08-22", "HDFCN00000000106", 1, 45_000_00, fee5, gst5, 0, net5))
+    settlements.append(SettlementRow("setl_ambiguous_b", "2026-08-22", "ICICN00000000107", 1, 45_000_00, fee5, gst5, 0, net5))
+    bank.append(BankRow("btxn_ambiguous_a", "2026-08-22", "NEFT-HDFCN00000000106-RAZORPAY SOFTWARE PVT LTD", net5, 0, 0))
+    bank.append(BankRow("btxn_ambiguous_b", "2026-08-22", "NEFT-ICICN00000000107-RAZORPAY SOFTWARE PVT LTD", net5, 0, 0))
+
+    return Dataset(orders=orders, payments=payments, settlements=settlements, bank=bank)
+
+
+SYNTHETIC_RESIDUAL_ITEMS: list[tuple[str, str]] = [
+    ("pay_unexplained", "payments"),
+    ("pay_high_value", "payments"),
+    ("pay_weak_evidence", "payments"),
+    ("btxn_batch", "bank"),
+    ("pay_ambiguous", "payments"),
+]
+
+
+def _profile(backend: str, model: str | None, out_path: str | None, traces_dir: str, cache_dir: str) -> None:
+    """`python -m engine.l3_agent --profile [--backend nim|anthropic] [--model ID]
+    [--out path.json] [--traces-dir DIR] [--cache-dir DIR]`
+
+    Runs the fixed 5-record synthetic exercise set (NOT run_2000 residual, which
+    is empty - see ARCHITECTURE.md) against a real backend, persists a trace per
+    record, and reports the same throughput/behavior shape as a benchmark JSON.
+    """
+    if backend == "nim":
+        from .llm.nim_client import NimClient
+        client = NimClient(model=model) if model else NimClient()
+        model_name, backend_name = client._model, "nim"
+    elif backend == "anthropic":
+        from .llm.anthropic_client import AnthropicClient
+        client = AnthropicClient(model=model) if model else AnthropicClient()
+        model_name, backend_name = client._model, "anthropic"
+    else:
+        raise SystemExit(f"unknown backend {backend!r}")
+
+    dataset = _synthetic_exercise_dataset()
+    output = run_l3(
+        dataset, SYNTHETIC_RESIDUAL_ITEMS, client,
+        concurrency=len(SYNTHETIC_RESIDUAL_ITEMS),
+        cache_dir=Path(cache_dir), traces_dir=Path(traces_dir),
+        model_name=model_name, backend_name=backend_name,
+    )
+
+    report = {
+        "note": "SYNTHETIC exercise set, not run_2000 residual (which is empty - see ARCHITECTURE.md). "
+                "Exercises every hard constraint and tool against a real LLM backend.",
+        "backend": backend_name,
+        "model": model_name,
+        "records": len(SYNTHETIC_RESIDUAL_ITEMS),
+        "wall_clock_seconds": output.meta.wall_clock_seconds,
+        "llm_calls": output.meta.llm_calls,
+        "input_tokens": output.meta.input_tokens,
+        "output_tokens": output.meta.output_tokens,
+        "matches": [asdict(m) for m in output.matches],
+        "exceptions": [asdict(e) for e in output.exceptions],
+    }
+    print(json.dumps({k: v for k, v in report.items() if k not in ("matches", "exceptions")}, indent=2, sort_keys=True))
+    print(f"matches: {len(output.matches)}, exceptions: {len(output.exceptions)}")
+    if out_path:
+        with open(out_path, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2, sort_keys=True, default=str)
+            fh.write("\n")
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the L3 synthetic exercise set against a real LLM backend.")
+    parser.add_argument("--profile", action="store_true", help="run the synthetic exercise set (the only supported mode)")
+    parser.add_argument("--backend", choices=["nim", "anthropic"], default="nim")
+    parser.add_argument("--model", type=str, default=None)
+    parser.add_argument("--out", type=str, default=None)
+    parser.add_argument("--traces-dir", type=str, default="traces")
+    parser.add_argument("--cache-dir", type=str, default="traces/.cache")
+    args = parser.parse_args()
+    if args.profile:
+        _profile(args.backend, args.model, args.out, args.traces_dir, args.cache_dir)
+    else:
+        parser.print_help()

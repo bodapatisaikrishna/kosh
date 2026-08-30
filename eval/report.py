@@ -20,7 +20,7 @@ from pathlib import Path
 
 from engine.baselines import null_baseline, oracle_baseline
 from engine.io import load_dataset
-from engine.pipeline import run_l0_l1, run_l0_l1_l2
+from engine.pipeline import run_full, run_l0_l1, run_l0_l1_l2
 from eval.io import load_ground_truth
 from eval.metrics import compute_metrics
 
@@ -29,6 +29,7 @@ ENGINES = {
     "oracle": lambda dataset, ground_truth: oracle_baseline(dataset, ground_truth),
     "l0l1": lambda dataset, ground_truth: run_l0_l1(dataset),
     "l0l1l2": lambda dataset, ground_truth: run_l0_l1_l2(dataset),
+    "full": lambda dataset, ground_truth: run_full(dataset, client=None),
 }
 
 
