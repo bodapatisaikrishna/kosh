@@ -1,0 +1,233 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 17807,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 5443,
+  "record_id": "pay_weak_evidence",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_weak_evidence",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 7811200,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_weak_evidence",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-10T09:00:00",
+            "fee_paise": 160000,
+            "gross_paise": 8000000,
+            "gst_paise": 28800,
+            "international": false,
+            "method": "card",
+            "net_paise": 7811200,
+            "order_id": "order_weak",
+            "payment_id": "pay_weak_evidence",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": null,
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000,
+            "date_window_days": 7,
+            "limit": 20,
+            "record_id": "pay_weak_evidence"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 480000,
+                "gross_paise": 24000000,
+                "gst_paise": 86400,
+                "net_paise": 7861200,
+                "num_payments": 3,
+                "settled_at": "2026-08-12",
+                "settlement_id": "setl_weak_maybe",
+                "table": "settlements",
+                "utr": "UTIBN00000000103"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_weak_maybe",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 480000,
+              "gross_paise": 24000000,
+              "gst_paise": 86400,
+              "net_paise": 7861200,
+              "num_payments": 3,
+              "settled_at": "2026-08-12",
+              "settlement_id": "setl_weak_maybe",
+              "utr": "UTIBN00000000103"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 100000,
+            "date_window_days": 3,
+            "limit": 20,
+            "record_id": "setl_weak_maybe"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 0,
+                "bank_txn_id": "btxn_weak_maybe",
+                "credit_paise": 7861200,
+                "debit_paise": 0,
+                "narration": "NEFT-UTIBN00000000103-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-12"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "btxn_weak_maybe",
+            "source": "bank"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "balance_paise": 0,
+              "bank_txn_id": "btxn_weak_maybe",
+              "credit_paise": 7861200,
+              "debit_paise": 0,
+              "narration": "NEFT-UTIBN00000000103-RAZORPAY SOFTWARE PVT LTD",
+              "value_date": "2026-08-12"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 8000000,
+            "international": false,
+            "method": "card"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 160000,
+              "gst_paise": 28800,
+              "net_paise": 7811200
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_weak",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_3",
+            "gross_paise": 8000000,
+            "intended_method": "card",
+            "invoice_no": "INV-3",
+            "order_date": "2026-08-10",
+            "order_id": "order_weak",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 8000000,
+              "international": false,
+              "method": "card"
+            },
+            "expected_paise": 7811200,
+            "observed_paise": 7861200
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": 50000,
+              "detail": "50000 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

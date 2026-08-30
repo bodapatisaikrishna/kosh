@@ -4,20 +4,33 @@ Three-way payment settlement reconciliation for an Indian online merchant: **Ord
 
 Built for the Razorpay AI Buildathon 2026, Track 04.
 
-> **Status: Phase 4 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, L0 (exact-key joins) + L1 (tolerance matching), and now L2 (subset-sum solver). See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+> **Status: Phase 5 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, L0 (exact-key joins) + L1 (tolerance matching) + L2 (subset-sum solver), and now L3 (a provider-agnostic LLM agent) + L4 (the exception ledger). See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
 
-## Results — Phase 4 (L0 + L1 + L2), `data/fixtures/run_2000`
+## Results — Phase 5 (L0 + L1 + L2 + L4, no LLM), `data/fixtures/run_2000`
 
 | Metric | Value |
 |---|---|
 | Auto-match rate | **97.85%** |
 | Precision / Recall | **100.00% / 100.00%** |
 | **False-match rate** | **0.00%** |
-| Wall clock (2000 records) | **~4ms** |
-| Layer split | L0 99.74% · L1 0.26% · L2 0.00% |
-| L2 solver p50 / p99 / max (2000 synthetic instances, n up to 40) | **2.1ms / 49.8ms / 100.9ms** (budget: 250ms) |
+| Wall clock (2000 records) | **~7ms** |
+| Exceptions raised | **132**, all 12 defect types covered, 13/14 recall on `PERIOD_CUTOFF` (see Limitations) |
+| LLM calls on this fixture | **0** — the deterministic classifier resolves every case |
 
-Every one of the 1,858 captured payments not affected by `missing_settlement` or `duplicate_payment` (which have no true settlement link to begin with) is matched correctly, with zero wrong links asserted — unchanged from Phase 3, and **honestly so**: L2 contributes zero matches on this fixture, because L0+L1 already resolve every tie-outable settlement link (the split-settlement and mangled-UTR defects both turn out resolvable one layer up — see Limitations). L2 is real and unit-tested (a genuine multi-settlement batch, its ambiguity guard, the timeout escalation path), and its own solve-time distribution is verified directly against synthetic instances at realistic scale since this dataset doesn't hand it any residual to time. See [`benchmarks/phase4.json`](benchmarks/phase4.json) / [`.html`](benchmarks/phase4.html) and [`benchmarks/phase4_solver_perf.json`](benchmarks/phase4_solver_perf.json).
+See [`benchmarks/phase5.json`](benchmarks/phase5.json) / [`.html`](benchmarks/phase5.html).
+
+## Results — L3 agent, real run against a live LLM
+
+`run_2000`'s residual is empty (see below), so L3's real capability is proven on a small hand-built synthetic exercise set instead — 5 records engineered to need a different kind of investigation each, run for real against `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM (the brief specs Anthropic; no Anthropic key was available — see Limitations):
+
+| Record | Outcome |
+|---|---|
+| `pay_unexplained` (delta fits no known hypothesis) | Correctly raised `UNEXPLAINED_VARIANCE` |
+| `pay_ambiguous` (two identical-amount settlement candidates) | Correctly refused to guess, raised an exception |
+| `btxn_batch` (a genuine 2-settlement batch) | **Correctly chained `find_candidates` → `solve_subset` → `propose_match`**, both settlements linked, high-value companion exception auto-attached |
+| `pay_high_value`, `pay_weak_evidence` | `AGENT_INCOMPLETE` — thorough, correct investigation that ran out of its 8-turn budget before closing the loop |
+
+**Zero false matches across the run.** That's the headline, and it held on a live, non-scripted model: a first pass surfaced a genuine bug (`propose_match` mislabeled a payment's own settlement credit as a chargeback when the model bundled a 3-record chain into one call — see commit `81cc88c`), which was fixed and verified with regression tests *before* the reference run below. Committed as [`benchmarks/phase5_synthetic.json`](benchmarks/phase5_synthetic.json) with full traces in [`benchmarks/sample_traces/`](benchmarks/sample_traces/).
 
 ## Why we generate our own data
 
@@ -121,23 +134,25 @@ python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label 
 pip install -e ".[dev]"
 python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
 python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
-python -m eval.report --fixtures data/fixtures/run_2000 --engine l0l1l2 --label phase4
+python -m eval.report --fixtures data/fixtures/run_2000 --engine full --label phase5
 python -m engine.l2_subset --profile --trials 2000 --seed 42
+export NIM_API_KEY=...   # only needed to re-run the live L3 exercise for real
+python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultra-550b-a55b
 pytest
 ```
 
-`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, and `make l2-profile` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, and `make l3-profile` wrap the same commands.
 
 ## Repo layout
 
 ```
 data/generator/   synthetic dataset generator (Phase 1)
-engine/           EngineOutput contract (Phase 2), null/oracle baselines, L0 + L1 (Phase 3), L2 (Phase 4); L3-L4 not yet built
+engine/           EngineOutput contract, null/oracle baselines, L0+L1+L2 (Phases 2-4), L3 agent + llm/ adapter + L4 ledger (Phase 5)
 eval/             eval harness: metrics against ground truth, benchmark reports (Phase 2)
 cash/             forward cash position (not yet built)
 api/              FastAPI layer (not yet built)
 tests/            pytest suite, incl. tests/baselines/ regression fixtures
-benchmarks/       committed example reports: null/oracle baselines, phase3, phase4, phase4_solver_perf
+benchmarks/       committed reports: null/oracle baselines, phase3-5, phase4_solver_perf, phase5_synthetic, sample_traces/
 ```
 
 ## What's in Phase 3: L0 + L1
@@ -156,10 +171,20 @@ The ambiguity guard here is the same principle as L0/L1's, applied to subsets ra
 
 **Honestly: L2 contributes zero matches on `run_2000`.** L0+L1 already achieve 100% recall on every tie-outable `settlement_bank_txn` link in this fixture — a split settlement is resolved by both bank credits sharing the same UTR (L0), and a mangled UTR is resolved by amount+date+narration tolerance (L1) — so nothing genuinely batched-and-unrecoverable reaches L2 here. This is verified, not assumed: `tests/test_l2_subset.py` covers the solver and its pipeline wrapper (a genuine multi-settlement batch, the ambiguity guard, the already-matched exclusion, the date-window prune) against constructed cases, and `tests/test_l2_subset_perf.py` is the p99-under-250ms regression guard, run against synthetic instances rather than this dataset.
 
-## Limitations (Phase 1–4)
+## What's in Phase 5: L3 agent + L4 exception ledger
 
-- L3 (Claude agent) and L4 (exception ledger) don't exist yet. Whatever L0/L1/L2 can't place is simply absent from the match list for now — Phase 4's pipeline reports zero exceptions, which is a known temporary gap, not a claim that everything reconciled.
-- L2 has no real residual to solve on the reference fixture (see above) — its correctness and timing are verified by direct unit/perf tests, not by this fixture's own numbers.
+**A real gap fixed first.** Designing L4's classifier exposed that `bank_statement.csv`'s chargeback narration carried no reference back to its originating payment at all — legitimate and orphan chargebacks were textually identical, so no engine could ever have told them apart from the public data as it stood. Fixed by embedding a *derivable* reference in legitimate-chargeback narration (`data/generator/ids.py:derive_dispute_ref` — a pure transform of the payment_id, the same "engine can independently recompute this" pattern a settlement's UTR already uses), exposed as a 4th ground-truth link (`chargeback_to_payment`) and a 4th L0 matcher. Verified purely additive: `run_2000`'s auto-match and false-match rates are unchanged; the new link type scores 100% recall on its own 8 legitimate chargebacks.
+
+**L4** (`engine/exceptions.py::classify_deterministic`) covers every defect category with an honest, generalizable rule — `explain_variance` for fee/GST/refund causes, a settlement-vs-latest-capture gap for `PERIOD_CUTOFF` (empirically: normal is 1-4 days, genuine cutoffs are 3-31 days; the threshold is set to catch 13/14 with **zero** false positives rather than 14/14 with ~20 false alarms — the one boundary case is an honest miss, not a guess), and structural checks for the rest. On `run_2000`: **0 LLM calls, 132 exceptions, every non-resolvable defect type covered.**
+
+**L3** (`engine/l3_agent.py`, `engine/l3_tools.py`) is provider-agnostic — the brief specs Anthropic; no Anthropic key was available, an NVIDIA NIM key was, and NIM doesn't serve Claude. `engine/llm/` defines a minimal `LLMClient` interface; `AnthropicClient` is spec-complete and unit-tested against a mocked SDK (ready for a real key), `NimClient` is what actually ran for real. Every hard constraint from the brief is enforced structurally in the tool layer, not just prompted — see the Results section above for what a real, non-scripted run against `nvidia/nemotron-3-ultra-550b-a55b` actually did, including a genuine false-match bug it surfaced and that got fixed with regression tests before the reference run.
+
+## Limitations (Phase 1–5)
+
+- L2 has no real residual to solve on the reference fixture (see above) — its correctness and timing are verified by direct unit/perf tests, not by this fixture's own numbers. The same is true of L3: `run_2000`'s residual for it is empty, so its real capability is proven on the synthetic exercise set instead.
+- `PERIOD_CUTOFF` recall is 13/14 (92.9%) on `run_2000` — one boundary case (a 3-day settlement gap) is genuinely indistinguishable from ~20 normal same-gap settlements using the available signal; reported as a miss rather than guessed at the cost of false positives.
+- `propose_match`'s rationale-citation check (constraint 5) is a best-effort structural check (does the text contain a known record id), not a semantic verification that the citation actually supports the claim.
+- Two of the five live L3 exercise records ended in `AGENT_INCOMPLETE` rather than a clean decision — both were the model doing thorough, correct investigation that simply didn't fit inside the 8-turn budget. This is constraint 6's infrastructure-level fallback working as designed, not a false positive, but it's an honest sign the turn budget is tight for a genuinely uncertain case.
 - `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py` module docstring) — a documented simplification that holds until a layer can leave a record neither matched nor exceptioned.
 - `false_match_rate` is computed against the engine's own asserted links (wrong / total asserted), not against total records — deliberate, so it can't be gamed by asserting very few links, but it means it must always be read next to auto-match rate, never alone.
 - The reference fixture's own truncation defect happens to either leave the UTR fully intact or remove it entirely (its longest template prefix already exceeds the 35-char cutoff) — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.

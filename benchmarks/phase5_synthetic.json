@@ -1,0 +1,108 @@
+{
+  "backend": "nim",
+  "exceptions": [
+    {
+      "affected": {
+        "record_id": "pay_unexplained",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 7777,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [
+        "Payment pay_unexplained (gross 20,000,000 paise, UPI domestic) should have net 20,000,000 per compute_expected_fee (zero fee, zero GST). However observed net is 19,992,223 (-7,777 paise). explain_variance returns UNEXPLAINED. Settlement setl_unexplained shows identical net 19,992,223 with adjustment_paise=0. Bank btxn_unexplained credits 19,992,223 matching settlement UTR HDFCN00000000101. The payment-settlement-bank chain is internally consistent but the 7,777 paise shortfall vs expected has no explained cause (not fee tier, GST, refund, or rounding). Amount at risk 7,777 paise (Rs 77.77) below Rs 50,000 threshold."
+      ],
+      "recommended_action": "Investigate source of 7,777 paise deduction on domestic UPI payment (pay_unexplained) where expected net is 20,000,000 but observed net is 19,992,223 across payment, settlement (setl_unexplained), and bank (btxn_unexplained).",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops"
+    },
+    {
+      "affected": {
+        "record_id": "pay_high_value",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 60000000,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    },
+    {
+      "affected": {
+        "record_id": "pay_weak_evidence",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 7811200,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    },
+    {
+      "affected": {
+        "record_id": "btxn_batch"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 40000000,
+      "category": "HIGH_VALUE_MATCH_REVIEW",
+      "evidence_chain": [
+        "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+      ],
+      "recommended_action": "Match exceeds Rs 50,000 - a second reviewer should confirm before it's treated as final.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    },
+    {
+      "affected": {
+        "record_id": "pay_ambiguous",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 4500000,
+      "category": "AMBIGUOUS_SETTLEMENT",
+      "evidence_chain": [
+        "Payment pay_ambiguous (4500000 gross, 4399110 net, netbanking, domestic) has two candidate settlements (setl_ambiguous_a and setl_ambiguous_b) with identical amounts, fees, GST, and net, each with a distinct UTR and matching bank credit (btxn_ambiguous_a and btxn_ambiguous_b). Both settlements report num_payments=1. The payment's settlement_id is null. Deterministic matching cannot resolve which settlement owns this payment, or whether one settlement is erroneous/duplicate. Confidence in any single match is below 0.85."
+      ],
+      "recommended_action": "Manual review to determine which settlement (setl_ambiguous_a or setl_ambiguous_b) corresponds to pay_ambiguous, or if one settlement is a duplicate",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  ],
+  "input_tokens": 85707,
+  "llm_calls": 39,
+  "matches": [
+    {
+      "confidence": 0.98,
+      "evidence": [
+        "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+      ],
+      "layer": "L3",
+      "left_id": "setl_batch_a",
+      "link_type": "settlement_bank_txn",
+      "right_id": "btxn_batch"
+    },
+    {
+      "confidence": 0.98,
+      "evidence": [
+        "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+      ],
+      "layer": "L3",
+      "left_id": "setl_batch_b",
+      "link_type": "settlement_bank_txn",
+      "right_id": "btxn_batch"
+    }
+  ],
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "note": "SYNTHETIC exercise set, not run_2000 residual (which is empty - see ARCHITECTURE.md). Exercises every hard constraint and tool against a real LLM backend.",
+  "output_tokens": 13851,
+  "records": 5,
+  "wall_clock_seconds": 641.3605986250041
+}

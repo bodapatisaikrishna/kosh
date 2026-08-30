@@ -1,0 +1,265 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 17842,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 2163,
+  "record_id": "pay_ambiguous",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_ambiguous",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 4500000,
+      "category": "AMBIGUOUS_SETTLEMENT",
+      "evidence_chain": [
+        "Payment pay_ambiguous (4500000 gross, 4399110 net, netbanking, domestic) has two candidate settlements (setl_ambiguous_a and setl_ambiguous_b) with identical amounts, fees, GST, and net, each with a distinct UTR and matching bank credit (btxn_ambiguous_a and btxn_ambiguous_b). Both settlements report num_payments=1. The payment's settlement_id is null. Deterministic matching cannot resolve which settlement owns this payment, or whether one settlement is erroneous/duplicate. Confidence in any single match is below 0.85."
+      ],
+      "recommended_action": "Manual review to determine which settlement (setl_ambiguous_a or setl_ambiguous_b) corresponds to pay_ambiguous, or if one settlement is a duplicate",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_ambiguous",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-20T14:00:00",
+            "fee_paise": 85500,
+            "gross_paise": 4500000,
+            "gst_paise": 15390,
+            "international": false,
+            "method": "netbanking",
+            "net_paise": 4399110,
+            "order_id": "order_ambiguous",
+            "payment_id": "pay_ambiguous",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": null,
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 4500000,
+            "international": false,
+            "method": "netbanking"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 85500,
+              "gst_paise": 15390,
+              "net_paise": 4399110
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_ambiguous",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_5",
+            "gross_paise": 4500000,
+            "intended_method": "netbanking",
+            "invoice_no": "INV-5",
+            "order_date": "2026-08-20",
+            "order_id": "order_ambiguous",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000,
+            "date_window_days": 7,
+            "limit": 20,
+            "record_id": "pay_ambiguous"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 85500,
+                "gross_paise": 4500000,
+                "gst_paise": 15390,
+                "net_paise": 4399110,
+                "num_payments": 1,
+                "settled_at": "2026-08-22",
+                "settlement_id": "setl_ambiguous_a",
+                "table": "settlements",
+                "utr": "HDFCN00000000106"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 85500,
+                "gross_paise": 4500000,
+                "gst_paise": 15390,
+                "net_paise": 4399110,
+                "num_payments": 1,
+                "settled_at": "2026-08-22",
+                "settlement_id": "setl_ambiguous_b",
+                "table": "settlements",
+                "utr": "ICICN00000000107"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_ambiguous_a",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 85500,
+              "gross_paise": 4500000,
+              "gst_paise": 15390,
+              "net_paise": 4399110,
+              "num_payments": 1,
+              "settled_at": "2026-08-22",
+              "settlement_id": "setl_ambiguous_a",
+              "utr": "HDFCN00000000106"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_ambiguous_b",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 85500,
+              "gross_paise": 4500000,
+              "gst_paise": 15390,
+              "net_paise": 4399110,
+              "num_payments": 1,
+              "settled_at": "2026-08-22",
+              "settlement_id": "setl_ambiguous_b",
+              "utr": "ICICN00000000107"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000,
+            "date_window_days": 7,
+            "limit": 20,
+            "record_id": "setl_ambiguous_a"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 0,
+                "bank_txn_id": "btxn_ambiguous_a",
+                "credit_paise": 4399110,
+                "debit_paise": 0,
+                "narration": "NEFT-HDFCN00000000106-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-22"
+              },
+              {
+                "balance_paise": 0,
+                "bank_txn_id": "btxn_ambiguous_b",
+                "credit_paise": 4399110,
+                "debit_paise": 0,
+                "narration": "NEFT-ICICN00000000107-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-22"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_at_risk_paise": 4500000,
+            "category": "AMBIGUOUS_SETTLEMENT",
+            "rationale": "Payment pay_ambiguous (4500000 gross, 4399110 net, netbanking, domestic) has two candidate settlements (setl_ambiguous_a and setl_ambiguous_b) with identical amounts, fees, GST, and net, each with a distinct UTR and matching bank credit (btxn_ambiguous_a and btxn_ambiguous_b). Both settlements report num_payments=1. The payment's settlement_id is null. Deterministic matching cannot resolve which settlement owns this payment, or whether one settlement is erroneous/duplicate. Confidence in any single match is below 0.85.",
+            "recommended_action": "Manual review to determine which settlement (setl_ambiguous_a or setl_ambiguous_b) corresponds to pay_ambiguous, or if one settlement is a duplicate",
+            "severity": "REVIEW_REQUIRED"
+          },
+          "name": "raise_exception",
+          "result": {
+            "exception": {
+              "affected": {
+                "record_id": "pay_ambiguous",
+                "source": "payments"
+              },
+              "aging_days": 0,
+              "amount_at_risk_paise": 4500000,
+              "category": "AMBIGUOUS_SETTLEMENT",
+              "evidence_chain": [
+                "Payment pay_ambiguous (4500000 gross, 4399110 net, netbanking, domestic) has two candidate settlements (setl_ambiguous_a and setl_ambiguous_b) with identical amounts, fees, GST, and net, each with a distinct UTR and matching bank credit (btxn_ambiguous_a and btxn_ambiguous_b). Both settlements report num_payments=1. The payment's settlement_id is null. Deterministic matching cannot resolve which settlement owns this payment, or whether one settlement is erroneous/duplicate. Confidence in any single match is below 0.85."
+              ],
+              "recommended_action": "Manual review to determine which settlement (setl_ambiguous_a or setl_ambiguous_b) corresponds to pay_ambiguous, or if one settlement is a duplicate",
+              "severity": "STANDARD",
+              "suggested_owner": "Reconciliation Ops"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,321 @@
+{
+  "backend": "nim",
+  "final_decision": "match",
+  "from_cache": false,
+  "input_tokens": 16084,
+  "llm_calls": 7,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 1533,
+  "record_id": "btxn_batch",
+  "result": {
+    "companion_exception": {
+      "affected": {
+        "record_id": "btxn_batch"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 40000000,
+      "category": "HIGH_VALUE_MATCH_REVIEW",
+      "evidence_chain": [
+        "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+      ],
+      "recommended_action": "Match exceeds Rs 50,000 - a second reviewer should confirm before it's treated as final.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    },
+    "matches": [
+      {
+        "confidence": 0.98,
+        "evidence": [
+          "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+        ],
+        "layer": "L3",
+        "left_id": "setl_batch_a",
+        "link_type": "settlement_bank_txn",
+        "right_id": "btxn_batch"
+      },
+      {
+        "confidence": 0.98,
+        "evidence": [
+          "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+        ],
+        "layer": "L3",
+        "left_id": "setl_batch_b",
+        "link_type": "settlement_bank_txn",
+        "right_id": "btxn_batch"
+      }
+    ]
+  },
+  "source": "bank",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "btxn_batch",
+            "source": "bank"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "balance_paise": 0,
+              "bank_txn_id": "btxn_batch",
+              "credit_paise": 40000000,
+              "debit_paise": 0,
+              "narration": "BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES",
+              "value_date": "2026-08-15"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000,
+            "date_window_days": 7,
+            "limit": 50,
+            "record_id": "btxn_batch"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 5000000,
+            "date_window_days": 14,
+            "limit": 100,
+            "record_id": "btxn_batch"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000000,
+            "date_window_days": 30,
+            "limit": 200,
+            "record_id": "btxn_batch"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 0,
+                "gross_paise": 20000000,
+                "gst_paise": 0,
+                "net_paise": 19992223,
+                "num_payments": 1,
+                "settled_at": "2026-08-03",
+                "settlement_id": "setl_unexplained",
+                "table": "settlements",
+                "utr": "HDFCN00000000101"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 0,
+                "gross_paise": 60000000,
+                "gst_paise": 0,
+                "net_paise": 60000000,
+                "num_payments": 1,
+                "settled_at": "2026-08-07",
+                "settlement_id": "setl_high_value",
+                "table": "settlements",
+                "utr": "ICICN00000000102"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 480000,
+                "gross_paise": 24000000,
+                "gst_paise": 86400,
+                "net_paise": 7861200,
+                "num_payments": 3,
+                "settled_at": "2026-08-12",
+                "settlement_id": "setl_weak_maybe",
+                "table": "settlements",
+                "utr": "UTIBN00000000103"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 0,
+                "gross_paise": 15000000,
+                "gst_paise": 0,
+                "net_paise": 15000000,
+                "num_payments": 1,
+                "settled_at": "2026-08-15",
+                "settlement_id": "setl_batch_a",
+                "table": "settlements",
+                "utr": "KKBKN00000000104"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 0,
+                "gross_paise": 25000000,
+                "gst_paise": 0,
+                "net_paise": 25000000,
+                "num_payments": 1,
+                "settled_at": "2026-08-15",
+                "settlement_id": "setl_batch_b",
+                "table": "settlements",
+                "utr": "SBINN00000000105"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 85500,
+                "gross_paise": 4500000,
+                "gst_paise": 15390,
+                "net_paise": 4399110,
+                "num_payments": 1,
+                "settled_at": "2026-08-22",
+                "settlement_id": "setl_ambiguous_a",
+                "table": "settlements",
+                "utr": "HDFCN00000000106"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 85500,
+                "gross_paise": 4500000,
+                "gst_paise": 15390,
+                "net_paise": 4399110,
+                "num_payments": 1,
+                "settled_at": "2026-08-22",
+                "settlement_id": "setl_ambiguous_b",
+                "table": "settlements",
+                "utr": "ICICN00000000107"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_batch_a",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 0,
+              "gross_paise": 15000000,
+              "gst_paise": 0,
+              "net_paise": 15000000,
+              "num_payments": 1,
+              "settled_at": "2026-08-15",
+              "settlement_id": "setl_batch_a",
+              "utr": "KKBKN00000000104"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_batch_b",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 0,
+              "gross_paise": 25000000,
+              "gst_paise": 0,
+              "net_paise": 25000000,
+              "num_payments": 1,
+              "settled_at": "2026-08-15",
+              "settlement_id": "setl_batch_b",
+              "utr": "SBINN00000000105"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "confidence": 0.98,
+            "rationale": "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together.",
+            "record_ids": [
+              "btxn_batch",
+              "setl_batch_a",
+              "setl_batch_b"
+            ]
+          },
+          "name": "propose_match",
+          "result": {
+            "companion_exception": {
+              "affected": {
+                "record_id": "btxn_batch"
+              },
+              "aging_days": 0,
+              "amount_at_risk_paise": 40000000,
+              "category": "HIGH_VALUE_MATCH_REVIEW",
+              "evidence_chain": [
+                "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+              ],
+              "recommended_action": "Match exceeds Rs 50,000 - a second reviewer should confirm before it's treated as final.",
+              "severity": "REVIEW_REQUIRED",
+              "suggested_owner": "Reconciliation Ops"
+            },
+            "matches": [
+              {
+                "confidence": 0.98,
+                "evidence": [
+                  "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+                ],
+                "layer": "L3",
+                "left_id": "setl_batch_a",
+                "link_type": "settlement_bank_txn",
+                "right_id": "btxn_batch"
+              },
+              {
+                "confidence": 0.98,
+                "evidence": [
+                  "Bank transaction btxn_batch (40,000,000 paise credit on 2026-08-15, narration \"BATCH SETTLEMENT CREDIT - MULTIPLE REFERENCES\") exactly matches the sum of two settlements on the same date: setl_batch_a (net_paise 15,000,000, settled_at 2026-08-15) and setl_batch_b (net_paise 25,000,000, settled_at 2026-08-15). The combined net_paise = 40,000,000 paise matches the bank credit exactly. The narration explicitly indicates a batch credit with multiple references, consistent with these two settlements being batched together."
+                ],
+                "layer": "L3",
+                "left_id": "setl_batch_b",
+                "link_type": "settlement_bank_txn",
+                "right_id": "btxn_batch"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

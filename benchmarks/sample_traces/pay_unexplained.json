@@ -1,0 +1,235 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 17004,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 2433,
+  "record_id": "pay_unexplained",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_unexplained",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 7777,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [
+        "Payment pay_unexplained (gross 20,000,000 paise, UPI domestic) should have net 20,000,000 per compute_expected_fee (zero fee, zero GST). However observed net is 19,992,223 (-7,777 paise). explain_variance returns UNEXPLAINED. Settlement setl_unexplained shows identical net 19,992,223 with adjustment_paise=0. Bank btxn_unexplained credits 19,992,223 matching settlement UTR HDFCN00000000101. The payment-settlement-bank chain is internally consistent but the 7,777 paise shortfall vs expected has no explained cause (not fee tier, GST, refund, or rounding). Amount at risk 7,777 paise (Rs 77.77) below Rs 50,000 threshold."
+      ],
+      "recommended_action": "Investigate source of 7,777 paise deduction on domestic UPI payment (pay_unexplained) where expected net is 20,000,000 but observed net is 19,992,223 across payment, settlement (setl_unexplained), and bank (btxn_unexplained).",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_unexplained",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-01T10:00:00",
+            "fee_paise": 0,
+            "gross_paise": 20000000,
+            "gst_paise": 0,
+            "international": false,
+            "method": "upi",
+            "net_paise": 19992223,
+            "order_id": "order_unexplained",
+            "payment_id": "pay_unexplained",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_unexplained",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 20000000,
+            "international": false,
+            "method": "upi"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 0,
+              "gst_paise": 0,
+              "net_paise": 20000000
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 20000000,
+              "international": false,
+              "method": "upi"
+            },
+            "expected_paise": 20000000,
+            "observed_paise": 19992223
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -7777,
+              "detail": "-7777 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_unexplained",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 0,
+              "gross_paise": 20000000,
+              "gst_paise": 0,
+              "net_paise": 19992223,
+              "num_payments": 1,
+              "settled_at": "2026-08-03",
+              "settlement_id": "setl_unexplained",
+              "utr": "HDFCN00000000101"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 10000,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "setl_unexplained"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 0,
+                "bank_txn_id": "btxn_unexplained",
+                "credit_paise": 19992223,
+                "debit_paise": 0,
+                "narration": "NEFT-HDFCN00000000101-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-03"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "btxn_unexplained",
+            "source": "bank"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "balance_paise": 0,
+              "bank_txn_id": "btxn_unexplained",
+              "credit_paise": 19992223,
+              "debit_paise": 0,
+              "narration": "NEFT-HDFCN00000000101-RAZORPAY SOFTWARE PVT LTD",
+              "value_date": "2026-08-03"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_unexplained",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_1",
+            "gross_paise": 20000000,
+            "intended_method": "upi",
+            "invoice_no": "INV-1",
+            "order_date": "2026-08-01",
+            "order_id": "order_unexplained",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_at_risk_paise": 7777,
+            "category": "UNEXPLAINED_VARIANCE",
+            "rationale": "Payment pay_unexplained (gross 20,000,000 paise, UPI domestic) should have net 20,000,000 per compute_expected_fee (zero fee, zero GST). However observed net is 19,992,223 (-7,777 paise). explain_variance returns UNEXPLAINED. Settlement setl_unexplained shows identical net 19,992,223 with adjustment_paise=0. Bank btxn_unexplained credits 19,992,223 matching settlement UTR HDFCN00000000101. The payment-settlement-bank chain is internally consistent but the 7,777 paise shortfall vs expected has no explained cause (not fee tier, GST, refund, or rounding). Amount at risk 7,777 paise (Rs 77.77) below Rs 50,000 threshold.",
+            "recommended_action": "Investigate source of 7,777 paise deduction on domestic UPI payment (pay_unexplained) where expected net is 20,000,000 but observed net is 19,992,223 across payment, settlement (setl_unexplained), and bank (btxn_unexplained).",
+            "severity": "LOW"
+          },
+          "name": "raise_exception",
+          "result": {
+            "exception": {
+              "affected": {
+                "record_id": "pay_unexplained",
+                "source": "payments"
+              },
+              "aging_days": 0,
+              "amount_at_risk_paise": 7777,
+              "category": "UNEXPLAINED_VARIANCE",
+              "evidence_chain": [
+                "Payment pay_unexplained (gross 20,000,000 paise, UPI domestic) should have net 20,000,000 per compute_expected_fee (zero fee, zero GST). However observed net is 19,992,223 (-7,777 paise). explain_variance returns UNEXPLAINED. Settlement setl_unexplained shows identical net 19,992,223 with adjustment_paise=0. Bank btxn_unexplained credits 19,992,223 matching settlement UTR HDFCN00000000101. The payment-settlement-bank chain is internally consistent but the 7,777 paise shortfall vs expected has no explained cause (not fee tier, GST, refund, or rounding). Amount at risk 7,777 paise (Rs 77.77) below Rs 50,000 threshold."
+              ],
+              "recommended_action": "Investigate source of 7,777 paise deduction on domestic UPI payment (pay_unexplained) where expected net is 20,000,000 but observed net is 19,992,223 across payment, settlement (setl_unexplained), and bank (btxn_unexplained).",
+              "severity": "STANDARD",
+              "suggested_owner": "Reconciliation Ops"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

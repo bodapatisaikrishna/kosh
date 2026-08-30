@@ -1,0 +1,229 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 16970,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 2279,
+  "record_id": "pay_high_value",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_high_value",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 60000000,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_high_value",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-05T11:00:00",
+            "fee_paise": 0,
+            "gross_paise": 60000000,
+            "gst_paise": 0,
+            "international": false,
+            "method": "upi",
+            "net_paise": 60000000,
+            "order_id": "order_high_value",
+            "payment_id": "pay_high_value",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": null,
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 60000000,
+            "international": false,
+            "method": "upi"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 0,
+              "gst_paise": 0,
+              "net_paise": 60000000
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_high_value",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_2",
+            "gross_paise": 60000000,
+            "intended_method": "upi",
+            "invoice_no": "INV-2",
+            "order_date": "2026-08-05",
+            "order_id": "order_high_value",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 100000,
+            "date_window_days": 10,
+            "limit": 20,
+            "record_id": "pay_high_value"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 0,
+                "gross_paise": 60000000,
+                "gst_paise": 0,
+                "net_paise": 60000000,
+                "num_payments": 1,
+                "settled_at": "2026-08-07",
+                "settlement_id": "setl_high_value",
+                "table": "settlements",
+                "utr": "ICICN00000000102"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_high_value",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 0,
+              "gross_paise": 60000000,
+              "gst_paise": 0,
+              "net_paise": 60000000,
+              "num_payments": 1,
+              "settled_at": "2026-08-07",
+              "settlement_id": "setl_high_value",
+              "utr": "ICICN00000000102"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 100000,
+            "date_window_days": 10,
+            "limit": 20,
+            "record_id": "setl_high_value"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 0,
+                "bank_txn_id": "btxn_high_value",
+                "credit_paise": 60000000,
+                "debit_paise": 0,
+                "narration": "NEFT-ICICN00000000102-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-07"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "btxn_high_value",
+            "source": "bank"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "balance_paise": 0,
+              "bank_txn_id": "btxn_high_value",
+              "credit_paise": 60000000,
+              "debit_paise": 0,
+              "narration": "NEFT-ICICN00000000102-RAZORPAY SOFTWARE PVT LTD",
+              "value_date": "2026-08-07"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "confidence": 0.98,
+            "rationale": "The payment pay_high_value (\u20b9600,000, UPI, domestic) matches order_high_value exactly in amount (60,000,000 paise) and date (2026-08-05). compute_expected_fee confirms zero fee/GST for UPI domestic at this amount, matching the payment's fee_paise=0, gst_paise=0, net_paise=60,000,000. The settlement setl_high_value (2026-08-07) has identical gross/fee/GST/net amounts, num_payments=1, and UTR ICICN00000000102. The bank transaction btxn_high_value (2026-08-07) credits exactly 60,000,000 paise with narration referencing the same UTR. All four records form a complete, amount-consistent chain: order \u2192 payment \u2192 settlement \u2192 bank credit. The payment's settlement_id is null despite the matching settlement existing, which explains the L0-L2 matching gap.",
+            "record_ids": [
+              "order_high_value",
+              "setl_high_value",
+              "btxn_high_value"
+            ]
+          },
+          "name": "propose_match",
+          "result": {
+            "error": "cannot infer a valid link type between 'pay_high_value' and 'btxn_high_value' - if you were trying to also assert a link between two OTHER records (e.g. a settlement and its own bank credit), drop it from this call: propose_match only asserts links to the record under investigation",
+            "status": "error"
+          }
+        }
+      ]
+    }
+  ]
+}
