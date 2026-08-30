@@ -5,7 +5,6 @@ cash panel, the exception drill-down data, and trace linking.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import eval.report as report_module

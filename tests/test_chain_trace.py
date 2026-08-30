@@ -1,5 +1,4 @@
 from datetime import date
-from pathlib import Path
 
 from data.generator.generate import run
 from data.generator.trace import load_fixtures, pick_clean_bank_txn, trace

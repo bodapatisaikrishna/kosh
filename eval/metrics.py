@@ -27,7 +27,6 @@ Definitions used throughout this module (documented here once, not scattered):
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import asdict
 
 from engine.contract import LINK_TYPES, EngineOutput
 from engine.io import Dataset

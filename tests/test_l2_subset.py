@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import time
 
-from engine.l2_subset import Candidate, SubsetSolution, solve_subset
+from engine.l2_subset import Candidate, solve_subset
 
 
 def _c(id_, amount):

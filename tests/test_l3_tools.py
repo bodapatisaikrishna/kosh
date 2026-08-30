@@ -226,7 +226,7 @@ def test_dispatch_tool_returns_ok_for_a_successful_call():
 # false match. See engine/l3_agent.py's synthetic exercise notes.
 
 def test_propose_match_rejects_a_payment_linked_directly_to_a_settlement_credit():
-    dataset = _dataset()  # bank[0] is a CREDIT row (net_paise, debit_paise=0)
+    # _ctx()'s dataset has btxn_1 as a CREDIT row (credit=net_paise, debit=0).
     ctx = _ctx(residual_id="pay_1", residual_source="payments")
     get_record(ctx, "settlements", "setl_1")
     get_record(ctx, "bank", "btxn_1")
@@ -242,7 +242,6 @@ def test_propose_match_rejects_a_payment_linked_directly_to_a_settlement_credit(
 
 
 def test_propose_match_still_allows_a_genuine_chargeback_debit_link():
-    dataset = _dataset()
     ctx = _ctx(residual_id="pay_1", residual_source="payments")
     debit = BankRow("btxn_chargeback", "2026-08-05", "CHARGEBACK DR-ref-RAZORPAY SOFTWARE", 0, 500_00, 0)
     ctx.dataset.bank.append(debit)

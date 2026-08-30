@@ -5,7 +5,7 @@ each client translates to/from its own SDK's native format at the boundary.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Protocol
 
 

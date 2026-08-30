@@ -64,7 +64,6 @@ def pick_clean_bank_txn(bank: list[dict], settlements: list[dict], ground_truth:
     dirty_settlements = defect_settlement_ids(ground_truth)
     dirty_bank_txns = defect_bank_txn_ids(ground_truth)
     dirty_payments = defect_payment_ids(ground_truth)
-    settlement_by_id = {s["settlement_id"]: s for s in settlements}
     pay_to_settlement = {r["payment_id"]: r["settlement_id"] for r in ground_truth["links"]["payment_to_settlement"]}
     settle_to_payments: dict[str, list[str]] = {}
     for payment_id, settlement_id in pay_to_settlement.items():

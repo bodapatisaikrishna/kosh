@@ -287,7 +287,6 @@ def _inject_refund_misallocation(world, rng, log, rate, touched_payments):
     refunded = [p for p in world.payments if p.refund_id and p.settlement_id]
     count = _sample_target_count(rng, len(refunded), rate)
     chosen = _pick_untouched(rng, refunded, touched_payments, lambda p: p.payment_id, count)
-    orders_by_id = {o.order_id: o for o in world.orders}
     for payment in chosen:
         others = [o for o in world.orders if o.order_id != payment.order_id]
         if not others:

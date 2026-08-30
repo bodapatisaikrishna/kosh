@@ -14,13 +14,13 @@ reading it can see exactly why it's there, not just a category label.
 
 from __future__ import annotations
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 from datetime import date, datetime
 
 from .contract import RECOMMENDED_ACTIONS, ReconException, severity_for_amount
 from .fees import compute_expected_fee
 from .fees import explain_variance as _explain_variance
-from .io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
+from .io import BankRow, Dataset, OrderRow, PaymentRow
 
 
 def _exc(category: str, amount_at_risk_paise: int, affected: dict[str, str], evidence_chain: tuple[str, ...]) -> ReconException:

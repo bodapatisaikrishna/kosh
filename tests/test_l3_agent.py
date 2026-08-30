@@ -7,12 +7,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 from engine.fees import compute_expected_fee
 from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
 from engine.l3_agent import run_agent_on_record, run_l3
-from engine.llm.base import AssistantTurn, RateLimitedError, ToolCall
+from engine.llm.base import AssistantTurn, ToolCall
 from engine.llm.fake_client import FakeClient
 
 
