@@ -40,8 +40,8 @@ The agent never sees the ~97% that deterministic code already handled. That's th
 | 2 | Eval harness (metrics vs. ground truth) + null/oracle baselines | ✅ done |
 | 3 | L0 deterministic + L1 tolerance matching | ✅ done |
 | 4 | L2 subset-sum solver | ✅ done |
-| 5 | L3 agent (provider-agnostic) + L4 exception ledger | ✅ done (this repo) |
-| 6 | Cash position + dashboard + benchmark freeze | not started |
+| 5 | L3 agent (provider-agnostic) + L4 exception ledger | ✅ done |
+| 6 | Cash position + dashboard + benchmark freeze | ✅ done (this repo) |
 | 7 | README/architecture/demo polish for submission | not started |
 
 ## Phase 1: the data generator
@@ -126,9 +126,35 @@ The brief specs the Anthropic SDK (`claude-sonnet-5`). No Anthropic key was avai
 
 Committed as [`benchmarks/phase5_synthetic.json`](benchmarks/phase5_synthetic.json), full traces in [`benchmarks/sample_traces/`](benchmarks/sample_traces/).
 
-## Phases 6–7 (design intent, not yet built)
+## Phase 6, part 1: cash/forecast.py
 
-- **Cash** (`cash/`): unsettled-payment SLA forecasting, a 14-day inflow curve, and reconciled-vs-book cash where the delta is fully explained by the exception ledger.
-- **Dashboard**: the layer waterfall, exception queue with drill-down to the agent trace, cash position — or the `eval/report.py` HTML fallback if time runs out.
+Settlement SLA reuses `data.generator.calendar.settlement_date` unchanged — the same one-source-of-truth pattern as `engine/fees.py` re-exporting `compute_expected_fee`. `compute_inflow_curve` buckets unsettled captured payments' net by their own method's expected settlement date over the next 14 days; `compute_stuck` flags anything past its own SLA + 1 day grace, still unsettled — distinct from a payment still legitimately in flight.
+
+The hard part is `compute_cash_reconciliation`: book cash (accrual, gross on every captured payment) vs. reconciled cash (cash basis, actual net bank movement) must tie **to the paisa**, per the brief. Verified the same way every identity in this project has been — computed against `run_2000`, and iterated until the residual hit exactly zero, not assumed correct from the derivation alone:
+
+- First pass was off by ~₹3.1 lakh. Cause: `unsettled_gross_paise` was summed on `net_paise` instead of `gross_paise` — an unsettled payment hasn't been through the fee-deduction pipeline at all, so its *full gross* belongs in the gap, not a net figure that doesn't apply yet.
+- Second pass was off by exactly -18 paise. Cause: the fee/GST term was reconstructed as `fee_paise + gst_paise`, which silently drops `rounding_drift` (applied directly to `net_paise`, never touching the fee/GST fields). Replaced with `gross_paise - net_paise` directly — the true source of truth for what a settlement actually paid out, regardless of which defect caused the gap.
+- Also fixed: sign errors on `adjustments_paise` and `unidentified_credit_paise` (both *increase* actual bank cash, so they should *shrink* the book-reconciled gap, not widen it), and a missing `legitimate_chargeback_paise` term entirely, found via L0's `chargeback_payment` matches.
+
+Residual is now exactly 0 on both `run_2000` and `sample_200`. Separately, `_infer_as_of_date` originally took the max date across payments+settlements+bank — since settlements/bank trail captures by the T+N lag, that pushed "today" past every unsettled payment's own expected date and made the 14-day curve trivially all-zero. Fixed to use only capture dates.
+
+## Phase 6, part 2: dashboard + benchmark freeze
+
+Per the brief's own fallback rule ("a working CLI + report.html beats a broken dashboard, judges grade accuracy not CSS"), the 4 panels live in `eval/report.py`'s existing static HTML report rather than a new Next.js subsystem:
+
+1. **Headline strip** — gained "₹ reconciled" (previously missing).
+2. **Layer waterfall** — unchanged from Phase 2.
+3. **Exception queue** — now sortable (click the Category header; vanilla JS, no framework) and click-to-expand per row, showing the full `evidence_chain`, `affected` ids, `recommended_action`, and a link to the agent trace when one exists (checked against `benchmarks/sample_traces/` — the 5 live L3 records have one, every `run_2000` exception is deterministically classified and correctly shows none).
+4. **Cash position** — a 14-day inflow bar chart plus the full book-vs-reconciled table, rendered as the named components from Part 1, which sum exactly.
+
+Verified interactively in the browser, not just by reading the HTML source: bar heights checked against the underlying data via DOM inspection, click-to-expand confirmed to actually toggle the detail row's computed `display` style, and the sort function confirmed to actually reorder rows by amount.
+
+**Benchmark freeze**: `data/fixtures/run_{500,2000,10000}` (seed 42) through the complete pipeline, committed as `benchmarks/freeze_{500,2000,10000}.{json,html}` — consistent across a 20x size range (see README's results table), wall clock scaling linearly.
+
+**Fresh-clone checkpoint verified for real**: cloned into an isolated temp directory, `pip install -e .` into a brand-new venv, `make demo` ran clean. That same run caught a real gap — `pytest` crashed at *collection* (not just failed) because `test_anthropic_client.py`/`test_nim_client.py` import `anthropic`/`openai` unconditionally, and those packages live in the optional `llm` extra, not the base install. Fixed with `pytest.importorskip`: a bare install now gets 2 graceful skips (140 passed, 2 skipped) instead of an interrupted run; the dev environment with the `llm` extra is unaffected (151/151).
+
+## Phase 7 (not yet built)
+
+README, this file, and the demo video — polish for submission, no new engine code. Per the schedule's own rule: never cut the generator's ground truth, the eval harness, or the exception ledger; everything else is presentation.
 
 Full detail in [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md).

@@ -4,7 +4,19 @@ Three-way payment settlement reconciliation for an Indian online merchant: **Ord
 
 Built for the Razorpay AI Buildathon 2026, Track 04.
 
-> **Status: Phase 5 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, L0 (exact-key joins) + L1 (tolerance matching) + L2 (subset-sum solver), and now L3 (a provider-agnostic LLM agent) + L4 (the exception ledger). See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+> **Status: Phase 6 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, L0–L2 matching, L3 (a provider-agnostic LLM agent) + L4 (the exception ledger), and now the forward cash position + a 4-panel dashboard, with the benchmark frozen at 3 scales. See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+
+## Results — benchmark freeze, 3 scales
+
+The complete pipeline (`engine=full`, deterministic-only), run at `seed=42` on all three sizes and committed as-is:
+
+| Records | Auto-match | Precision / Recall | False-match | Exceptions | Wall clock |
+|---|---|---|---|---|---|
+| 500 | 97.83% | 100.00% / 100.00% | **0.00%** | 47 | ~2ms |
+| 2,000 | 97.85% | 100.00% / 100.00% | **0.00%** | 132 | ~7ms |
+| 10,000 | 97.83% | 100.00% / 100.00% | **0.00%** | 521 | ~31ms |
+
+Consistent across a 20x size range, wall clock scales linearly with no quadratic blowup. See [`benchmarks/freeze_500.json`](benchmarks/freeze_500.json), [`freeze_2000.json`](benchmarks/freeze_2000.json), [`freeze_10000.json`](benchmarks/freeze_10000.json) (`.html` alongside each for the full dashboard).
 
 ## Results — Phase 5 (L0 + L1 + L2 + L4, no LLM), `data/fixtures/run_2000`
 
@@ -130,6 +142,16 @@ python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label 
 
 ## Reproduce
 
+The fastest path — clone, install, one command, open the dashboard:
+
+```bash
+git clone <this-repo> && cd kosh
+pip install -e .
+make demo   # generates run_2000, runs the full pipeline, writes benchmarks/run_demo.html
+```
+
+Everything else:
+
 ```bash
 pip install -e ".[dev]"
 python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -138,21 +160,21 @@ python -m eval.report --fixtures data/fixtures/run_2000 --engine full --label ph
 python -m engine.l2_subset --profile --trials 2000 --seed 42
 export NIM_API_KEY=...   # only needed to re-run the live L3 exercise for real
 python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultra-550b-a55b
-pytest
+pytest   # pip install -e ".[dev,llm]" first, or the two LLM-client test files skip gracefully
 ```
 
-`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, and `make l3-profile` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, `make l3-profile`, and `make demo` wrap the same commands.
 
 ## Repo layout
 
 ```
 data/generator/   synthetic dataset generator (Phase 1)
 engine/           EngineOutput contract, null/oracle baselines, L0+L1+L2 (Phases 2-4), L3 agent + llm/ adapter + L4 ledger (Phase 5)
-eval/             eval harness: metrics against ground truth, benchmark reports (Phase 2)
-cash/             forward cash position (not yet built)
+eval/             eval harness: metrics against ground truth, benchmark reports + 4-panel dashboard (Phases 2, 6)
+cash/             forward cash position: SLA forecast, stuck cash, book-vs-reconciled identity (Phase 6)
 api/              FastAPI layer (not yet built)
 tests/            pytest suite, incl. tests/baselines/ regression fixtures
-benchmarks/       committed reports: null/oracle baselines, phase3-5, phase4_solver_perf, phase5_synthetic, sample_traces/
+benchmarks/       committed reports: null/oracle baselines, phase3-5, phase4_solver_perf, phase5_synthetic, freeze_{500,2000,10000}, sample_traces/
 ```
 
 ## What's in Phase 3: L0 + L1
@@ -179,7 +201,15 @@ The ambiguity guard here is the same principle as L0/L1's, applied to subsets ra
 
 **L3** (`engine/l3_agent.py`, `engine/l3_tools.py`) is provider-agnostic — the brief specs Anthropic; no Anthropic key was available, an NVIDIA NIM key was, and NIM doesn't serve Claude. `engine/llm/` defines a minimal `LLMClient` interface; `AnthropicClient` is spec-complete and unit-tested against a mocked SDK (ready for a real key), `NimClient` is what actually ran for real. Every hard constraint from the brief is enforced structurally in the tool layer, not just prompted — see the Results section above for what a real, non-scripted run against `nvidia/nemotron-3-ultra-550b-a55b` actually did, including a genuine false-match bug it surfaced and that got fixed with regression tests before the reference run.
 
-## Limitations (Phase 1–5)
+## What's in Phase 6: cash position + dashboard + benchmark freeze
+
+**`cash/forecast.py`** is the other half of "run the books *and* the cash position." Settlement SLA reuses `data.generator.calendar.settlement_date` unchanged (same "one source of truth" pattern as `engine/fees.py`). The brief's hardest requirement here — book cash (accrual, gross on every captured payment) vs. reconciled cash (actual net bank movement) must tie **to the paisa** — was verified the same way every other identity in this project was: computed, checked against `run_2000`, and iterated until the residual hit exactly zero. Two real formula bugs surfaced doing that (not fixture noise): `unsettled_gross_paise` was summed on `net_paise` instead of `gross_paise` (an unsettled payment hasn't been through the fee-deduction pipeline at all, so its full gross belongs in the gap), and the fee/GST term was reconstructed as `fee_paise + gst_paise`, which silently drops `rounding_drift` (applied directly to `net_paise`, never touching the fee/GST fields) — replaced with `gross - net` directly, the true source of truth regardless of which defect caused the gap. Residual is now exactly 0 on both committed fixtures.
+
+**Dashboard**: rather than a separate Next.js app, the brief's own fallback rule ("a working CLI + report.html beats a broken dashboard, judges grade accuracy not CSS") is taken literally — `eval/report.py`'s static HTML report now covers all 4 panels: headline strip (incl. **₹ reconciled**, previously missing), layer waterfall, a sortable, click-to-expand exception queue (evidence chain, affected records, and a link to the agent trace when one exists — checked against `benchmarks/sample_traces/`), and the cash position (14-day inflow chart + the full book-vs-reconciled breakdown, rendered as named line items that sum exactly). No build step, no framework, verified interactively in the browser (bar heights, click-to-expand, click-to-sort all confirmed via direct DOM inspection), not just by reading the HTML source.
+
+**Benchmark freeze**: `data/fixtures/run_{500,2000,10000}` (seed 42) through the complete pipeline, committed as `benchmarks/freeze_{500,2000,10000}.{json,html}` — see the results table above the fold. **Fresh-clone checkpoint verified for real**, not assumed: cloned into an isolated temp directory, `pip install -e .` in a brand-new venv, `make demo` ran clean. That run also caught a real gap — `pytest` crashed at collection (not just failed) because `test_anthropic_client.py`/`test_nim_client.py` import `anthropic`/`openai` unconditionally, and those live in the optional `llm` extra, not the base install. Fixed with `pytest.importorskip` so a bare install gets 2 graceful skips instead of an interrupted run.
+
+## Limitations (Phase 1–6)
 
 - L2 has no real residual to solve on the reference fixture (see above) — its correctness and timing are verified by direct unit/perf tests, not by this fixture's own numbers. The same is true of L3: `run_2000`'s residual for it is empty, so its real capability is proven on the synthetic exercise set instead.
 - `PERIOD_CUTOFF` recall is 13/14 (92.9%) on `run_2000` — one boundary case (a 3-day settlement gap) is genuinely indistinguishable from ~20 normal same-gap settlements using the available signal; reported as a miss rather than guessed at the cost of false positives.
@@ -190,3 +220,5 @@ The ambiguity guard here is the same principle as L0/L1's, applied to subsets ra
 - The reference fixture's own truncation defect happens to either leave the UTR fully intact or remove it entirely (its longest template prefix already exceeds the 35-char cutoff) — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.
 - Volume seasonality, ticket-size distributions, and defect rates are hand-tuned to look like a mid-size D2C merchant; they are not calibrated against any real portfolio.
 - The bank calendar covers 2025–2026 national holidays only, not state-specific ones.
+- `cash/forecast.py`'s "as of" date is inferred from the dataset's own latest capture date, not passed in — fine for a fixed historical fixture, but a real deployment would pass the actual current date explicitly.
+- No FastAPI layer (`api/`) or a live/interactive dashboard — the static HTML report is the deliverable, per the brief's own fallback preference.
