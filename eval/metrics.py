@@ -31,7 +31,7 @@ from collections import Counter
 from engine.contract import LINK_TYPES, EngineOutput
 from engine.io import Dataset
 
-RESOLVABLE_DEFECT_TYPES = {"rounding_drift", "utr_mangled", "settlement_split"}
+RESOLVABLE_DEFECT_TYPES = {"rounding_drift", "utr_mangled", "settlement_split", "consolidated_payout"}
 
 # Which field(s) of a defect's `affected` dict actually identify it, for matching
 # against an exception's `affected` dict in compute_defect_confusion. This must be
@@ -55,6 +55,8 @@ DEFECT_IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "fx_variance": ("payment_id",),
     "unidentified_credit": ("bank_txn_id",),
     "settlement_split": ("bank_txn_id_a", "bank_txn_id_b"),
+    "compound_fee_tax_error": ("payment_id",),
+    "consolidated_payout": ("bank_txn_id",),
 }
 
 # The symmetric counterpart to DEFECT_IDENTITY_FIELDS, keyed by exception category
@@ -82,6 +84,9 @@ CATEGORY_IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "ORPHAN_CHARGEBACK": ("bank_txn_id",),
     "UNIDENTIFIED_CREDIT": ("bank_txn_id",),
     "UNRECONCILED": ("payment_id",),  # the null baseline's catch-all category
+    # L4's fallback path names the payment directly; L3's raise_exception tool
+    # names it as record_id - either is this category's own identity.
+    "UNEXPLAINED_VARIANCE": ("payment_id", "record_id"),
 }
 
 

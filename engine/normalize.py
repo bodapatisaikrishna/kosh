@@ -51,6 +51,7 @@ SETTLEMENT_VOCABULARY: frozenset[str] = frozenset({
     "NEFT", "UPI", "IMPS", "CR", "RTGS",
     "RAZORPAY", "RAZORPAYSOFT", "RZPY", "RZP", "SOFTWARE", "PVT", "LTD",
     "SETTLE", "SETTLEMENT", "HDFC0000060",
+    "CONSOLIDATED", "CONSOL", "PAYOUT",
 })
 
 

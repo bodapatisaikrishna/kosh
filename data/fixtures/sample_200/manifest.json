@@ -1,5 +1,7 @@
 {
   "defect_counts": {
+    "compound_fee_tax_error": 1,
+    "consolidated_payout": 2,
     "duplicate_payment": 2,
     "fx_variance": 1,
     "gst_variance": 1,
@@ -12,14 +14,14 @@
     "unidentified_credit": 3,
     "utr_mangled": 4
   },
-  "defect_rate_pct_of_orders": "11.5",
-  "defect_total": 23,
+  "defect_rate_pct_of_orders": "13.0",
+  "defect_total": 26,
   "files": {
-    "bank_statement.csv": "e765d21d5f074bce1ce1b7e900fe497dda539da78f1a390310d43d0bf4a7893e",
-    "ground_truth.json": "a122fa12a9c0e0a7ce8fd84ecebe5e464d551be77b1373c843e46d77d5b28eb5",
+    "bank_statement.csv": "32cad344912da4ee3ae5b1c11260708b864b896a36082da1776c9b2e9a93676a",
+    "ground_truth.json": "26d62ef7425f0244c670e6d96da9632a74da9e8ee792bfb85c8c61dd869e010a",
     "orders.csv": "dbf480cc68d36e9a6f9e8f3a972950b0304230374332b5203e63c14aabe9587f",
-    "pg_payments.csv": "a2d7b78bc76a7a43d4a503a519f4abdc128d2834eb7d6d50b80660eabc4bf18d",
-    "pg_settlements.csv": "485b35b28ea0535d49ed288d408abb30bb730f849f5f90aabbbefe20b36249e4"
+    "pg_payments.csv": "10cd78e555c7a896eb747aa7031ff0aadf514616eeded1be1aa1e01a32b3f2c5",
+    "pg_settlements.csv": "dc5a77a53e8b6718c4a6c14fb388631ef4308013e93dbb5cfb45d621f832f2fd"
   },
   "generator": {
     "end_date": "2026-08-31",
@@ -28,15 +30,15 @@
     "seed": 7
   },
   "row_counts": {
-    "bank_statement": 79,
+    "bank_statement": 75,
     "orders": 200,
     "pg_payments": 202,
     "pg_settlements": 71
   },
   "totals": {
-    "bank_credit_paise": 150441011,
-    "bank_debit_paise": 331928,
+    "bank_credit_paise": 150523394,
+    "bank_debit_paise": 276028,
     "gmv_paise": 163047453,
-    "settled_net_paise": 147841711
+    "settled_net_paise": 147714894
   }
 }

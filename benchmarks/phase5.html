@@ -40,32 +40,122 @@
 
   <div class="headline">
     <div class="card"><div class="label">Records processed</div><div class="value">1858</div></div>
-    <div class="card"><div class="label">Auto-match rate</div><div class="value">97.85%</div></div>
+    <div class="card"><div class="label">Auto-match rate</div><div class="value">97.74%</div></div>
     <div class="card risk"><div class="label">False-match rate</div><div class="value">0.00%</div></div>
-    <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">₹13,309,048.36</div></div>
-    <div class="card"><div class="label">Wall clock</div><div class="value">0.007s</div></div>
+    <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">₹13,281,428.77</div></div>
+    <div class="card"><div class="label">Wall clock</div><div class="value">0.010s</div></div>
   </div>
 
   <section>
     <h2>Layer waterfall</h2>
     <p class="muted">Share of correctly-matched links contributed by each layer.</p>
-    <table><tr><th>Layer</th><th>Share of correct matches</th></tr><tr><td>L0</td><td>99.74%</td></tr><tr><td>L1</td><td>0.26%</td></tr></table>
+    <table><tr><th>Layer</th><th>Share of correct matches</th></tr><tr><td>L0</td><td>99.33%</td></tr><tr><td>L1</td><td>0.26%</td></tr><tr><td>L2</td><td>0.41%</td></tr></table>
   </section>
 
   <section>
     <h2>Exception queue</h2>
-    <p>132 exceptions &middot; ₹1,082,866.84 at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
+    <p>139 exceptions &middot; ₹1,672,013.03 at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
     <table>
       <tr><th class="sortable" onclick="sortExceptions()">Category</th><th>Severity</th><th class="num">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
       
-        <tr class="exc-row" data-amount="9197366" onclick="document.getElementById('detail-0').classList.toggle('open')">
+        <tr class="exc-row" data-amount="17715599" onclick="document.getElementById('detail-0').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
+          <td class="num">₹177,155.99</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-0">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_ay2LvNyOtg9dGE&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_ay2LvNyOtg9dGE settled 28 days after its latest payment capture (2026-07-06 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="15747371" onclick="document.getElementById('detail-1').classList.toggle('open')">
+          <td>UNEXPLAINED_VARIANCE</td>
+          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
+          <td class="num">₹157,473.71</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-1">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_OyvjU0Hc7g7Bi2&quot;}<br>
+              <strong>Recommended action:</strong> No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_OyvjU0Hc7g7Bi2&#x27;s booked net (15747371p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="15489951" onclick="document.getElementById('detail-2').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
+          <td class="num">₹154,899.51</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-2">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_LiJ9x15p82UyLI&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_LiJ9x15p82UyLI settled 29 days after its latest payment capture (2026-07-05 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="15216620" onclick="document.getElementById('detail-3').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
+          <td class="num">₹152,166.20</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-3">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_ZUnJJmNoyJrirV&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_ZUnJJmNoyJrirV settled 10 days after its latest payment capture (2026-06-21 -&gt; 2026-07-01), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="10242659" onclick="document.getElementById('detail-4').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
+          <td class="num">₹102,426.59</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-4">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_XnXIhD1TT1ZiKl&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_XnXIhD1TT1ZiKl settled 17 days after its latest payment capture (2026-08-16 -&gt; 2026-09-02), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="9197366" onclick="document.getElementById('detail-5').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹91,973.66</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-0">
+        <tr class="exc-detail" id="detail-5">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_KeTpm6rjstiLv9&quot;, &quot;order_id&quot;: &quot;order_FExUjNiZUtDgV4&quot;}<br>
@@ -76,14 +166,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="8469460" onclick="document.getElementById('detail-1').classList.toggle('open')">
+        <tr class="exc-row" data-amount="8469460" onclick="document.getElementById('detail-6').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹84,694.60</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-1">
+        <tr class="exc-detail" id="detail-6">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_ABjv6W8WCmseUh&quot;, &quot;order_id&quot;: &quot;order_GmREqjnAP0o1Wn&quot;}<br>
@@ -94,14 +184,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6682444" onclick="document.getElementById('detail-2').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6682444" onclick="document.getElementById('detail-7').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹66,824.44</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-2">
+        <tr class="exc-detail" id="detail-7">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_GwNFILXcMWMKHE&quot;}<br>
@@ -112,50 +202,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6367690" onclick="document.getElementById('detail-3').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
-          <td class="num">₹63,676.90</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-3">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_WXU61N77MegxN9&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_WXU61N77MegxN9 settled 24 days after its latest payment capture (2026-06-09 -&gt; 2026-07-03), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="6263448" onclick="document.getElementById('detail-4').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
-          <td class="num">₹62,634.48</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-4">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_5gHWa3iFPUvzrP&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_5gHWa3iFPUvzrP settled 9 days after its latest payment capture (2026-06-23 -&gt; 2026-07-02), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="6178073" onclick="document.getElementById('detail-5').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6178073" onclick="document.getElementById('detail-8').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹61,780.73</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-5">
+        <tr class="exc-detail" id="detail-8">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Z2TqH9tGgzx5Uk&quot;}<br>
@@ -166,32 +220,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6080900" onclick="document.getElementById('detail-6').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
-          <td class="num">₹60,809.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-6">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_y3CAweOspZ8CWU&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_y3CAweOspZ8CWU settled 7 days after its latest payment capture (2026-06-25 -&gt; 2026-07-02), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="5528279" onclick="document.getElementById('detail-7').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5528279" onclick="document.getElementById('detail-9').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹55,282.79</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-7">
+        <tr class="exc-detail" id="detail-9">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_5ZlJytatQrzR7t&quot;, &quot;order_id&quot;: &quot;order_uzgM1ZWPfEGDEp&quot;}<br>
@@ -202,68 +238,104 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5213747" onclick="document.getElementById('detail-8').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5390459" onclick="document.getElementById('detail-10').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
-          <td class="num">₹52,137.47</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-8">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_iprFzDkvEbfgSn&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_iprFzDkvEbfgSn settled 8 days after its latest payment capture (2026-06-23 -&gt; 2026-07-01), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="4444768" onclick="document.getElementById('detail-9').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹44,447.68</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-9">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_ugrDCYYI3SV1Ya&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_ugrDCYYI3SV1Ya settled 6 days after its latest payment capture (2026-08-27 -&gt; 2026-09-02), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="4075140" onclick="document.getElementById('detail-10').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹40,751.40</td>
+          <td class="num">₹53,904.59</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-10">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_MOoQjOSMv7vg5Y&quot;}<br>
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_qirvLBTOvHu3UJ&quot;}<br>
               <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_MOoQjOSMv7vg5Y settled 21 days after its latest payment capture (2026-08-12 -&gt; 2026-09-02), beyond the normal T+N cycle</li></ul>
+              <ul><li>settlement setl_qirvLBTOvHu3UJ settled 8 days after its latest payment capture (2026-07-26 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2269993" onclick="document.getElementById('detail-11').classList.toggle('open')">
+        <tr class="exc-row" data-amount="4771387" onclick="document.getElementById('detail-11').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹47,713.87</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-11">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_M261BuELIeVnVK&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_M261BuELIeVnVK settled 30 days after its latest payment capture (2026-08-02 -&gt; 2026-09-01), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="3782477" onclick="document.getElementById('detail-12').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹37,824.77</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-12">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_k8yWDC04Q3csD3&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_k8yWDC04Q3csD3 settled 34 days after its latest payment capture (2026-07-30 -&gt; 2026-09-02), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="2992900" onclick="document.getElementById('detail-13').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹29,929.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-13">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_PqobrwWKrwmmYt&quot;, &quot;booked_order_id&quot;: &quot;order_wsvUwSm5MmBEvU&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_PqobrwWKrwmmYt carries a refund and its gross (5625819p) does not match order order_wsvUwSm5MmBEvU&#x27;s gross (62800p) - the refund is likely booked against the wrong order</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="2950932" onclick="document.getElementById('detail-14').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹29,509.32</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-14">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_y795Qkgnw76CGm&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_y795Qkgnw76CGm settled 24 days after its latest payment capture (2026-08-10 -&gt; 2026-09-03), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="2269993" onclick="document.getElementById('detail-15').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹22,699.93</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-11">
+        <tr class="exc-detail" id="detail-15">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_4EJCfyNzpAa2aw&quot;, &quot;order_id&quot;: &quot;order_VLPwPcXZsM761W&quot;}<br>
@@ -274,86 +346,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2067905" onclick="document.getElementById('detail-12').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2188605" onclick="document.getElementById('detail-16').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹20,679.05</td>
+          <td class="num">₹21,886.05</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-12">
+        <tr class="exc-detail" id="detail-16">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_XeeiYPZSbr8Og3&quot;}<br>
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_t9espgbx675ua5&quot;}<br>
               <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_XeeiYPZSbr8Og3 settled 11 days after its latest payment capture (2026-07-21 -&gt; 2026-08-01), beyond the normal T+N cycle</li></ul>
+              <ul><li>settlement setl_t9espgbx675ua5 settled 35 days after its latest payment capture (2026-06-29 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1853900" onclick="document.getElementById('detail-13').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹18,539.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-13">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_PmMX9oUJ4qqc&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_PmMX9oUJ4qqc (1853900p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="1851570" onclick="document.getElementById('detail-14').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹18,515.70</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-14">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_4S4yx4NIPpGBhx&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_4S4yx4NIPpGBhx settled 14 days after its latest payment capture (2026-07-20 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="1820200" onclick="document.getElementById('detail-15').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹18,202.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-15">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_s6ZCivtn9rOK&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_s6ZCivtn9rOK (1820200p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="1793664" onclick="document.getElementById('detail-16').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1793664" onclick="document.getElementById('detail-17').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹17,936.64</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-16">
+        <tr class="exc-detail" id="detail-17">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Ku6uo8uuBsHFyF&quot;}<br>
@@ -364,28 +382,10 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1524900" onclick="document.getElementById('detail-17').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1725500" onclick="document.getElementById('detail-18').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹15,249.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-17">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_n8enG7j6CRI9&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_n8enG7j6CRI9 (1524900p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="1490400" onclick="document.getElementById('detail-18').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹14,904.00</td>
+          <td class="num">₹17,255.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
@@ -395,19 +395,55 @@
               <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_hbqcLFHc3LQ8&quot;}<br>
               <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_hbqcLFHc3LQ8 (1490400p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <ul><li>credit btxn_hbqcLFHc3LQ8 (1725500p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1476243" onclick="document.getElementById('detail-19').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1696000" onclick="document.getElementById('detail-19').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹16,960.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-19">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_s6ZCivtn9rOK&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_s6ZCivtn9rOK (1696000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="1498031" onclick="document.getElementById('detail-20').classList.toggle('open')">
+          <td>UNEXPLAINED_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹14,980.31</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-20">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_ymzQx3u8WEhd7G&quot;}<br>
+              <strong>Recommended action:</strong> No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_ymzQx3u8WEhd7G&#x27;s booked net (1498031p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="1476243" onclick="document.getElementById('detail-21').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,762.43</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-19">
+        <tr class="exc-detail" id="detail-21">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Xlhdv6G3KrBdAj&quot;}<br>
@@ -418,122 +454,104 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1416300" onclick="document.getElementById('detail-20').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1469600" onclick="document.getElementById('detail-22').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹14,163.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-20">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_54c4HFf3Yojl&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_54c4HFf3Yojl (1416300p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="1358308" onclick="document.getElementById('detail-21').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹13,583.08</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-21">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_P65ExMApYLxX4s&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_P65ExMApYLxX4s settled 27 days after its latest payment capture (2026-07-07 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="1200000" onclick="document.getElementById('detail-22').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹12,000.00</td>
+          <td class="num">₹14,696.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-22">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_t3PpStwBXwSJuE&quot;, &quot;booked_order_id&quot;: &quot;order_eBF2l883S2Yr6m&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_wy9KLBrF6UJ1&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>payment pay_t3PpStwBXwSJuE carries a refund and its gross (1200000p) does not match order order_eBF2l883S2Yr6m&#x27;s gross (54700p) - the refund is likely booked against the wrong order</li></ul>
+              <ul><li>credit btxn_wy9KLBrF6UJ1 (1469600p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1167100" onclick="document.getElementById('detail-23').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1454000" onclick="document.getElementById('detail-23').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹11,671.00</td>
+          <td class="num">₹14,540.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-23">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_nYU3ELM8kY5K&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_LVreOkbpJ1qh&quot;}<br>
               <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_nYU3ELM8kY5K (1167100p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <ul><li>credit btxn_LVreOkbpJ1qh (1454000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1138400" onclick="document.getElementById('detail-24').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
+        <tr class="exc-row" data-amount="1448900" onclick="document.getElementById('detail-24').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹11,384.00</td>
+          <td class="num">₹14,489.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-24">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_E64baSzJwFcZsy&quot;, &quot;booked_order_id&quot;: &quot;order_438zTIiugmvAe8&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_54c4HFf3Yojl&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>payment pay_E64baSzJwFcZsy carries a refund and its gross (1138400p) does not match order order_438zTIiugmvAe8&#x27;s gross (32300p) - the refund is likely booked against the wrong order</li></ul>
+              <ul><li>credit btxn_54c4HFf3Yojl (1448900p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1089800" onclick="document.getElementById('detail-25').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
+        <tr class="exc-row" data-amount="1417700" onclick="document.getElementById('detail-25').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹10,898.00</td>
+          <td class="num">₹14,177.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-25">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Vn7dFZMAH8WKaW&quot;, &quot;booked_order_id&quot;: &quot;order_noKdKedVhc3fec&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_DVqAvSSY82FJPA&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>payment pay_Vn7dFZMAH8WKaW carries a refund and its gross (1089800p) does not match order order_noKdKedVhc3fec&#x27;s gross (287100p) - the refund is likely booked against the wrong order</li></ul>
+              <ul><li>settlement setl_DVqAvSSY82FJPA settled 29 days after its latest payment capture (2026-06-03 -&gt; 2026-07-02), beyond the normal T+N cycle</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1071600" onclick="document.getElementById('detail-26').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1354000" onclick="document.getElementById('detail-26').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹13,540.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-26">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_gkhPApohVGVZ&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_gkhPApohVGVZ (1354000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="1071600" onclick="document.getElementById('detail-27').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹10,716.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-26">
+        <tr class="exc-detail" id="detail-27">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_avcU1qjyghbZf1&quot;}<br>
@@ -544,50 +562,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1000400" onclick="document.getElementById('detail-27').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹10,004.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-27">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_PBXpipaUlUzX&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_PBXpipaUlUzX (1000400p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="957800" onclick="document.getElementById('detail-28').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹9,578.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-28">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_xv5YyiRpQk3V&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_xv5YyiRpQk3V (957800p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="949290" onclick="document.getElementById('detail-29').classList.toggle('open')">
+        <tr class="exc-row" data-amount="949290" onclick="document.getElementById('detail-28').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹9,492.90</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-29">
+        <tr class="exc-detail" id="detail-28">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_WpncI2FGAwSpFK&quot;, &quot;order_id&quot;: &quot;order_XxkTjZxx7NoJt5&quot;}<br>
@@ -598,38 +580,56 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="945700" onclick="document.getElementById('detail-30').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
+        <tr class="exc-row" data-amount="781413" onclick="document.getElementById('detail-29').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹9,457.00</td>
+          <td class="num">₹7,814.13</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-29">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_prMOODQeSlMcQU&quot;, &quot;booked_order_id&quot;: &quot;order_ikIFschwSirLnz&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_prMOODQeSlMcQU carries a refund and its gross (800300p) does not match order order_ikIFschwSirLnz&#x27;s gross (57900p) - the refund is likely booked against the wrong order</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="776726" onclick="document.getElementById('detail-30').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹7,767.26</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-30">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_gkhPApohVGVZ&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_jcpXaQcw3wN21l&quot;, &quot;booked_order_id&quot;: &quot;order_Sa4EcEFPQkTWzu&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_gkhPApohVGVZ (945700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <ul><li>payment pay_jcpXaQcw3wN21l carries a refund and its gross (795500p) does not match order order_Sa4EcEFPQkTWzu&#x27;s gross (63200p) - the refund is likely booked against the wrong order</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="893600" onclick="document.getElementById('detail-31').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
+        <tr class="exc-row" data-amount="726649" onclick="document.getElementById('detail-31').classList.toggle('open')">
+          <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹8,936.00</td>
+          <td class="num">₹7,266.49</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-31">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_iNUm1Hnwpwmz&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_RMejvzSwrh9QXa&quot;}<br>
+              <strong>Recommended action:</strong> No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_iNUm1Hnwpwmz (893600p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <ul><li>payment pay_RMejvzSwrh9QXa&#x27;s booked net (726649p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
@@ -670,20 +670,20 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="609800" onclick="document.getElementById('detail-34').classList.toggle('open')">
+        <tr class="exc-row" data-amount="610900" onclick="document.getElementById('detail-34').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹6,098.00</td>
+          <td class="num">₹6,109.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-34">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_LVreOkbpJ1qh&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_PmMX9oUJ4qqc&quot;}<br>
               <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_LVreOkbpJ1qh (609800p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <ul><li>credit btxn_PmMX9oUJ4qqc (610900p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
@@ -706,14 +706,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="529000" onclick="document.getElementById('detail-36').classList.toggle('open')">
+        <tr class="exc-row" data-amount="542200" onclick="document.getElementById('detail-36').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹5,422.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-36">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_PBXpipaUlUzX&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_PBXpipaUlUzX (542200p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="529000" onclick="document.getElementById('detail-37').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹5,290.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-36">
+        <tr class="exc-detail" id="detail-37">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_u2cCQXnvH3Y11S&quot;, &quot;order_id&quot;: &quot;order_qkATjuHp6AWDR4&quot;}<br>
@@ -724,86 +742,86 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="496500" onclick="document.getElementById('detail-37').classList.toggle('open')">
+        <tr class="exc-row" data-amount="519900" onclick="document.getElementById('detail-38').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹4,965.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-37">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_wy9KLBrF6UJ1&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_wy9KLBrF6UJ1 (496500p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="400981" onclick="document.getElementById('detail-38').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹4,009.81</td>
+          <td class="num">₹5,199.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-38">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_CNeUC363a0jlhO&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_GV7ZfTfUMhnZ&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_CNeUC363a0jlhO settled 23 days after its latest payment capture (2026-08-09 -&gt; 2026-09-01), beyond the normal T+N cycle</li></ul>
+              <ul><li>credit btxn_GV7ZfTfUMhnZ (519900p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="359800" onclick="document.getElementById('detail-39').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
+        <tr class="exc-row" data-amount="484880" onclick="document.getElementById('detail-39').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹3,598.00</td>
+          <td class="num">₹4,848.80</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-39">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_GV7ZfTfUMhnZ&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_LHwY94Ri3rsAiJ&quot;, &quot;booked_order_id&quot;: &quot;order_ZRdJmt1b7KumsH&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_GV7ZfTfUMhnZ (359800p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <ul><li>payment pay_LHwY94Ri3rsAiJ carries a refund and its gross (496600p) does not match order order_ZRdJmt1b7KumsH&#x27;s gross (217590p) - the refund is likely booked against the wrong order</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="359328" onclick="document.getElementById('detail-40').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
+        <tr class="exc-row" data-amount="481300" onclick="document.getElementById('detail-40').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹3,593.28</td>
+          <td class="num">₹4,813.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
         <tr class="exc-detail" id="detail-40">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_acp0P4vDywwJ2Q&quot;, &quot;order_id&quot;: &quot;order_ZRCXBSi16WcJs6&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_RaZCeRa8iOODnb&quot;, &quot;booked_order_id&quot;: &quot;order_hcwY3twMDg3NmS&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (9342528p) differs from the invoiced order gross (8983200p) by 359328p</li></ul>
+              <ul><li>payment pay_RaZCeRa8iOODnb carries a refund and its gross (771345p) does not match order order_hcwY3twMDg3NmS&#x27;s gross (58934p) - the refund is likely booked against the wrong order</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="304800" onclick="document.getElementById('detail-41').classList.toggle('open')">
+        <tr class="exc-row" data-amount="468300" onclick="document.getElementById('detail-41').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹4,683.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-41">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_xv5YyiRpQk3V&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_xv5YyiRpQk3V (468300p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="304800" onclick="document.getElementById('detail-42').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹3,048.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-41">
+        <tr class="exc-detail" id="detail-42">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_pPwXAHt49tyNXJ&quot;}<br>
@@ -814,14 +832,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="298100" onclick="document.getElementById('detail-42').classList.toggle('open')">
+        <tr class="exc-row" data-amount="298100" onclick="document.getElementById('detail-43').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,981.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-42">
+        <tr class="exc-detail" id="detail-43">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_LZSnpadz8i3Z3O&quot;}<br>
@@ -832,32 +850,50 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="298100" onclick="document.getElementById('detail-43').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
+        <tr class="exc-row" data-amount="296325" onclick="document.getElementById('detail-44').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹2,981.00</td>
+          <td class="num">₹2,963.25</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-43">
+        <tr class="exc-detail" id="detail-44">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_ZFfJ7wXmfcgeoj&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_SJnhghryQnPIUZ&quot;, &quot;order_id&quot;: &quot;order_svmacRBFBsrwmF&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_ZFfJ7wXmfcgeoj settled 5 days after its latest payment capture (2026-07-29 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
+              <ul><li>international payment gross (20051325p) differs from the invoiced order gross (19755000p) by 296325p</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="291416" onclick="document.getElementById('detail-44').classList.toggle('open')">
+        <tr class="exc-row" data-amount="293900" onclick="document.getElementById('detail-45').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹2,939.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-45">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_8hvOeLOTfbRyYB&quot;, &quot;booked_order_id&quot;: &quot;order_QJoyDUWITr0eIY&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_8hvOeLOTfbRyYB carries a refund and its gross (293900p) does not match order order_QJoyDUWITr0eIY&#x27;s gross (14200p) - the refund is likely booked against the wrong order</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="291416" onclick="document.getElementById('detail-46').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,914.16</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-44">
+        <tr class="exc-detail" id="detail-46">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_prMCLfLHnmT3xM&quot;}<br>
@@ -868,14 +904,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="286000" onclick="document.getElementById('detail-45').classList.toggle('open')">
+        <tr class="exc-row" data-amount="289000" onclick="document.getElementById('detail-47').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹2,890.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-47">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_ZwH13fdPdURD&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_ZwH13fdPdURD (289000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="286000" onclick="document.getElementById('detail-48').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,860.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-45">
+        <tr class="exc-detail" id="detail-48">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_okN5AJZ1OIc3Fi&quot;, &quot;order_id&quot;: &quot;order_dDlNusicVMYCBU&quot;}<br>
@@ -886,14 +940,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="272732" onclick="document.getElementById('detail-46').classList.toggle('open')">
+        <tr class="exc-row" data-amount="272732" onclick="document.getElementById('detail-49').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,727.32</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-46">
+        <tr class="exc-detail" id="detail-49">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_svotmeI4C4vXY3&quot;}<br>
@@ -904,14 +958,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="256200" onclick="document.getElementById('detail-47').classList.toggle('open')">
+        <tr class="exc-row" data-amount="261600" onclick="document.getElementById('detail-50').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹2,616.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-50">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_iNUm1Hnwpwmz&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_iNUm1Hnwpwmz (261600p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="256200" onclick="document.getElementById('detail-51').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,562.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-47">
+        <tr class="exc-detail" id="detail-51">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_sTD3yhPopbEzHP&quot;}<br>
@@ -922,14 +994,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="254800" onclick="document.getElementById('detail-48').classList.toggle('open')">
+        <tr class="exc-row" data-amount="254800" onclick="document.getElementById('detail-52').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,548.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-48">
+        <tr class="exc-detail" id="detail-52">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_DduEh3pwNje2Fg&quot;, &quot;order_id&quot;: &quot;order_9A3jsGY3XgkFrJ&quot;}<br>
@@ -940,14 +1012,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="247282" onclick="document.getElementById('detail-49').classList.toggle('open')">
+        <tr class="exc-row" data-amount="247282" onclick="document.getElementById('detail-53').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,472.82</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-49">
+        <tr class="exc-detail" id="detail-53">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_DiEFR2BDn2DOA7&quot;, &quot;order_id&quot;: &quot;order_5qYLlZLpAiRQwX&quot;}<br>
@@ -958,32 +1030,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="237100" onclick="document.getElementById('detail-50').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹2,371.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-50">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_MBhhrtH82dAw61&quot;, &quot;booked_order_id&quot;: &quot;order_YSfjsQ3reIFGyB&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>payment pay_MBhhrtH82dAw61 carries a refund and its gross (237100p) does not match order order_YSfjsQ3reIFGyB&#x27;s gross (265000p) - the refund is likely booked against the wrong order</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="231407" onclick="document.getElementById('detail-51').classList.toggle('open')">
+        <tr class="exc-row" data-amount="231407" onclick="document.getElementById('detail-54').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,314.07</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-51">
+        <tr class="exc-detail" id="detail-54">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_cjGyHB8wgnBGyx&quot;}<br>
@@ -994,14 +1048,50 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="211391" onclick="document.getElementById('detail-52').classList.toggle('open')">
+        <tr class="exc-row" data-amount="225300" onclick="document.getElementById('detail-55').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹2,253.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-55">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_3rMbn8xjoEgqd6&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_3rMbn8xjoEgqd6 settled 17 days after its latest payment capture (2026-07-17 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="217834" onclick="document.getElementById('detail-56').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹2,178.34</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-56">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_3APhs3wVNUzCBo&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_3APhs3wVNUzCBo settled 28 days after its latest payment capture (2026-07-06 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="211391" onclick="document.getElementById('detail-57').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,113.91</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-52">
+        <tr class="exc-detail" id="detail-57">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_NoNOG9wQHaPGQR&quot;, &quot;order_id&quot;: &quot;order_Suo3fxPK0Uvkxw&quot;}<br>
@@ -1012,14 +1102,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="200900" onclick="document.getElementById('detail-53').classList.toggle('open')">
+        <tr class="exc-row" data-amount="200900" onclick="document.getElementById('detail-58').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,009.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-53">
+        <tr class="exc-detail" id="detail-58">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_WQRMWgetkP62eF&quot;}<br>
@@ -1030,50 +1120,50 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="177668" onclick="document.getElementById('detail-54').classList.toggle('open')">
+        <tr class="exc-row" data-amount="200400" onclick="document.getElementById('detail-59').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹2,004.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-59">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_7X8QEg7tomYDs0&quot;, &quot;booked_order_id&quot;: &quot;order_ugkQ1I5eeycrEd&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_7X8QEg7tomYDs0 carries a refund and its gross (200400p) does not match order order_ugkQ1I5eeycrEd&#x27;s gross (91100p) - the refund is likely booked against the wrong order</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="199409" onclick="document.getElementById('detail-60').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹1,776.68</td>
+          <td class="num">₹1,994.09</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-54">
+        <tr class="exc-detail" id="detail-60">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_P5bWXosFOdm5oe&quot;, &quot;order_id&quot;: &quot;order_qoYbO7CQcmz7gi&quot;}<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Nq6ZcRDxlFSonZ&quot;, &quot;order_id&quot;: &quot;order_7e56RlfGeIabC0&quot;}<br>
               <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (4619368p) differs from the invoiced order gross (4441700p) by 177668p</li></ul>
+              <ul><li>international payment gross (13094491p) differs from the invoiced order gross (13293900p) by -199409p</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="175500" onclick="document.getElementById('detail-55').classList.toggle('open')">
-          <td>UNIDENTIFIED_CREDIT</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹1,755.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-55">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_ZwH13fdPdURD&quot;}<br>
-              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>credit btxn_ZwH13fdPdURD (175500p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="167700" onclick="document.getElementById('detail-56').classList.toggle('open')">
+        <tr class="exc-row" data-amount="167700" onclick="document.getElementById('detail-61').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,677.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-56">
+        <tr class="exc-detail" id="detail-61">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_mSRVB6ceKEiZOr&quot;, &quot;order_id&quot;: &quot;order_W9mI6ywciZYtOD&quot;}<br>
@@ -1084,50 +1174,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="140604" onclick="document.getElementById('detail-57').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹1,406.04</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-57">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_CGxRElAtCdcEK3&quot;, &quot;order_id&quot;: &quot;order_YMLC8Fu0k5Z85J&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (3655704p) differs from the invoiced order gross (3515100p) by 140604p</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="131600" onclick="document.getElementById('detail-58').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹1,316.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-58">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_93WvwfkelNgxDG&quot;, &quot;booked_order_id&quot;: &quot;order_N0mZMUilaySiMH&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>payment pay_93WvwfkelNgxDG carries a refund and its gross (211000p) does not match order order_N0mZMUilaySiMH&#x27;s gross (1023191p) - the refund is likely booked against the wrong order</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="128006" onclick="document.getElementById('detail-59').classList.toggle('open')">
+        <tr class="exc-row" data-amount="128006" onclick="document.getElementById('detail-62').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,280.06</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-59">
+        <tr class="exc-detail" id="detail-62">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_1A8JYY7GkAqBkC&quot;, &quot;order_id&quot;: &quot;order_vJHRX4FPlw13v6&quot;}<br>
@@ -1138,50 +1192,140 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="94348" onclick="document.getElementById('detail-60').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
+        <tr class="exc-row" data-amount="117000" onclick="document.getElementById('detail-63').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹943.48</td>
+          <td class="num">₹1,170.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-60">
+        <tr class="exc-detail" id="detail-63">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_0D7tiJVT0gtNOg&quot;, &quot;order_id&quot;: &quot;order_897GvAMvpVAesg&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_nYU3ELM8kY5K&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (2453048p) differs from the invoiced order gross (2358700p) by 94348p</li></ul>
+              <ul><li>credit btxn_nYU3ELM8kY5K (117000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="91100" onclick="document.getElementById('detail-61').classList.toggle('open')">
+        <tr class="exc-row" data-amount="111128" onclick="document.getElementById('detail-64').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹1,111.28</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-64">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_rgICBTq2nFDQKZ&quot;, &quot;order_id&quot;: &quot;order_0z88KY7gpzG90m&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>international payment gross (4556228p) differs from the invoiced order gross (4445100p) by 111128p</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="101341" onclick="document.getElementById('detail-65').classList.toggle('open')">
+          <td>UNEXPLAINED_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹1,013.41</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-65">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_dGxUjmPIxeeXo4&quot;}<br>
+              <strong>Recommended action:</strong> No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_dGxUjmPIxeeXo4&#x27;s booked net (101341p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="100018" onclick="document.getElementById('detail-66').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹1,000.18</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-66">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Y3bYi2SlPWsvQy&quot;, &quot;order_id&quot;: &quot;order_jcSI7sDTOeVmKl&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>international payment gross (2600464p) differs from the invoiced order gross (2500446p) by 100018p</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="91100" onclick="document.getElementById('detail-67').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹911.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-61">
+        <tr class="exc-detail" id="detail-67">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_VPF1xnIskKBf39&quot;, &quot;order_id&quot;: &quot;order_ugkQ1I5eeycrEd&quot;}<br>
               <strong>Recommended action:</strong> Void or refund the duplicate payment after confirming with the PG.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>order order_ugkQ1I5eeycrEd has 2 captured payments; pay_VPF1xnIskKBf39 has no settlement_id while at least one sibling payment does</li></ul>
+              <ul><li>order order_ugkQ1I5eeycrEd has 3 captured payments; pay_VPF1xnIskKBf39 has no settlement_id while at least one sibling payment does</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="81000" onclick="document.getElementById('detail-62').classList.toggle('open')">
+        <tr class="exc-row" data-amount="88000" onclick="document.getElementById('detail-68').classList.toggle('open')">
+          <td>UNIDENTIFIED_CREDIT</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹880.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-68">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_n8enG7j6CRI9&quot;}<br>
+              <strong>Recommended action:</strong> Identify the payer; likely a direct customer transfer outside the PG flow.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>credit btxn_n8enG7j6CRI9 (88000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="84983" onclick="document.getElementById('detail-69').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹849.83</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-69">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_KSNI4wlE5kAqKX&quot;, &quot;order_id&quot;: &quot;order_SOH5XrFT6Tv1p4&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>international payment gross (3484283p) differs from the invoiced order gross (3399300p) by 84983p</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="81000" onclick="document.getElementById('detail-70').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹810.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-62">
+        <tr class="exc-detail" id="detail-70">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_zbyBhmiCi3mABg&quot;}<br>
@@ -1192,50 +1336,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="78213" onclick="document.getElementById('detail-63').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
+        <tr class="exc-row" data-amount="67266" onclick="document.getElementById('detail-71').classList.toggle('open')">
+          <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹782.13</td>
+          <td class="num">₹672.66</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-63">
+        <tr class="exc-detail" id="detail-71">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_4fxmslUcMOza0D&quot;, &quot;order_id&quot;: &quot;order_GTnKTFNdR7lV8K&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_3egKQ6BCralBAI&quot;}<br>
+              <strong>Recommended action:</strong> No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (3050287p) differs from the invoiced order gross (3128500p) by -78213p</li></ul>
+              <ul><li>payment pay_3egKQ6BCralBAI&#x27;s booked net (67266p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="75565" onclick="document.getElementById('detail-64').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹755.65</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-64">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_CXVJo1FFMKgVyR&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_CXVJo1FFMKgVyR settled 31 days after its latest payment capture (2026-07-03 -&gt; 2026-08-03), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="60400" onclick="document.getElementById('detail-65').classList.toggle('open')">
+        <tr class="exc-row" data-amount="60400" onclick="document.getElementById('detail-72').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹604.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-65">
+        <tr class="exc-detail" id="detail-72">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_X7FAjKOYOLSuWY&quot;}<br>
@@ -1246,32 +1372,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="59885" onclick="document.getElementById('detail-66').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹598.85</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-66">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_7S9wNSx5tGtUIr&quot;, &quot;order_id&quot;: &quot;order_28Mu2hyrBQ4CA6&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (4052185p) differs from the invoiced order gross (3992300p) by 59885p</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="59660" onclick="document.getElementById('detail-67').classList.toggle('open')">
+        <tr class="exc-row" data-amount="59660" onclick="document.getElementById('detail-73').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹596.60</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-67">
+        <tr class="exc-detail" id="detail-73">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_XutKSS6Yiz1cEV&quot;, &quot;order_id&quot;: &quot;order_T3msyV7GfOUJJM&quot;}<br>
@@ -1282,14 +1390,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="55092" onclick="document.getElementById('detail-68').classList.toggle('open')">
+        <tr class="exc-row" data-amount="57457" onclick="document.getElementById('detail-74').classList.toggle('open')">
+          <td>UNEXPLAINED_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹574.57</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-74">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Yw6hEZsEyvZMNn&quot;}<br>
+              <strong>Recommended action:</strong> No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_Yw6hEZsEyvZMNn&#x27;s booked net (57457p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="55092" onclick="document.getElementById('detail-75').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹550.92</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-68">
+        <tr class="exc-detail" id="detail-75">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_a7eJ1gseDhP4zL&quot;, &quot;settlement_id&quot;: &quot;setl_PbhUdB6RBB0cOw&quot;}<br>
@@ -1300,14 +1426,50 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="49100" onclick="document.getElementById('detail-69').classList.toggle('open')">
+        <tr class="exc-row" data-amount="50675" onclick="document.getElementById('detail-76').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹506.75</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-76">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_e4NK9rkqvyiMlR&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>settlement setl_e4NK9rkqvyiMlR settled 17 days after its latest payment capture (2026-06-16 -&gt; 2026-07-03), beyond the normal T+N cycle</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="49800" onclick="document.getElementById('detail-77').classList.toggle('open')">
+          <td>REFUND_MISALLOCATION</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹498.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-77">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_GaBqCZHT930gpy&quot;, &quot;booked_order_id&quot;: &quot;order_noGHvtH6ol5kJe&quot;}<br>
+              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>payment pay_GaBqCZHT930gpy carries a refund and its gross (106800p) does not match order order_noGHvtH6ol5kJe&#x27;s gross (641874p) - the refund is likely booked against the wrong order</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="49100" onclick="document.getElementById('detail-78').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹491.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-69">
+        <tr class="exc-detail" id="detail-78">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_CFFSqf1pRrtIKI&quot;}<br>
@@ -1318,104 +1480,122 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="47400" onclick="document.getElementById('detail-70').classList.toggle('open')">
+        <tr class="exc-row" data-amount="48400" onclick="document.getElementById('detail-79').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹474.00</td>
+          <td class="num">₹484.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-70">
+        <tr class="exc-detail" id="detail-79">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_H7Oi0lYf0DPw&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_5EUfLXfsgbPN&quot;}<br>
               <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_H7Oi0lYf0DPw (47400p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>debit btxn_5EUfLXfsgbPN (48400p) carries no dispute reference resolvable to a known payment_id</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="43000" onclick="document.getElementById('detail-71').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
+        <tr class="exc-row" data-amount="45470" onclick="document.getElementById('detail-80').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹430.00</td>
+          <td class="num">₹454.70</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-71">
+        <tr class="exc-detail" id="detail-80">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_CVrQqFjBzCKl&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_cwlxvwluUHDrTp&quot;, &quot;order_id&quot;: &quot;order_09Ygk7RIQCC4xO&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_CVrQqFjBzCKl (43000p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>international payment gross (1864270p) differs from the invoiced order gross (1818800p) by 45470p</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="41700" onclick="document.getElementById('detail-72').classList.toggle('open')">
+        <tr class="exc-row" data-amount="45200" onclick="document.getElementById('detail-81').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹417.00</td>
+          <td class="num">₹452.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-72">
+        <tr class="exc-detail" id="detail-81">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_RwOBoZlB8SJX&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_O3r7Zie4gH1w&quot;}<br>
               <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_RwOBoZlB8SJX (41700p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>debit btxn_O3r7Zie4gH1w (45200p) carries no dispute reference resolvable to a known payment_id</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="40900" onclick="document.getElementById('detail-73').classList.toggle('open')">
+        <tr class="exc-row" data-amount="43700" onclick="document.getElementById('detail-82').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹437.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-82">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_6qSKRkaAbdhA&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_6qSKRkaAbdhA (43700p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="40900" onclick="document.getElementById('detail-83').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹409.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-73">
+        <tr class="exc-detail" id="detail-83">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_g2vcLAyH8JDQIA&quot;, &quot;booked_order_id&quot;: &quot;order_Kd4HjfV1oy3JRu&quot;}<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_g2vcLAyH8JDQIA&quot;, &quot;booked_order_id&quot;: &quot;order_JIlIzQBs01XOSK&quot;}<br>
               <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>payment pay_g2vcLAyH8JDQIA carries a refund and its gross (40900p) does not match order order_Kd4HjfV1oy3JRu&#x27;s gross (136031p) - the refund is likely booked against the wrong order</li></ul>
+              <ul><li>payment pay_g2vcLAyH8JDQIA carries a refund and its gross (40900p) does not match order order_JIlIzQBs01XOSK&#x27;s gross (297600p) - the refund is likely booked against the wrong order</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="40300" onclick="document.getElementById('detail-74').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
+        <tr class="exc-row" data-amount="40077" onclick="document.getElementById('detail-84').classList.toggle('open')">
+          <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹403.00</td>
+          <td class="num">₹400.77</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-74">
+        <tr class="exc-detail" id="detail-84">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_UNTwgPCLONJK&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_jgklJKKgZbm9gT&quot;}<br>
+              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_UNTwgPCLONJK (40300p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>settlement setl_jgklJKKgZbm9gT settled 14 days after its latest payment capture (2026-08-20 -&gt; 2026-09-03), beyond the normal T+N cycle</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="38839" onclick="document.getElementById('detail-75').classList.toggle('open')">
+        <tr class="exc-row" data-amount="38839" onclick="document.getElementById('detail-85').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹388.39</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-75">
+        <tr class="exc-detail" id="detail-85">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_SlE3QiXiIgfNWi&quot;}<br>
@@ -1426,32 +1606,104 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="36800" onclick="document.getElementById('detail-76').classList.toggle('open')">
+        <tr class="exc-row" data-amount="38800" onclick="document.getElementById('detail-86').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹368.00</td>
+          <td class="num">₹388.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-76">
+        <tr class="exc-detail" id="detail-86">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_LQ9JksYkqx6R&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_2LVr4GnnzCfe&quot;}<br>
               <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_LQ9JksYkqx6R (36800p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>debit btxn_2LVr4GnnzCfe (38800p) carries no dispute reference resolvable to a known payment_id</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="32000" onclick="document.getElementById('detail-77').classList.toggle('open')">
+        <tr class="exc-row" data-amount="38000" onclick="document.getElementById('detail-87').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹380.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-87">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_RwOBoZlB8SJX&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_RwOBoZlB8SJX (38000p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="37700" onclick="document.getElementById('detail-88').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹377.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-88">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_jipQV2DfDqmf&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_jipQV2DfDqmf (37700p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="36100" onclick="document.getElementById('detail-89').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹361.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-89">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_VZkrVFpYPKkQ&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_VZkrVFpYPKkQ (36100p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="34700" onclick="document.getElementById('detail-90').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹347.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-90">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_d8dd3s7ylV7i&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_d8dd3s7ylV7i (34700p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="32000" onclick="document.getElementById('detail-91').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹320.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-77">
+        <tr class="exc-detail" id="detail-91">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_MhzjPuYMvuM1XG&quot;, &quot;order_id&quot;: &quot;order_4MOTK0xbOwDdpu&quot;}<br>
@@ -1462,14 +1714,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="29500" onclick="document.getElementById('detail-78').classList.toggle('open')">
+        <tr class="exc-row" data-amount="29500" onclick="document.getElementById('detail-92').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹295.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-78">
+        <tr class="exc-detail" id="detail-92">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_6x7P7wj1TOivjb&quot;, &quot;order_id&quot;: &quot;order_jnLA6z7iwU9JcV&quot;}<br>
@@ -1480,68 +1732,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="29400" onclick="document.getElementById('detail-79').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹294.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-79">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_jipQV2DfDqmf&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_jipQV2DfDqmf (29400p) carries no dispute reference resolvable to a known payment_id</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="28900" onclick="document.getElementById('detail-80').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹289.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-80">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_VZkrVFpYPKkQ&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_VZkrVFpYPKkQ (28900p) carries no dispute reference resolvable to a known payment_id</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="28900" onclick="document.getElementById('detail-81').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹289.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-81">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_3Mvzw3V164bY&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_3Mvzw3V164bY (28900p) carries no dispute reference resolvable to a known payment_id</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="28769" onclick="document.getElementById('detail-82').classList.toggle('open')">
+        <tr class="exc-row" data-amount="28769" onclick="document.getElementById('detail-93').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹287.69</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-82">
+        <tr class="exc-detail" id="detail-93">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_321mSm7DcDg6NM&quot;, &quot;order_id&quot;: &quot;order_g1pnSZcZUD248E&quot;}<br>
@@ -1552,14 +1750,50 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="27600" onclick="document.getElementById('detail-83').classList.toggle('open')">
+        <tr class="exc-row" data-amount="27965" onclick="document.getElementById('detail-94').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹279.65</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-94">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_HSO8eVh9hhxsYJ&quot;, &quot;order_id&quot;: &quot;order_W3y2dfXsgwgiHh&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>international payment gross (1146565p) differs from the invoiced order gross (1118600p) by 27965p</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="27700" onclick="document.getElementById('detail-95').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹277.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-95">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_H7Oi0lYf0DPw&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_H7Oi0lYf0DPw (27700p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="27600" onclick="document.getElementById('detail-96').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹276.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-83">
+        <tr class="exc-detail" id="detail-96">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_4EM6X3L2b7Kecc&quot;}<br>
@@ -1570,122 +1804,50 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="27282" onclick="document.getElementById('detail-84').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹272.82</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-84">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_cwlxvwluUHDrTp&quot;, &quot;order_id&quot;: &quot;order_09Ygk7RIQCC4xO&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (1846082p) differs from the invoiced order gross (1818800p) by 27282p</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="23100" onclick="document.getElementById('detail-85').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹231.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-85">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_2LVr4GnnzCfe&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_2LVr4GnnzCfe (23100p) carries no dispute reference resolvable to a known payment_id</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="22500" onclick="document.getElementById('detail-86').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹225.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-86">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_81LIenFUp3uRGi&quot;, &quot;booked_order_id&quot;: &quot;order_zl9EgadEe7JfW5&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>payment pay_81LIenFUp3uRGi carries a refund and its gross (38900p) does not match order order_zl9EgadEe7JfW5&#x27;s gross (44838p) - the refund is likely booked against the wrong order</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="22500" onclick="document.getElementById('detail-87').classList.toggle('open')">
+        <tr class="exc-row" data-amount="22500" onclick="document.getElementById('detail-97').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹225.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-87">
+        <tr class="exc-detail" id="detail-97">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_p5CdSXW9d5VC&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_LQ9JksYkqx6R&quot;}<br>
               <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_p5CdSXW9d5VC (22500p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>debit btxn_LQ9JksYkqx6R (22500p) carries no dispute reference resolvable to a known payment_id</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="19700" onclick="document.getElementById('detail-88').classList.toggle('open')">
+        <tr class="exc-row" data-amount="21400" onclick="document.getElementById('detail-98').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹197.00</td>
+          <td class="num">₹214.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-88">
+        <tr class="exc-detail" id="detail-98">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_d8dd3s7ylV7i&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_CVrQqFjBzCKl&quot;}<br>
               <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_d8dd3s7ylV7i (19700p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>debit btxn_CVrQqFjBzCKl (21400p) carries no dispute reference resolvable to a known payment_id</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="19340" onclick="document.getElementById('detail-89').classList.toggle('open')">
-          <td>FX_VARIANCE</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹193.40</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-89">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_SVM3vm6ZbymPkw&quot;, &quot;order_id&quot;: &quot;order_V4JDtN6RSQCiA1&quot;}<br>
-              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>international payment gross (754260p) differs from the invoiced order gross (773600p) by -19340p</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="18300" onclick="document.getElementById('detail-90').classList.toggle('open')">
+        <tr class="exc-row" data-amount="18300" onclick="document.getElementById('detail-99').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹183.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-90">
+        <tr class="exc-detail" id="detail-99">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_l5R1Um1OKyZRxF&quot;, &quot;order_id&quot;: &quot;order_1YagY0p6DQtnht&quot;}<br>
@@ -1696,14 +1858,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="18000" onclick="document.getElementById('detail-91').classList.toggle('open')">
+        <tr class="exc-row" data-amount="18100" onclick="document.getElementById('detail-100').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹181.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-100">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_UNTwgPCLONJK&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_UNTwgPCLONJK (18100p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="18000" onclick="document.getElementById('detail-101').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹180.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-91">
+        <tr class="exc-detail" id="detail-101">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_1VQyaLmF12PBP9&quot;}<br>
@@ -1714,14 +1894,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="16300" onclick="document.getElementById('detail-92').classList.toggle('open')">
+        <tr class="exc-row" data-amount="16800" onclick="document.getElementById('detail-102').classList.toggle('open')">
+          <td>ORPHAN_CHARGEBACK</td>
+          <td><span class="pill pill-standard">STANDARD</span></td>
+          <td class="num">₹168.00</td>
+          <td>Reconciliation Ops</td>
+          <td>0d</td>
+        </tr>
+        <tr class="exc-detail" id="detail-102">
+          <td colspan="5">
+            <div class="detail-box">
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_p5CdSXW9d5VC&quot;}<br>
+              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
+              <strong>Evidence chain:</strong>
+              <ul><li>debit btxn_p5CdSXW9d5VC (16800p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <span class="muted">no agent trace (deterministically classified)</span>
+            </div>
+          </td>
+        </tr>
+        <tr class="exc-row" data-amount="16300" onclick="document.getElementById('detail-103').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹163.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-92">
+        <tr class="exc-detail" id="detail-103">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_8qDpOZBABEDLwt&quot;, &quot;order_id&quot;: &quot;order_eAO0tO3sY9igm3&quot;}<br>
@@ -1732,14 +1930,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="16027" onclick="document.getElementById('detail-93').classList.toggle('open')">
+        <tr class="exc-row" data-amount="16027" onclick="document.getElementById('detail-104').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹160.27</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-93">
+        <tr class="exc-detail" id="detail-104">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_gumcGFOQDqu9W3&quot;, &quot;settlement_id&quot;: &quot;setl_wzoX76GkVSNoMS&quot;}<br>
@@ -1750,14 +1948,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="15795" onclick="document.getElementById('detail-94').classList.toggle('open')">
+        <tr class="exc-row" data-amount="15795" onclick="document.getElementById('detail-105').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹157.95</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-94">
+        <tr class="exc-detail" id="detail-105">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_ycgipNNk1ctJYx&quot;, &quot;settlement_id&quot;: &quot;setl_2Yx5FmTgpVciO6&quot;}<br>
@@ -1768,32 +1966,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="14000" onclick="document.getElementById('detail-95').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹140.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-95">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_5EUfLXfsgbPN&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_5EUfLXfsgbPN (14000p) carries no dispute reference resolvable to a known payment_id</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="13457" onclick="document.getElementById('detail-96').classList.toggle('open')">
+        <tr class="exc-row" data-amount="13457" onclick="document.getElementById('detail-106').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹134.57</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-96">
+        <tr class="exc-detail" id="detail-106">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_UU1N3Wv2HOYpXQ&quot;, &quot;settlement_id&quot;: &quot;setl_CM0jNAb6J3UOKG&quot;}<br>
@@ -1804,50 +1984,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="13000" onclick="document.getElementById('detail-97').classList.toggle('open')">
-          <td>ORPHAN_CHARGEBACK</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹130.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-97">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_O3r7Zie4gH1w&quot;}<br>
-              <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_O3r7Zie4gH1w (13000p) carries no dispute reference resolvable to a known payment_id</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="10500" onclick="document.getElementById('detail-98').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹105.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-98">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Dv3TsKTeZBzJQM&quot;, &quot;booked_order_id&quot;: &quot;order_HIN8hTxkDVGKTU&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>payment pay_Dv3TsKTeZBzJQM carries a refund and its gross (27100p) does not match order order_HIN8hTxkDVGKTU&#x27;s gross (172200p) - the refund is likely booked against the wrong order</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
-        <tr class="exc-row" data-amount="10252" onclick="document.getElementById('detail-99').classList.toggle('open')">
+        <tr class="exc-row" data-amount="10252" onclick="document.getElementById('detail-107').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹102.52</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-99">
+        <tr class="exc-detail" id="detail-107">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_SugYEjvM1c4mpq&quot;, &quot;settlement_id&quot;: &quot;setl_dhFa91amjOcQyE&quot;}<br>
@@ -1858,32 +2002,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="8300" onclick="document.getElementById('detail-100').classList.toggle('open')">
+        <tr class="exc-row" data-amount="9400" onclick="document.getElementById('detail-108').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹83.00</td>
+          <td class="num">₹94.00</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-100">
+        <tr class="exc-detail" id="detail-108">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_6qSKRkaAbdhA&quot;}<br>
+              <strong>Affected:</strong> {&quot;bank_txn_id&quot;: &quot;btxn_3Mvzw3V164bY&quot;}<br>
               <strong>Recommended action:</strong> Match the chargeback to its originating payment, or escalate as an unexplained debit.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>debit btxn_6qSKRkaAbdhA (8300p) carries no dispute reference resolvable to a known payment_id</li></ul>
+              <ul><li>debit btxn_3Mvzw3V164bY (9400p) carries no dispute reference resolvable to a known payment_id</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="7094" onclick="document.getElementById('detail-101').classList.toggle('open')">
+        <tr class="exc-row" data-amount="7094" onclick="document.getElementById('detail-109').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹70.94</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-101">
+        <tr class="exc-detail" id="detail-109">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_XssP76lkMHFFaU&quot;, &quot;settlement_id&quot;: &quot;setl_oTy2VVmqp2QMGR&quot;}<br>
@@ -1894,14 +2038,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="7023" onclick="document.getElementById('detail-102').classList.toggle('open')">
+        <tr class="exc-row" data-amount="7023" onclick="document.getElementById('detail-110').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹70.23</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-102">
+        <tr class="exc-detail" id="detail-110">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_mh57w0GfDrKBza&quot;, &quot;settlement_id&quot;: &quot;setl_7Hylr8kmXwy958&quot;}<br>
@@ -1912,32 +2056,32 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6900" onclick="document.getElementById('detail-103').classList.toggle('open')">
-          <td>REFUND_MISALLOCATION</td>
+        <tr class="exc-row" data-amount="6702" onclick="document.getElementById('detail-111').classList.toggle('open')">
+          <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹69.00</td>
+          <td class="num">₹67.02</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-103">
+        <tr class="exc-detail" id="detail-111">
           <td colspan="5">
             <div class="detail-box">
-              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_ZGMbMw0vospNrk&quot;, &quot;booked_order_id&quot;: &quot;order_gQhEeVNxyxgyHy&quot;}<br>
-              <strong>Recommended action:</strong> Reassign the refund to the correct order and notify accounts of the correction.<br>
+              <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_qgQxekYFUPkGCE&quot;, &quot;order_id&quot;: &quot;order_2KSPbtSXa92p3X&quot;}<br>
+              <strong>Recommended action:</strong> Reconcile against the booked FX rate; verify with the PG&#x27;s FX statement.<br>
               <strong>Evidence chain:</strong>
-              <ul><li>payment pay_ZGMbMw0vospNrk carries a refund and its gross (25900p) does not match order order_gQhEeVNxyxgyHy&#x27;s gross (162400p) - the refund is likely booked against the wrong order</li></ul>
+              <ul><li>international payment gross (453502p) differs from the invoiced order gross (446800p) by 6702p</li></ul>
               <span class="muted">no agent trace (deterministically classified)</span>
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6011" onclick="document.getElementById('detail-104').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6011" onclick="document.getElementById('detail-112').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹60.11</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-104">
+        <tr class="exc-detail" id="detail-112">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_BRlcbvxLtkeoOl&quot;, &quot;settlement_id&quot;: &quot;setl_z5d7bgDPtehIKm&quot;}<br>
@@ -1948,14 +2092,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5932" onclick="document.getElementById('detail-105').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5932" onclick="document.getElementById('detail-113').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹59.32</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-105">
+        <tr class="exc-detail" id="detail-113">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_iP3ii9u5hmly1g&quot;, &quot;settlement_id&quot;: &quot;setl_plYULQNWXCOzvZ&quot;}<br>
@@ -1966,14 +2110,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5738" onclick="document.getElementById('detail-106').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5738" onclick="document.getElementById('detail-114').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹57.38</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-106">
+        <tr class="exc-detail" id="detail-114">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_gcx8r2sWYscJ6y&quot;, &quot;settlement_id&quot;: &quot;setl_W38ZLto1t6J4eS&quot;}<br>
@@ -1984,14 +2128,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5081" onclick="document.getElementById('detail-107').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5081" onclick="document.getElementById('detail-115').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹50.81</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-107">
+        <tr class="exc-detail" id="detail-115">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_XrR0om6jW6bMZz&quot;, &quot;settlement_id&quot;: &quot;setl_CI0DdUcm9SevW9&quot;}<br>
@@ -2002,14 +2146,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="4718" onclick="document.getElementById('detail-108').classList.toggle('open')">
+        <tr class="exc-row" data-amount="4718" onclick="document.getElementById('detail-116').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹47.18</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-108">
+        <tr class="exc-detail" id="detail-116">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_JVN2MlnOxQdBLq&quot;, &quot;settlement_id&quot;: &quot;setl_M7XC4Wp9QorH42&quot;}<br>
@@ -2020,14 +2164,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="4017" onclick="document.getElementById('detail-109').classList.toggle('open')">
+        <tr class="exc-row" data-amount="4017" onclick="document.getElementById('detail-117').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹40.17</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-109">
+        <tr class="exc-detail" id="detail-117">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_xotonczqqMXmMa&quot;, &quot;settlement_id&quot;: &quot;setl_5nmMpzwfRfjPAo&quot;}<br>
@@ -2038,14 +2182,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="3167" onclick="document.getElementById('detail-110').classList.toggle('open')">
+        <tr class="exc-row" data-amount="3167" onclick="document.getElementById('detail-118').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹31.67</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-110">
+        <tr class="exc-detail" id="detail-118">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_8KGz9ccaFOsnNu&quot;, &quot;settlement_id&quot;: &quot;setl_Z9MpgQluW1WbM0&quot;}<br>
@@ -2056,14 +2200,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2815" onclick="document.getElementById('detail-111').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2815" onclick="document.getElementById('detail-119').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹28.15</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-111">
+        <tr class="exc-detail" id="detail-119">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_8vuGH4GmFtGSq6&quot;, &quot;settlement_id&quot;: &quot;setl_wzoX76GkVSNoMS&quot;}<br>
@@ -2074,14 +2218,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1923" onclick="document.getElementById('detail-112').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1923" onclick="document.getElementById('detail-120').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹19.23</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-112">
+        <tr class="exc-detail" id="detail-120">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_Rv93Am0vjS7XQo&quot;, &quot;settlement_id&quot;: &quot;setl_ktWJLloa4rSQJd&quot;}<br>
@@ -2092,14 +2236,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1833" onclick="document.getElementById('detail-113').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1833" onclick="document.getElementById('detail-121').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹18.33</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-113">
+        <tr class="exc-detail" id="detail-121">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_de7oBxQK1c6IUK&quot;, &quot;settlement_id&quot;: &quot;setl_8zu5KcbxIQH71E&quot;}<br>
@@ -2110,14 +2254,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1775" onclick="document.getElementById('detail-114').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1775" onclick="document.getElementById('detail-122').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹17.75</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-114">
+        <tr class="exc-detail" id="detail-122">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_wBIBuJPpZkfnNy&quot;, &quot;settlement_id&quot;: &quot;setl_QTZThS1HN8MluG&quot;}<br>
@@ -2128,14 +2272,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1659" onclick="document.getElementById('detail-115').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1659" onclick="document.getElementById('detail-123').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹16.59</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-115">
+        <tr class="exc-detail" id="detail-123">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_KjfTy3kZDfR7yM&quot;, &quot;settlement_id&quot;: &quot;setl_xn4nLtJhj8sY2Z&quot;}<br>
@@ -2146,14 +2290,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1260" onclick="document.getElementById('detail-116').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1260" onclick="document.getElementById('detail-124').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹12.60</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-116">
+        <tr class="exc-detail" id="detail-124">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_kozgW2lBlBnTk8&quot;, &quot;settlement_id&quot;: &quot;setl_GfyyaPopkXFa6r&quot;}<br>
@@ -2164,14 +2308,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="841" onclick="document.getElementById('detail-117').classList.toggle('open')">
+        <tr class="exc-row" data-amount="841" onclick="document.getElementById('detail-125').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹8.41</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-117">
+        <tr class="exc-detail" id="detail-125">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_4xFCIlZ2l0DxfR&quot;, &quot;settlement_id&quot;: &quot;setl_P65ExMApYLxX4s&quot;}<br>
@@ -2182,14 +2326,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="808" onclick="document.getElementById('detail-118').classList.toggle('open')">
+        <tr class="exc-row" data-amount="808" onclick="document.getElementById('detail-126').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹8.08</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-118">
+        <tr class="exc-detail" id="detail-126">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_jlsYzsfP2zavT1&quot;, &quot;settlement_id&quot;: &quot;setl_JsokcIssfX8dlE&quot;}<br>
@@ -2200,14 +2344,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="649" onclick="document.getElementById('detail-119').classList.toggle('open')">
+        <tr class="exc-row" data-amount="649" onclick="document.getElementById('detail-127').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹6.49</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-119">
+        <tr class="exc-detail" id="detail-127">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_a9fzWJlQMxRnbH&quot;, &quot;settlement_id&quot;: &quot;setl_xn4nLtJhj8sY2Z&quot;}<br>
@@ -2218,14 +2362,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="446" onclick="document.getElementById('detail-120').classList.toggle('open')">
+        <tr class="exc-row" data-amount="446" onclick="document.getElementById('detail-128').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4.46</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-120">
+        <tr class="exc-detail" id="detail-128">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_jynyzIVmBanl6s&quot;, &quot;settlement_id&quot;: &quot;setl_9HYHEAN48LlsV7&quot;}<br>
@@ -2236,14 +2380,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="445" onclick="document.getElementById('detail-121').classList.toggle('open')">
+        <tr class="exc-row" data-amount="445" onclick="document.getElementById('detail-129').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4.45</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-121">
+        <tr class="exc-detail" id="detail-129">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_r5wY85diB18Frb&quot;, &quot;settlement_id&quot;: &quot;setl_Zfz63V77U1Y3ft&quot;}<br>
@@ -2254,14 +2398,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="414" onclick="document.getElementById('detail-122').classList.toggle('open')">
+        <tr class="exc-row" data-amount="414" onclick="document.getElementById('detail-130').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4.14</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-122">
+        <tr class="exc-detail" id="detail-130">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_IKLrael3ArDNCP&quot;, &quot;settlement_id&quot;: &quot;setl_qB4spME3K3AnjZ&quot;}<br>
@@ -2272,14 +2416,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="288" onclick="document.getElementById('detail-123').classList.toggle('open')">
+        <tr class="exc-row" data-amount="288" onclick="document.getElementById('detail-131').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2.88</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-123">
+        <tr class="exc-detail" id="detail-131">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_cER3wxQMI9IGs0&quot;, &quot;settlement_id&quot;: &quot;setl_0HOYm6CA19EZJG&quot;}<br>
@@ -2290,14 +2434,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="228" onclick="document.getElementById('detail-124').classList.toggle('open')">
+        <tr class="exc-row" data-amount="228" onclick="document.getElementById('detail-132').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2.28</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-124">
+        <tr class="exc-detail" id="detail-132">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_LyMZEWnQZA6G17&quot;, &quot;settlement_id&quot;: &quot;setl_YpKF4tYzobO3Nl&quot;}<br>
@@ -2308,14 +2452,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="161" onclick="document.getElementById('detail-125').classList.toggle('open')">
+        <tr class="exc-row" data-amount="161" onclick="document.getElementById('detail-133').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.61</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-125">
+        <tr class="exc-detail" id="detail-133">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_xu864hTlDamoOC&quot;, &quot;settlement_id&quot;: &quot;setl_jAHGWBSW6jxKI4&quot;}<br>
@@ -2326,14 +2470,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="157" onclick="document.getElementById('detail-126').classList.toggle('open')">
+        <tr class="exc-row" data-amount="157" onclick="document.getElementById('detail-134').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.57</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-126">
+        <tr class="exc-detail" id="detail-134">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_JjUt3bRCdrGMIp&quot;, &quot;settlement_id&quot;: &quot;setl_QTZThS1HN8MluG&quot;}<br>
@@ -2344,14 +2488,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="152" onclick="document.getElementById('detail-127').classList.toggle('open')">
+        <tr class="exc-row" data-amount="152" onclick="document.getElementById('detail-135').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.52</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-127">
+        <tr class="exc-detail" id="detail-135">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_0zXCv4Cbro1Y0W&quot;, &quot;settlement_id&quot;: &quot;setl_fAyNW41Mr0i4iW&quot;}<br>
@@ -2362,14 +2506,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="149" onclick="document.getElementById('detail-128').classList.toggle('open')">
+        <tr class="exc-row" data-amount="149" onclick="document.getElementById('detail-136').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.49</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-128">
+        <tr class="exc-detail" id="detail-136">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_GN6FAPAyxfNafc&quot;, &quot;settlement_id&quot;: &quot;setl_I1AksinXcwF6Fm&quot;}<br>
@@ -2380,14 +2524,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="128" onclick="document.getElementById('detail-129').classList.toggle('open')">
+        <tr class="exc-row" data-amount="128" onclick="document.getElementById('detail-137').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.28</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-129">
+        <tr class="exc-detail" id="detail-137">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_jpVQ0Fa4MT1YN1&quot;, &quot;settlement_id&quot;: &quot;setl_w87xSMzSXTcXDX&quot;}<br>
@@ -2398,14 +2542,14 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5" onclick="document.getElementById('detail-130').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5" onclick="document.getElementById('detail-138').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹0.05</td>
           <td>Reconciliation Ops</td>
           <td>0d</td>
         </tr>
-        <tr class="exc-detail" id="detail-130">
+        <tr class="exc-detail" id="detail-138">
           <td colspan="5">
             <div class="detail-box">
               <strong>Affected:</strong> {&quot;payment_id&quot;: &quot;pay_L43FqlTsZId613&quot;, &quot;settlement_id&quot;: &quot;setl_JNoJqWUR3BO1Tp&quot;}<br>
@@ -2416,30 +2560,12 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="0" onclick="document.getElementById('detail-131').classList.toggle('open')">
-          <td>PERIOD_CUTOFF</td>
-          <td><span class="pill pill-standard">STANDARD</span></td>
-          <td class="num">₹0.00</td>
-          <td>Reconciliation Ops</td>
-          <td>0d</td>
-        </tr>
-        <tr class="exc-detail" id="detail-131">
-          <td colspan="5">
-            <div class="detail-box">
-              <strong>Affected:</strong> {&quot;settlement_id&quot;: &quot;setl_xyFPHBW5czpIad&quot;}<br>
-              <strong>Recommended action:</strong> Confirm the settlement period for month-end close; may require an accrual entry.<br>
-              <strong>Evidence chain:</strong>
-              <ul><li>settlement setl_xyFPHBW5czpIad settled 5 days after its latest payment capture (2026-07-27 -&gt; 2026-08-01), beyond the normal T+N cycle</li></ul>
-              <span class="muted">no agent trace (deterministically classified)</span>
-            </div>
-          </td>
-        </tr>
     </table>
   </section>
 
   <section>
     <h2>Cash position</h2>
-    <p class="muted">As of 2026-08-31 &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹1,082,866.84</strong></p>
+    <p class="muted">As of 2026-08-31 &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹1,672,013.03</strong></p>
     <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">14-day expected inflow</h3>
     <div class="inflow-chart"><div class="bar-col">
               <div class="bar" style="height:100%"></div>
@@ -2485,13 +2611,13 @@
               <div class="bar-label">09-13</div>
             </div></div>
     <h3 style="font-size:0.95rem;margin:1.2rem 0 0.3rem;">Book cash vs. reconciled cash</h3>
-    <p class="muted">Book: ₹14,200,765.83 &middot; Reconciled: ₹13,309,048.36 &middot; every paisa of the gap is named below</p>
-    <table><tr><th>Component</th><th class="num">Amount</th></tr><tr><td>unsettled_gross_paise</td><td class='num'>₹507,630.17</td></tr><tr><td>settled_gross_minus_net_paise</td><td class='num'>₹274,716.04</td></tr><tr><td>settled_refunds_paise</td><td class='num'>₹238,231.52</td></tr><tr><td>adjustments_paise</td><td class='num'>₹1,258.00</td></tr><tr><td>legitimate_chargeback_paise</td><td class='num'>₹13,030.74</td></tr><tr><td>orphan_chargeback_paise</td><td class='num'>₹3,970.00</td></tr><tr><td>unidentified_credit_paise</td><td class='num'>-₹147,119.00</td></tr></table>
+    <p class="muted">Book: ₹14,197,882.03 &middot; Reconciled: ₹13,281,428.77 &middot; every paisa of the gap is named below</p>
+    <table><tr><th>Component</th><th class="num">Amount</th></tr><tr><td>unsettled_gross_paise</td><td class='num'>₹507,630.17</td></tr><tr><td>settled_gross_minus_net_paise</td><td class='num'>₹272,366.83</td></tr><tr><td>settled_refunds_paise</td><td class='num'>₹238,231.52</td></tr><tr><td>adjustments_paise</td><td class='num'>₹1,258.00</td></tr><tr><td>legitimate_chargeback_paise</td><td class='num'>₹13,030.74</td></tr><tr><td>orphan_chargeback_paise</td><td class='num'>₹4,385.00</td></tr><tr><td>unidentified_credit_paise</td><td class='num'>-₹120,449.00</td></tr></table>
   </section>
 
   <section>
     <h2>Per-defect-class confusion</h2>
-    <table><tr><th>Defect type</th><th>Outcome counts</th></tr><tr><td>duplicate_payment</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>fee_mismatch_wrong_tier</td><td>{&quot;detected&quot;: 19}</td></tr><tr><td>fx_variance</td><td>{&quot;detected&quot;: 8}</td></tr><tr><td>gst_variance</td><td>{&quot;detected&quot;: 15}</td></tr><tr><td>missing_settlement</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>orphan_chargeback</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>period_cutoff</td><td>{&quot;detected&quot;: 13, &quot;missed&quot;: 1}</td></tr><tr><td>refund_misallocation</td><td>{&quot;detected&quot;: 9}</td></tr><tr><td>rounding_drift</td><td>{&quot;correctly_resolved&quot;: 25}</td></tr><tr><td>settlement_split</td><td>{&quot;correctly_resolved&quot;: 10}</td></tr><tr><td>unidentified_credit</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>utr_mangled</td><td>{&quot;correctly_resolved&quot;: 20}</td></tr></table>
+    <table><tr><th>Defect type</th><th>Outcome counts</th></tr><tr><td>compound_fee_tax_error</td><td>{&quot;detected&quot;: 6}</td></tr><tr><td>consolidated_payout</td><td>{&quot;correctly_resolved&quot;: 8}</td></tr><tr><td>duplicate_payment</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>fee_mismatch_wrong_tier</td><td>{&quot;detected&quot;: 19}</td></tr><tr><td>fx_variance</td><td>{&quot;detected&quot;: 8}</td></tr><tr><td>gst_variance</td><td>{&quot;detected&quot;: 15}</td></tr><tr><td>missing_settlement</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>orphan_chargeback</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>period_cutoff</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>refund_misallocation</td><td>{&quot;detected&quot;: 9}</td></tr><tr><td>rounding_drift</td><td>{&quot;correctly_resolved&quot;: 25}</td></tr><tr><td>settlement_split</td><td>{&quot;correctly_resolved&quot;: 11}</td></tr><tr><td>unidentified_credit</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>utr_mangled</td><td>{&quot;correctly_resolved&quot;: 20}</td></tr></table>
   </section>
 
 <script>

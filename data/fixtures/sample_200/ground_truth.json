@@ -75,12 +75,23 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_s5h1wAFJTXrHpw",
+        "payment_id": "pay_wAReQJLjgKPc8Y",
+        "settlement_id": "setl_8EzsIjvNEqHCOH"
+      },
+      "amount_at_risk_paise": 3767,
+      "defect_id": "DEF-0008",
+      "expected_exception_category": "UNEXPLAINED_VARIANCE",
+      "resolvable_by_engine": false,
+      "type": "compound_fee_tax_error"
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_nejPF99vlwvY3O",
         "correct_order_id": "order_CKooAsJ2w2LgDL",
         "payment_id": "pay_u1zD42C18nSpkW"
       },
       "amount_at_risk_paise": 1120300,
-      "defect_id": "DEF-0008",
+      "defect_id": "DEF-0009",
       "expected_exception_category": "REFUND_MISALLOCATION",
       "resolvable_by_engine": false,
       "type": "refund_misallocation"
@@ -89,8 +100,8 @@
       "affected": {
         "bank_txn_id": "btxn_Sm2LjNXA3Z6J"
       },
-      "amount_at_risk_paise": 38400,
-      "defect_id": "DEF-0009",
+      "amount_at_risk_paise": 10900,
+      "defect_id": "DEF-0010",
       "expected_exception_category": "ORPHAN_CHARGEBACK",
       "resolvable_by_engine": false,
       "type": "orphan_chargeback"
@@ -99,8 +110,8 @@
       "affected": {
         "bank_txn_id": "btxn_slajg9NSS8Ey"
       },
-      "amount_at_risk_paise": 29400,
-      "defect_id": "DEF-0010",
+      "amount_at_risk_paise": 29100,
+      "defect_id": "DEF-0011",
       "expected_exception_category": "ORPHAN_CHARGEBACK",
       "resolvable_by_engine": false,
       "type": "orphan_chargeback"
@@ -109,27 +120,17 @@
       "affected": {
         "bank_txn_id": "btxn_54PxtVlzh9Sf"
       },
-      "amount_at_risk_paise": 46300,
-      "defect_id": "DEF-0011",
+      "amount_at_risk_paise": 18200,
+      "defect_id": "DEF-0012",
       "expected_exception_category": "ORPHAN_CHARGEBACK",
       "resolvable_by_engine": false,
       "type": "orphan_chargeback"
     },
     {
       "affected": {
-        "settlement_id": "setl_LrrBAW4nNMMXTf"
+        "settlement_id": "setl_L5qp1pTf9snB38"
       },
-      "amount_at_risk_paise": 7486895,
-      "defect_id": "DEF-0012",
-      "expected_exception_category": "PERIOD_CUTOFF",
-      "resolvable_by_engine": false,
-      "type": "period_cutoff"
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_obuThoBpZlMaHQ"
-      },
-      "amount_at_risk_paise": 19733840,
+      "amount_at_risk_paise": 4374210,
       "defect_id": "DEF-0013",
       "expected_exception_category": "PERIOD_CUTOFF",
       "resolvable_by_engine": false,
@@ -137,9 +138,9 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_z4HZt6gN7jgb96"
+        "settlement_id": "setl_vUm10To41rSpql"
       },
-      "amount_at_risk_paise": 3079000,
+      "amount_at_risk_paise": 808850,
       "defect_id": "DEF-0014",
       "expected_exception_category": "PERIOD_CUTOFF",
       "resolvable_by_engine": false,
@@ -147,21 +148,20 @@
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_SonDlBpuKppr",
-        "settlement_id": "setl_RgPomY0hxFBzw9"
+        "settlement_id": "setl_FD8so57Rshb2mj"
       },
-      "amount_at_risk_paise": 10447,
+      "amount_at_risk_paise": 7286197,
       "defect_id": "DEF-0015",
-      "expected_exception_category": null,
-      "resolvable_by_engine": true,
-      "type": "utr_mangled"
+      "expected_exception_category": "PERIOD_CUTOFF",
+      "resolvable_by_engine": false,
+      "type": "period_cutoff"
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_xfrYPywBjjDq",
-        "settlement_id": "setl_kfcFOC9SUqcBsg"
+        "bank_txn_id": "btxn_WiHVHWEicu0m",
+        "settlement_id": "setl_g3LLIcMM4g3UM0"
       },
-      "amount_at_risk_paise": 444848,
+      "amount_at_risk_paise": 334700,
       "defect_id": "DEF-0016",
       "expected_exception_category": null,
       "resolvable_by_engine": true,
@@ -169,10 +169,10 @@
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_vxJrt6J5YQDv",
-        "settlement_id": "setl_nwxDDhE5bej4hR"
+        "bank_txn_id": "btxn_K2EISpEvAfKW",
+        "settlement_id": "setl_L5qp1pTf9snB38"
       },
-      "amount_at_risk_paise": 339000,
+      "amount_at_risk_paise": 4374210,
       "defect_id": "DEF-0017",
       "expected_exception_category": null,
       "resolvable_by_engine": true,
@@ -180,11 +180,22 @@
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_MtXrVceDgUge",
-        "settlement_id": "setl_z4HZt6gN7jgb96"
+        "bank_txn_id": "btxn_44QCu0LvWiCy",
+        "settlement_id": "setl_LrrBAW4nNMMXTf"
       },
-      "amount_at_risk_paise": 3079000,
+      "amount_at_risk_paise": 7486895,
       "defect_id": "DEF-0018",
+      "expected_exception_category": null,
+      "resolvable_by_engine": true,
+      "type": "utr_mangled"
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_CyiG4SGMMlt2",
+        "settlement_id": "setl_vUm10To41rSpql"
+      },
+      "amount_at_risk_paise": 808850,
+      "defect_id": "DEF-0019",
       "expected_exception_category": null,
       "resolvable_by_engine": true,
       "type": "utr_mangled"
@@ -194,8 +205,8 @@
         "order_id": "order_hBsWH2UWlQmFvB",
         "payment_id": "pay_zWcvoSIq5V741h"
       },
-      "amount_at_risk_paise": 84610,
-      "defect_id": "DEF-0019",
+      "amount_at_risk_paise": 50766,
+      "defect_id": "DEF-0020",
       "expected_exception_category": "FX_VARIANCE",
       "resolvable_by_engine": false,
       "type": "fx_variance"
@@ -204,8 +215,8 @@
       "affected": {
         "bank_txn_id": "btxn_9D3ILF2iu4vJ"
       },
-      "amount_at_risk_paise": 165900,
-      "defect_id": "DEF-0020",
+      "amount_at_risk_paise": 992900,
+      "defect_id": "DEF-0021",
       "expected_exception_category": "UNIDENTIFIED_CREDIT",
       "resolvable_by_engine": false,
       "type": "unidentified_credit"
@@ -214,8 +225,8 @@
       "affected": {
         "bank_txn_id": "btxn_RdJWyPIJnqIp"
       },
-      "amount_at_risk_paise": 1905600,
-      "defect_id": "DEF-0021",
+      "amount_at_risk_paise": 397300,
+      "defect_id": "DEF-0022",
       "expected_exception_category": "UNIDENTIFIED_CREDIT",
       "resolvable_by_engine": false,
       "type": "unidentified_credit"
@@ -224,23 +235,45 @@
       "affected": {
         "bank_txn_id": "btxn_HFnzYfG3Lukf"
       },
-      "amount_at_risk_paise": 527800,
-      "defect_id": "DEF-0022",
+      "amount_at_risk_paise": 1418300,
+      "defect_id": "DEF-0023",
       "expected_exception_category": "UNIDENTIFIED_CREDIT",
       "resolvable_by_engine": false,
       "type": "unidentified_credit"
     },
     {
       "affected": {
-        "bank_txn_id_a": "btxn_obQ6ivutznwR",
+        "bank_txn_id_a": "btxn_rvFyP3Iuz7Be",
         "bank_txn_id_b": "btxn_Jvkui9Xwf9xW",
-        "settlement_id": "setl_Hguc58YLFEsULi"
+        "settlement_id": "setl_khI2WEOWhIfy1Y"
       },
-      "amount_at_risk_paise": 130043,
-      "defect_id": "DEF-0023",
+      "amount_at_risk_paise": 506900,
+      "defect_id": "DEF-0024",
       "expected_exception_category": null,
       "resolvable_by_engine": true,
       "type": "settlement_split"
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_ujMkV1IZQg1b",
+        "settlement_ids": "setl_8EzsIjvNEqHCOH,setl_CDCePzhuDTIS1Z,setl_EdZ7XptdbRQNPS,setl_RgPomY0hxFBzw9"
+      },
+      "amount_at_risk_paise": 4562470,
+      "defect_id": "DEF-0025",
+      "expected_exception_category": null,
+      "resolvable_by_engine": true,
+      "type": "consolidated_payout"
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_yApKETrKPlbm",
+        "settlement_ids": "setl_AqvJ2zeC6zcgEy,setl_I964cvBdHc1Q4e"
+      },
+      "amount_at_risk_paise": 3472219,
+      "defect_id": "DEF-0026",
+      "expected_exception_category": null,
+      "resolvable_by_engine": true,
+      "type": "consolidated_payout"
     }
   ],
   "generator": {
@@ -882,6 +915,10 @@
         "payment_id": "pay_jaCSAyfZhRwF0p"
       },
       {
+        "order_id": "order_nejPF99vlwvY3O",
+        "payment_id": "pay_u1zD42C18nSpkW"
+      },
+      {
         "order_id": "order_nw0jToLzvdzvoC",
         "payment_id": "pay_zEFL08bct0G4yn"
       },
@@ -944,10 +981,6 @@
       {
         "order_id": "order_s5h1wAFJTXrHpw",
         "payment_id": "pay_7ToTI31nhNBRBy"
-      },
-      {
-        "order_id": "order_s5h1wAFJTXrHpw",
-        "payment_id": "pay_u1zD42C18nSpkW"
       },
       {
         "order_id": "order_s8J5Uz69qLAjON",
@@ -1806,7 +1839,7 @@
         "settlement_id": "setl_4NHQeurUMLUdZU"
       },
       {
-        "bank_txn_id": "btxn_EiRVHj8vT5NB",
+        "bank_txn_id": "btxn_ujMkV1IZQg1b",
         "settlement_id": "setl_8EzsIjvNEqHCOH"
       },
       {
@@ -1818,7 +1851,7 @@
         "settlement_id": "setl_9tp3CvFJCxTB1s"
       },
       {
-        "bank_txn_id": "btxn_Mc2cHAXrDATA",
+        "bank_txn_id": "btxn_yApKETrKPlbm",
         "settlement_id": "setl_AqvJ2zeC6zcgEy"
       },
       {
@@ -1830,7 +1863,7 @@
         "settlement_id": "setl_BrhkijFXzINSa9"
       },
       {
-        "bank_txn_id": "btxn_bbXZfUpEGvOi",
+        "bank_txn_id": "btxn_ujMkV1IZQg1b",
         "settlement_id": "setl_CDCePzhuDTIS1Z"
       },
       {
@@ -1846,7 +1879,7 @@
         "settlement_id": "setl_DxIUaLPjvGKHD8"
       },
       {
-        "bank_txn_id": "btxn_tph6vUAvQJav",
+        "bank_txn_id": "btxn_ujMkV1IZQg1b",
         "settlement_id": "setl_EdZ7XptdbRQNPS"
       },
       {
@@ -1870,15 +1903,11 @@
         "settlement_id": "setl_HXSoIA72aYpe6t"
       },
       {
-        "bank_txn_id": "btxn_Jvkui9Xwf9xW",
-        "settlement_id": "setl_Hguc58YLFEsULi"
-      },
-      {
         "bank_txn_id": "btxn_obQ6ivutznwR",
         "settlement_id": "setl_Hguc58YLFEsULi"
       },
       {
-        "bank_txn_id": "btxn_QdvvqSeYtd9b",
+        "bank_txn_id": "btxn_yApKETrKPlbm",
         "settlement_id": "setl_I964cvBdHc1Q4e"
       },
       {
@@ -1922,7 +1951,7 @@
         "settlement_id": "setl_QHelNGrAfNpm6i"
       },
       {
-        "bank_txn_id": "btxn_SonDlBpuKppr",
+        "bank_txn_id": "btxn_ujMkV1IZQg1b",
         "settlement_id": "setl_RgPomY0hxFBzw9"
       },
       {
@@ -2024,6 +2053,10 @@
       {
         "bank_txn_id": "btxn_xfrYPywBjjDq",
         "settlement_id": "setl_kfcFOC9SUqcBsg"
+      },
+      {
+        "bank_txn_id": "btxn_Jvkui9Xwf9xW",
+        "settlement_id": "setl_khI2WEOWhIfy1Y"
       },
       {
         "bank_txn_id": "btxn_rvFyP3Iuz7Be",

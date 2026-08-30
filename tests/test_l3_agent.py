@@ -136,16 +136,22 @@ def test_trace_file_is_persisted_with_the_record_id_as_filename(tmp_path):
 
 def test_run_l3_aggregates_matches_and_exceptions_across_records(tmp_path):
     dirs = _dirs(tmp_path)
-    client = FakeClient([
-        AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
-            "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
-            "recommended_action": "x", "rationale": "record one",
-        }),), stop_reason="tool_use"),
-        AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_2", name="get_record", arguments={"source": "settlements", "record_id": "setl_1"}),), stop_reason="tool_use"),
-        AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_3", name="propose_match", arguments={
-            "record_ids": ["btxn_1", "setl_1"], "confidence": 0.9, "rationale": "setl_1 matches btxn_1",
-        }),), stop_reason="tool_use"),
-    ])
+    # Scripted PER RECORD, not as one shared queue: run_l3 runs these two records
+    # concurrently, so a single queue makes "which record gets which turn" a race.
+    client = FakeClient(turns_by_record={
+        "pay_1": [
+            AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+                "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
+                "recommended_action": "x", "rationale": "record one",
+            }),), stop_reason="tool_use"),
+        ],
+        "btxn_1": [
+            AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_2", name="get_record", arguments={"source": "settlements", "record_id": "setl_1"}),), stop_reason="tool_use"),
+            AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_3", name="propose_match", arguments={
+                "record_ids": ["btxn_1", "setl_1"], "confidence": 0.9, "rationale": "setl_1 matches btxn_1",
+            }),), stop_reason="tool_use"),
+        ],
+    })
     output = run_l3(_dataset(), [("pay_1", "payments"), ("btxn_1", "bank")], client, model_name="fake", backend_name="fake", **dirs)
     # 1 exception from record pay_1, plus a HIGH_VALUE_MATCH_REVIEW companion
     # exception from btxn_1's match (its amount, Rs 1,00,000 at zero-MDR UPI,

@@ -40,6 +40,16 @@ DEFECT_RATES_PER_1000: dict[str, int] = {
     "fx_variance": 350,
     "unidentified_credit": 49,
     "settlement_split": 48,
+    # A payment where BOTH the fee tier and the tax rate are wrong at once. Neither
+    # single-cause hypothesis in explain_variance can decompose it (the fee-tier
+    # check assumes correct GST, the GST-rate check assumes the correct fee), so it
+    # lands as a genuinely UNEXPLAINED residual - real work for L3.
+    "compound_fee_tax_error": 8,
+    # A daily consolidated payout: one bank credit paying 2-4 settlements at once,
+    # carrying only a batch reference and no per-settlement UTR. No exact key exists
+    # (L0 cannot join) and no single settlement matches the amount (L1 cannot either)
+    # - only subset-sum can explain it. This is what real PGs actually do.
+    "consolidated_payout": 130,
 }
 
 EXCEPTION_CATEGORY: dict[str, str | None] = {
@@ -55,6 +65,8 @@ EXCEPTION_CATEGORY: dict[str, str | None] = {
     "fx_variance": "FX_VARIANCE",
     "unidentified_credit": "UNIDENTIFIED_CREDIT",
     "settlement_split": None,
+    "compound_fee_tax_error": "UNEXPLAINED_VARIANCE",
+    "consolidated_payout": None,
 }
 
 RESOLVABLE: dict[str, bool] = {
@@ -70,6 +82,8 @@ RESOLVABLE: dict[str, bool] = {
     "fx_variance": False,
     "unidentified_credit": False,
     "settlement_split": True,
+    "compound_fee_tax_error": False,
+    "consolidated_payout": True,
 }
 
 
@@ -150,6 +164,7 @@ def inject_all(world: World, seed: int, rates_per_1000: dict[str, int] | None = 
     _inject_rounding_drift(world, rng, log, rates["rounding_drift"], touched_payments)
     _inject_fee_mismatch(world, rng, log, rates["fee_mismatch_wrong_tier"], touched_payments)
     _inject_gst_variance(world, rng, log, rates["gst_variance"], touched_payments)
+    _inject_compound_fee_tax_error(world, rng, log, rates["compound_fee_tax_error"], touched_payments)
     _inject_refund_misallocation(world, rng, log, rates["refund_misallocation"], touched_payments)
     _inject_orphan_chargeback(world, rng, log, rates["orphan_chargeback"], touched_bank_txns)
     _inject_period_cutoff(world, rng, log, rates["period_cutoff"], touched_settlements)
@@ -157,6 +172,9 @@ def inject_all(world: World, seed: int, rates_per_1000: dict[str, int] | None = 
     _inject_fx_variance(world, rng, log, rates["fx_variance"], touched_payments)
     _inject_unidentified_credit(world, rng, log, rates["unidentified_credit"])
     _inject_settlement_split(world, rng, log, rates["settlement_split"], touched_settlements, touched_bank_txns)
+    # Runs last: it deletes the individual settlement credits it consolidates, so
+    # every injector that adjusts a settlement's own bank credit must already be done.
+    _inject_consolidated_payout(world, rng, log, rates["consolidated_payout"], touched_settlements, touched_bank_txns)
 
     return log
 
@@ -468,6 +486,99 @@ def _inject_settlement_split(world, rng, log, rate, touched_settlements, touched
             "settlement_split",
             {"settlement_id": settlement.settlement_id, "bank_txn_id_a": txn.bank_txn_id, "bank_txn_id_b": second.bank_txn_id},
             settlement.net_paise,
+        )
+    _resequence_bank_order(world)
+    _resequence_balances(world)
+
+
+# --- 13. Compound fee+tax error (genuinely unexplainable -> L3's residual) -----
+
+# Deliberately disjoint from engine/fees.py::KNOWN_WRONG_GST_BPS (1200/1500/2800):
+# if the injected rate were one explain_variance already hypothesises about, the
+# GST_RATE branch could still decompose this and it would never reach L3.
+_COMPOUND_GST_BPS = (1150, 1375, 2550)
+
+
+def _inject_compound_fee_tax_error(world, rng, log, rate, touched_payments):
+    """Wrong MDR tier AND a non-standard tax rate applied together. Each single-cause
+    hypothesis in explain_variance assumes the other component is correct, so neither
+    fits - the delta is genuinely UNEXPLAINED, which is exactly the residual L3 exists
+    to investigate rather than something a rule should silently guess at."""
+    captured = [p for p in world.payments if p.status == "captured" and p.settlement_id and p.fee_paise > 0]
+    count = _sample_target_count(rng, len(captured), rate)
+    chosen = _pick_untouched(rng, captured, touched_payments, lambda p: p.payment_id, count)
+    for payment in chosen:
+        wrong_method = "card" if payment.method != "card" else "netbanking"
+        try:
+            wrong_fee = round_half_up_div(payment.gross_paise * mdr_bps(wrong_method, False), 10_000)
+        except KeyError:
+            continue
+        wrong_gst = round_half_up_div(wrong_fee * rng.choice(_COMPOUND_GST_BPS), 10_000)
+        new_net = payment.gross_paise - wrong_fee - wrong_gst
+        delta = new_net - payment.net_paise
+        if delta == 0:
+            continue
+        settlement = next(s for s in world.settlements if s.settlement_id == payment.settlement_id)
+        settlement.fee_paise += wrong_fee - payment.fee_paise
+        settlement.gst_paise += wrong_gst - payment.gst_paise
+        settlement.net_paise += delta
+        _adjust_bank_credit_for_settlement(world, settlement.settlement_id, delta)
+        payment.fee_paise, payment.gst_paise, payment.net_paise = wrong_fee, wrong_gst, new_net
+        log.add(
+            "compound_fee_tax_error",
+            {"payment_id": payment.payment_id, "settlement_id": settlement.settlement_id},
+            delta,
+        )
+
+
+# --- 14. Consolidated payout (many settlements -> one credit, resolvable via L2) ---
+
+def _inject_consolidated_payout(world, rng, log, rate, touched_settlements, touched_bank_txns):
+    """One bank credit pays several same-day settlements at once, carrying only a
+    batch reference. L0 finds no UTR to join on; L1 finds no single settlement whose
+    amount matches a 2-4 way sum. Only subset-sum can explain it - this is the case
+    L2 exists for, and it is what real gateways actually do on a daily payout run."""
+    from .narration import consolidated_narration
+
+    by_date: dict = {}
+    for t in world.bank_txns:
+        if t.kind != "settlement_credit" or not t.settlement_id:
+            continue
+        if t.bank_txn_id in touched_bank_txns or t.settlement_id in touched_settlements:
+            continue
+        by_date.setdefault(t.value_date, []).append(t)
+
+    groups = [(d, txns) for d, txns in sorted(by_date.items()) if len(txns) >= 2]
+    count = _sample_target_count(rng, len(groups), rate)
+    rng.shuffle(groups)
+
+    for value_date, txns in groups[:count]:
+        members = txns[: min(len(txns), rng.randrange(2, 5))]
+        total = sum(t.credit_paise for t in members)
+        if len(members) < 2 or total <= 0:
+            continue
+        settlement_ids = sorted(t.settlement_id for t in members)
+        for t in members:
+            world.bank_txns.remove(t)
+            touched_bank_txns.add(t.bank_txn_id)
+        txn = BankTxn(
+            bank_txn_id=world.ids.bank_txn(),
+            value_date=value_date,
+            narration=consolidated_narration(rng, world.ids.payout_ref()),
+            credit_paise=total,
+            debit_paise=0,
+            balance_paise=0,  # recomputed below
+            settlement_id=None,
+            settlement_ids=settlement_ids,
+            kind="consolidated_credit",
+        )
+        world.bank_txns.append(txn)
+        touched_bank_txns.add(txn.bank_txn_id)
+        touched_settlements.update(settlement_ids)
+        log.add(
+            "consolidated_payout",
+            {"bank_txn_id": txn.bank_txn_id, "settlement_ids": ",".join(settlement_ids)},
+            total,
         )
     _resequence_bank_order(world)
     _resequence_balances(world)

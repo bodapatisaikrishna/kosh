@@ -130,11 +130,18 @@ def emit(world: World, defect_log: DefectLog, out_dir: Path) -> None:
         ],
         key=lambda r: (r["settlement_id"], r["payment_id"]),
     )
+    # Both shapes of settlement->credit link: the ordinary one-to-one
+    # (settlement_id), and a consolidated payout's many-to-one (settlement_ids).
     settlement_to_bank_txn = sorted(
         [
             {"settlement_id": t.settlement_id, "bank_txn_id": t.bank_txn_id}
             for t in bank_sorted
             if t.settlement_id
+        ]
+        + [
+            {"settlement_id": sid, "bank_txn_id": t.bank_txn_id}
+            for t in bank_sorted
+            for sid in t.settlement_ids
         ],
         key=lambda r: (r["settlement_id"], r["bank_txn_id"]),
     )
@@ -153,7 +160,8 @@ def emit(world: World, defect_log: DefectLog, out_dir: Path) -> None:
     unmatched_bank_txn_ids = sorted(
         t.bank_txn_id
         for t in bank_sorted
-        if t.kind != "settlement_credit" and t.bank_txn_id not in legitimate_chargeback_txn_ids
+        if t.kind not in ("settlement_credit", "consolidated_credit")
+        and t.bank_txn_id not in legitimate_chargeback_txn_ids
     )
 
     ground_truth = {

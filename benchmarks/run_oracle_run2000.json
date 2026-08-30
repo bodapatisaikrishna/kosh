@@ -1,8 +1,8 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
-    "at_risk_paise": 110499868,
-    "book_cash_paise": 1420076583,
+    "at_risk_paise": 149209528,
+    "book_cash_paise": 1419788203,
     "inflow_curve": [
       {
         "date": "2026-08-31",
@@ -61,14 +61,14 @@
         "expected_inflow_paise": 0
       }
     ],
-    "reconciled_cash_paise": 1330904836,
+    "reconciled_cash_paise": 1328142877,
     "reconciliation": {
       "adjustments_paise": 125800,
       "legitimate_chargeback_paise": 1303074,
-      "orphan_chargeback_paise": 397000,
-      "settled_gross_minus_net_paise": 27471604,
+      "orphan_chargeback_paise": 438500,
+      "settled_gross_minus_net_paise": 27236683,
       "settled_refunds_paise": 23823152,
-      "unidentified_credit_paise": -14711900,
+      "unidentified_credit_paise": -12044900,
       "unsettled_gross_paise": 50763017
     },
     "stuck_paise": 49170754,
@@ -1133,12 +1133,96 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_gQhEeVNxyxgyHy",
-        "correct_order_id": "order_umrHTQnu6N1aij",
-        "payment_id": "pay_ZGMbMw0vospNrk"
+        "payment_id": "pay_ymzQx3u8WEhd7G",
+        "settlement_id": "setl_p7l4JVGHn8xQmP"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 6900,
+      "amount_at_risk_paise": 4119,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_OyvjU0Hc7g7Bi2",
+        "settlement_id": "setl_ay2LvNyOtg9dGE"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 228693,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_3egKQ6BCralBAI",
+        "settlement_id": "setl_z8uznCnwbVI7RN"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 90,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_Yw6hEZsEyvZMNn",
+        "settlement_id": "setl_ktWJLloa4rSQJd"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 142,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_RMejvzSwrh9QXa",
+        "settlement_id": "setl_P65ExMApYLxX4s"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 183,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_dGxUjmPIxeeXo4",
+        "settlement_id": "setl_WCpMEdv6RwTwIE"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 88,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "booked_order_id": "order_hcwY3twMDg3NmS",
+        "correct_order_id": "order_kAWeT8IJWhX9wm",
+        "payment_id": "pay_RaZCeRa8iOODnb"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 481300,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1148,12 +1232,12 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_zl9EgadEe7JfW5",
-        "correct_order_id": "order_lBhnDNXfcsmCEU",
-        "payment_id": "pay_81LIenFUp3uRGi"
+        "booked_order_id": "order_ugkQ1I5eeycrEd",
+        "correct_order_id": "order_378F9ZC6r8V9sd",
+        "payment_id": "pay_7X8QEg7tomYDs0"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 22500,
+      "amount_at_risk_paise": 200400,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1163,12 +1247,12 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_438zTIiugmvAe8",
-        "correct_order_id": "order_cjcUnZQKZ53XyG",
-        "payment_id": "pay_E64baSzJwFcZsy"
+        "booked_order_id": "order_ikIFschwSirLnz",
+        "correct_order_id": "order_FJCd0YNxOVbcaO",
+        "payment_id": "pay_prMOODQeSlMcQU"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1138400,
+      "amount_at_risk_paise": 781413,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1178,12 +1262,12 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_HIN8hTxkDVGKTU",
-        "correct_order_id": "order_wS4shRLkvXHQiB",
-        "payment_id": "pay_Dv3TsKTeZBzJQM"
+        "booked_order_id": "order_wsvUwSm5MmBEvU",
+        "correct_order_id": "order_9zVgHqET18waNW",
+        "payment_id": "pay_PqobrwWKrwmmYt"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 10500,
+      "amount_at_risk_paise": 2992900,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1193,12 +1277,12 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_N0mZMUilaySiMH",
-        "correct_order_id": "order_OEYSHUpe9U0ITY",
-        "payment_id": "pay_93WvwfkelNgxDG"
+        "booked_order_id": "order_QJoyDUWITr0eIY",
+        "correct_order_id": "order_I2jKr6rgI5hdvK",
+        "payment_id": "pay_8hvOeLOTfbRyYB"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 131600,
+      "amount_at_risk_paise": 293900,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1208,12 +1292,12 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_eBF2l883S2Yr6m",
-        "correct_order_id": "order_JIdlvcGbUrDpC3",
-        "payment_id": "pay_t3PpStwBXwSJuE"
+        "booked_order_id": "order_noGHvtH6ol5kJe",
+        "correct_order_id": "order_FWPTI2MuA3cQro",
+        "payment_id": "pay_GaBqCZHT930gpy"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1200000,
+      "amount_at_risk_paise": 49800,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1223,12 +1307,12 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_noKdKedVhc3fec",
-        "correct_order_id": "order_W2L1LrryTW1Iaw",
-        "payment_id": "pay_Vn7dFZMAH8WKaW"
+        "booked_order_id": "order_ZRdJmt1b7KumsH",
+        "correct_order_id": "order_FpQJQPSj8HlM8g",
+        "payment_id": "pay_LHwY94Ri3rsAiJ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1089800,
+      "amount_at_risk_paise": 484880,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
@@ -1238,22 +1322,7 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_YSfjsQ3reIFGyB",
-        "correct_order_id": "order_a4gru4QeCdkB0k",
-        "payment_id": "pay_MBhhrtH82dAw61"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 237100,
-      "category": "REFUND_MISALLOCATION",
-      "evidence_chain": [],
-      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "booked_order_id": "order_Kd4HjfV1oy3JRu",
+        "booked_order_id": "order_JIlIzQBs01XOSK",
         "correct_order_id": "order_WfX4gyjCH8wKTj",
         "payment_id": "pay_g2vcLAyH8JDQIA"
       },
@@ -1268,10 +1337,25 @@
     },
     {
       "affected": {
+        "booked_order_id": "order_Sa4EcEFPQkTWzu",
+        "correct_order_id": "order_TexPPPD9yS4Ikz",
+        "payment_id": "pay_jcpXaQcw3wN21l"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 776726,
+      "category": "REFUND_MISALLOCATION",
+      "evidence_chain": [],
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
         "bank_txn_id": "btxn_6qSKRkaAbdhA"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 8300,
+      "amount_at_risk_paise": 43700,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1284,7 +1368,7 @@
         "bank_txn_id": "btxn_3Mvzw3V164bY"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 28900,
+      "amount_at_risk_paise": 9400,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1297,7 +1381,7 @@
         "bank_txn_id": "btxn_VZkrVFpYPKkQ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 28900,
+      "amount_at_risk_paise": 36100,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1310,7 +1394,7 @@
         "bank_txn_id": "btxn_H7Oi0lYf0DPw"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 47400,
+      "amount_at_risk_paise": 27700,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1323,7 +1407,7 @@
         "bank_txn_id": "btxn_RwOBoZlB8SJX"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 41700,
+      "amount_at_risk_paise": 38000,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1336,7 +1420,7 @@
         "bank_txn_id": "btxn_5EUfLXfsgbPN"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 14000,
+      "amount_at_risk_paise": 48400,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1349,7 +1433,7 @@
         "bank_txn_id": "btxn_UNTwgPCLONJK"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 40300,
+      "amount_at_risk_paise": 18100,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1362,7 +1446,7 @@
         "bank_txn_id": "btxn_CVrQqFjBzCKl"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 43000,
+      "amount_at_risk_paise": 21400,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1375,7 +1459,7 @@
         "bank_txn_id": "btxn_d8dd3s7ylV7i"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 19700,
+      "amount_at_risk_paise": 34700,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1388,7 +1472,7 @@
         "bank_txn_id": "btxn_p5CdSXW9d5VC"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 22500,
+      "amount_at_risk_paise": 16800,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1401,7 +1485,7 @@
         "bank_txn_id": "btxn_2LVr4GnnzCfe"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 23100,
+      "amount_at_risk_paise": 38800,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1414,7 +1498,7 @@
         "bank_txn_id": "btxn_jipQV2DfDqmf"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 29400,
+      "amount_at_risk_paise": 37700,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1427,7 +1511,7 @@
         "bank_txn_id": "btxn_LQ9JksYkqx6R"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 36800,
+      "amount_at_risk_paise": 22500,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1440,7 +1524,7 @@
         "bank_txn_id": "btxn_O3r7Zie4gH1w"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 13000,
+      "amount_at_risk_paise": 45200,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
@@ -1450,10 +1534,62 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_iprFzDkvEbfgSn"
+        "settlement_id": "setl_DVqAvSSY82FJPA"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 5213747,
+      "amount_at_risk_paise": 1417700,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_jgklJKKgZbm9gT"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 40077,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_e4NK9rkqvyiMlR"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 50675,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_3APhs3wVNUzCBo"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 217834,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_qirvLBTOvHu3UJ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 5390459,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1463,10 +1599,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_4S4yx4NIPpGBhx"
+        "settlement_id": "setl_t9espgbx675ua5"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1851570,
+      "amount_at_risk_paise": 2161630,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1476,23 +1612,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_ZFfJ7wXmfcgeoj"
+        "settlement_id": "setl_ZUnJJmNoyJrirV"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 298100,
-      "category": "PERIOD_CUTOFF",
-      "evidence_chain": [],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_y3CAweOspZ8CWU"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 6080900,
+      "amount_at_risk_paise": 15216620,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1502,10 +1625,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_Zfz63V77U1Y3ft"
+        "settlement_id": "setl_M261BuELIeVnVK"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 2213184,
+      "amount_at_risk_paise": 4771387,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1515,36 +1638,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_xyFPHBW5czpIad"
+        "settlement_id": "setl_XnXIhD1TT1ZiKl"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 0,
-      "category": "PERIOD_CUTOFF",
-      "evidence_chain": [],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_XeeiYPZSbr8Og3"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 2067905,
-      "category": "PERIOD_CUTOFF",
-      "evidence_chain": [],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_WXU61N77MegxN9"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 6367690,
+      "amount_at_risk_paise": 10242659,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1554,10 +1651,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_5gHWa3iFPUvzrP"
+        "settlement_id": "setl_LiJ9x15p82UyLI"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 6263448,
+      "amount_at_risk_paise": 15489951,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1567,10 +1664,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_CXVJo1FFMKgVyR"
+        "settlement_id": "setl_y795Qkgnw76CGm"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 75565,
+      "amount_at_risk_paise": 2950932,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1580,10 +1677,10 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_P65ExMApYLxX4s"
+        "settlement_id": "setl_k8yWDC04Q3csD3"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1358308,
+      "amount_at_risk_paise": 3782477,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1593,10 +1690,23 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_ugrDCYYI3SV1Ya"
+        "settlement_id": "setl_ay2LvNyOtg9dGE"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 4444768,
+      "amount_at_risk_paise": 17715599,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_3rMbn8xjoEgqd6"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 225300,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
@@ -1606,37 +1716,11 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_MOoQjOSMv7vg5Y"
+        "order_id": "order_jcSI7sDTOeVmKl",
+        "payment_id": "pay_Y3bYi2SlPWsvQy"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 4075140,
-      "category": "PERIOD_CUTOFF",
-      "evidence_chain": [],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_CNeUC363a0jlhO"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 400981,
-      "category": "PERIOD_CUTOFF",
-      "evidence_chain": [],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "order_id": "order_qoYbO7CQcmz7gi",
-        "payment_id": "pay_P5bWXosFOdm5oe"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 177668,
+      "amount_at_risk_paise": 100018,
       "category": "FX_VARIANCE",
       "evidence_chain": [],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
@@ -1646,11 +1730,11 @@
     },
     {
       "affected": {
-        "order_id": "order_V4JDtN6RSQCiA1",
-        "payment_id": "pay_SVM3vm6ZbymPkw"
+        "order_id": "order_W3y2dfXsgwgiHh",
+        "payment_id": "pay_HSO8eVh9hhxsYJ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 19340,
+      "amount_at_risk_paise": 27965,
       "category": "FX_VARIANCE",
       "evidence_chain": [],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
@@ -1660,11 +1744,11 @@
     },
     {
       "affected": {
-        "order_id": "order_YMLC8Fu0k5Z85J",
-        "payment_id": "pay_CGxRElAtCdcEK3"
+        "order_id": "order_7e56RlfGeIabC0",
+        "payment_id": "pay_Nq6ZcRDxlFSonZ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 140604,
+      "amount_at_risk_paise": 199409,
       "category": "FX_VARIANCE",
       "evidence_chain": [],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
@@ -1674,11 +1758,53 @@
     },
     {
       "affected": {
-        "order_id": "order_28Mu2hyrBQ4CA6",
-        "payment_id": "pay_7S9wNSx5tGtUIr"
+        "order_id": "order_2KSPbtSXa92p3X",
+        "payment_id": "pay_qgQxekYFUPkGCE"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 59885,
+      "amount_at_risk_paise": 6702,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_SOH5XrFT6Tv1p4",
+        "payment_id": "pay_KSNI4wlE5kAqKX"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 84983,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_0z88KY7gpzG90m",
+        "payment_id": "pay_rgICBTq2nFDQKZ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 111128,
+      "category": "FX_VARIANCE",
+      "evidence_chain": [],
+      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_svmacRBFBsrwmF",
+        "payment_id": "pay_SJnhghryQnPIUZ"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 296325,
       "category": "FX_VARIANCE",
       "evidence_chain": [],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
@@ -1692,49 +1818,7 @@
         "payment_id": "pay_cwlxvwluUHDrTp"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 27282,
-      "category": "FX_VARIANCE",
-      "evidence_chain": [],
-      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "order_id": "order_GTnKTFNdR7lV8K",
-        "payment_id": "pay_4fxmslUcMOza0D"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 78213,
-      "category": "FX_VARIANCE",
-      "evidence_chain": [],
-      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "order_id": "order_897GvAMvpVAesg",
-        "payment_id": "pay_0D7tiJVT0gtNOg"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 94348,
-      "category": "FX_VARIANCE",
-      "evidence_chain": [],
-      "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "order_id": "order_ZRCXBSi16WcJs6",
-        "payment_id": "pay_acp0P4vDywwJ2Q"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 359328,
+      "amount_at_risk_paise": 45470,
       "category": "FX_VARIANCE",
       "evidence_chain": [],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
@@ -1747,7 +1831,7 @@
         "bank_txn_id": "btxn_gkhPApohVGVZ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 945700,
+      "amount_at_risk_paise": 1354000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1760,7 +1844,7 @@
         "bank_txn_id": "btxn_54c4HFf3Yojl"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1416300,
+      "amount_at_risk_paise": 1448900,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1773,7 +1857,7 @@
         "bank_txn_id": "btxn_xv5YyiRpQk3V"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 957800,
+      "amount_at_risk_paise": 468300,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1786,7 +1870,7 @@
         "bank_txn_id": "btxn_iNUm1Hnwpwmz"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 893600,
+      "amount_at_risk_paise": 261600,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1799,7 +1883,7 @@
         "bank_txn_id": "btxn_PBXpipaUlUzX"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1000400,
+      "amount_at_risk_paise": 542200,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1812,7 +1896,7 @@
         "bank_txn_id": "btxn_n8enG7j6CRI9"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1524900,
+      "amount_at_risk_paise": 88000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1825,7 +1909,7 @@
         "bank_txn_id": "btxn_wy9KLBrF6UJ1"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 496500,
+      "amount_at_risk_paise": 1469600,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1838,7 +1922,7 @@
         "bank_txn_id": "btxn_nYU3ELM8kY5K"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1167100,
+      "amount_at_risk_paise": 117000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1851,7 +1935,7 @@
         "bank_txn_id": "btxn_ZwH13fdPdURD"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 175500,
+      "amount_at_risk_paise": 289000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1864,7 +1948,7 @@
         "bank_txn_id": "btxn_GV7ZfTfUMhnZ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 359800,
+      "amount_at_risk_paise": 519900,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1877,7 +1961,7 @@
         "bank_txn_id": "btxn_s6ZCivtn9rOK"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1820200,
+      "amount_at_risk_paise": 1696000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1890,7 +1974,7 @@
         "bank_txn_id": "btxn_PmMX9oUJ4qqc"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1853900,
+      "amount_at_risk_paise": 610900,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1903,7 +1987,7 @@
         "bank_txn_id": "btxn_LVreOkbpJ1qh"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 609800,
+      "amount_at_risk_paise": 1454000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1916,7 +2000,7 @@
         "bank_txn_id": "btxn_hbqcLFHc3LQ8"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1490400,
+      "amount_at_risk_paise": 1725500,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
@@ -1926,11 +2010,17 @@
     }
   ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788083174.289579,
+  "generated_at_unix": 1788087272.763776,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9784714747039828,
       "defect_confusion": {
+        "compound_fee_tax_error": {
+          "detected": 6
+        },
+        "consolidated_payout": {
+          "correctly_resolved": 8
+        },
         "duplicate_payment": {
           "detected": 20
         },
@@ -1959,7 +2049,7 @@
           "correctly_resolved": 25
         },
         "settlement_split": {
-          "correctly_resolved": 10
+          "correctly_resolved": 11
         },
         "unidentified_credit": {
           "detected": 14
@@ -2000,18 +2090,18 @@
             "wrong_count": 0
           },
           "settlement_bank_txn": {
-            "asserted_count": 315,
-            "correct_count": 315,
+            "asserted_count": 316,
+            "correct_count": 316,
             "missing_count": 0,
-            "true_count": 315,
+            "true_count": 316,
             "wrong_count": 0
           }
         },
         "precision": 1.0,
         "recall": 1.0,
-        "total_asserted_links": 4161,
-        "total_correct_links": 4161,
-        "total_true_links": 4161
+        "total_asserted_links": 4162,
+        "total_correct_links": 4162,
+        "total_true_links": 4162
       },
       "matched_records": 1818,
       "precision": 1.0,
@@ -2028,25 +2118,26 @@
         "PERIOD_CUTOFF": 14,
         "REFUND_MISALLOCATION": 9,
         "TAX_VARIANCE": 15,
+        "UNEXPLAINED_VARIANCE": 6,
         "UNIDENTIFIED_CREDIT": 14
       },
       "by_severity": {
-        "REVIEW_REQUIRED": 9,
-        "STANDARD": 124
+        "REVIEW_REQUIRED": 10,
+        "STANDARD": 129
       },
-      "count": 133,
-      "total_amount_at_risk_paise": 110499868
+      "count": 139,
+      "total_amount_at_risk_paise": 149209528
     },
-    "records_pct_exceptioned": 0.07158234660925726,
+    "records_pct_exceptioned": 0.07481162540365985,
     "throughput": {
       "cost_per_1000_records_micros": 0,
       "cost_usd_micros": 0,
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 739134.7615867922,
+      "records_per_second": 695153.496684294,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.0025137499906122684
+      "wall_clock_seconds": 0.0026727909862529486
     }
   }
 }

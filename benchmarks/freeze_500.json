@@ -1,8 +1,8 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
-    "at_risk_paise": 28954301,
-    "book_cash_paise": 328381569,
+    "at_risk_paise": 28489399,
+    "book_cash_paise": 328605509,
     "inflow_curve": [
       {
         "date": "2026-08-31",
@@ -61,14 +61,14 @@
         "expected_inflow_paise": 0
       }
     ],
-    "reconciled_cash_paise": 322114088,
+    "reconciled_cash_paise": 314492150,
     "reconciliation": {
       "adjustments_paise": 87700,
       "legitimate_chargeback_paise": 0,
-      "orphan_chargeback_paise": 266900,
-      "settled_gross_minus_net_paise": 6085779,
+      "orphan_chargeback_paise": 244700,
+      "settled_gross_minus_net_paise": 6093357,
       "settled_refunds_paise": 4952565,
-      "unidentified_credit_paise": -10858500,
+      "unidentified_credit_paise": -2998000,
       "unsettled_gross_paise": 5733037
     },
     "stuck_paise": 5174719,
@@ -88,13 +88,13 @@
   "exceptions_detail": [
     {
       "affected": {
-        "settlement_id": "setl_tcjhFu4Pyi11ou"
+        "settlement_id": "setl_whJK6kLvvWeLKN"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 5399174,
+      "amount_at_risk_paise": 5929189,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "settlement setl_tcjhFu4Pyi11ou settled 31 days after its latest payment capture (2026-08-02 -> 2026-09-02), beyond the normal T+N cycle"
+        "settlement setl_whJK6kLvvWeLKN settled 21 days after its latest payment capture (2026-07-13 -> 2026-08-03), beyond the normal T+N cycle"
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "REVIEW_REQUIRED",
@@ -103,13 +103,28 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_fkZWYRBoCEucZA"
+        "settlement_id": "setl_Ii7Ni9IDogWiCw"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 3042560,
+      "amount_at_risk_paise": 3995428,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "settlement setl_fkZWYRBoCEucZA settled 14 days after its latest payment capture (2026-08-20 -> 2026-09-03), beyond the normal T+N cycle"
+        "settlement setl_Ii7Ni9IDogWiCw settled 29 days after its latest payment capture (2026-07-05 -> 2026-08-03), beyond the normal T+N cycle"
+      ],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_3AOxDKJy1qyBMV"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 3097560,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [
+        "settlement setl_3AOxDKJy1qyBMV settled 24 days after its latest payment capture (2026-08-09 -> 2026-09-02), beyond the normal T+N cycle"
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
@@ -133,15 +148,15 @@
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_f7wsWTm7avRV"
+        "settlement_id": "setl_mGZUepHFicXWMa"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1987700,
-      "category": "UNIDENTIFIED_CREDIT",
+      "amount_at_risk_paise": 1883200,
+      "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "credit btxn_f7wsWTm7avRV (1987700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+        "settlement setl_mGZUepHFicXWMa settled 17 days after its latest payment capture (2026-06-15 -> 2026-07-02), beyond the normal T+N cycle"
       ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
@@ -151,10 +166,10 @@
         "bank_txn_id": "btxn_EUxMEwITGAKw"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1896800,
+      "amount_at_risk_paise": 1662600,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
-        "credit btxn_EUxMEwITGAKw (1896800p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+        "credit btxn_EUxMEwITGAKw (1662600p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
       ],
       "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
@@ -163,90 +178,47 @@
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_ih8zZbAtL8P7"
+        "booked_order_id": "order_aBTMS5ji51lyaP",
+        "payment_id": "pay_t3PpStwBXwSJuE"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1454700,
-      "category": "UNIDENTIFIED_CREDIT",
+      "amount_at_risk_paise": 1200000,
+      "category": "REFUND_MISALLOCATION",
       "evidence_chain": [
-        "credit btxn_ih8zZbAtL8P7 (1454700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+        "payment pay_t3PpStwBXwSJuE carries a refund and its gross (1200000p) does not match order order_aBTMS5ji51lyaP's gross (221800p) - the refund is likely booked against the wrong order"
       ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_H75xtMf548sV"
+        "booked_order_id": "order_1sC0bnPmNTZxvA",
+        "payment_id": "pay_Vn7dFZMAH8WKaW"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1341100,
-      "category": "UNIDENTIFIED_CREDIT",
+      "amount_at_risk_paise": 1089800,
+      "category": "REFUND_MISALLOCATION",
       "evidence_chain": [
-        "credit btxn_H75xtMf548sV (1341100p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+        "payment pay_Vn7dFZMAH8WKaW carries a refund and its gross (1089800p) does not match order order_1sC0bnPmNTZxvA's gross (1487000p) - the refund is likely booked against the wrong order"
       ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_HPa7BGc4W01E"
+        "settlement_id": "setl_mt66YttWwKuy1u"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1204100,
-      "category": "UNIDENTIFIED_CREDIT",
-      "evidence_chain": [
-        "credit btxn_HPa7BGc4W01E (1204100p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
-      ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_lw07gL1GuaHlJt"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 1107700,
+      "amount_at_risk_paise": 829940,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "settlement setl_lw07gL1GuaHlJt settled 28 days after its latest payment capture (2026-07-06 -> 2026-08-03), beyond the normal T+N cycle"
+        "settlement setl_mt66YttWwKuy1u settled 8 days after its latest payment capture (2026-06-25 -> 2026-07-03), beyond the normal T+N cycle"
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_K7IZvv32wa7g"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 1054700,
-      "category": "UNIDENTIFIED_CREDIT",
-      "evidence_chain": [
-        "credit btxn_K7IZvv32wa7g (1054700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
-      ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_WLQSywZWBtsR"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 1040700,
-      "category": "UNIDENTIFIED_CREDIT",
-      "evidence_chain": [
-        "credit btxn_WLQSywZWBtsR (1040700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
-      ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
@@ -269,44 +241,13 @@
     },
     {
       "affected": {
-        "booked_order_id": "order_oMfYgTdDDztztg",
-        "payment_id": "pay_IbpppyecRiHUih"
+        "settlement_id": "setl_tVFtVLbw9kefB8"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 711698,
-      "category": "REFUND_MISALLOCATION",
-      "evidence_chain": [
-        "payment pay_IbpppyecRiHUih carries a refund and its gross (728900p) does not match order order_oMfYgTdDDztztg's gross (268200p) - the refund is likely booked against the wrong order"
-      ],
-      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_G31TKTXyuqab"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 618600,
-      "category": "UNIDENTIFIED_CREDIT",
-      "evidence_chain": [
-        "credit btxn_G31TKTXyuqab (618600p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
-      ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "settlement_id": "setl_OCHKjduAKra4ow"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 507694,
+      "amount_at_risk_paise": 686527,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "settlement setl_OCHKjduAKra4ow settled 32 days after its latest payment capture (2026-07-31 -> 2026-09-01), beyond the normal T+N cycle"
+        "settlement setl_tVFtVLbw9kefB8 settled 29 days after its latest payment capture (2026-08-05 -> 2026-09-03), beyond the normal T+N cycle"
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
@@ -331,13 +272,13 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_uBnG3Ra6Y97Vru"
+        "settlement_id": "setl_ZDkQ57JRUJQSGs"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 392500,
+      "amount_at_risk_paise": 342600,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "settlement setl_uBnG3Ra6Y97Vru settled 7 days after its latest payment capture (2026-08-26 -> 2026-09-02), beyond the normal T+N cycle"
+        "settlement setl_ZDkQ57JRUJQSGs settled 27 days after its latest payment capture (2026-06-04 -> 2026-07-01), beyond the normal T+N cycle"
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
@@ -346,15 +287,15 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_Pz5ecXaew1JZEj"
+        "bank_txn_id": "btxn_K7IZvv32wa7g"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 365028,
-      "category": "PERIOD_CUTOFF",
+      "amount_at_risk_paise": 326700,
+      "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
-        "settlement setl_Pz5ecXaew1JZEj settled 7 days after its latest payment capture (2026-06-24 -> 2026-07-01), beyond the normal T+N cycle"
+        "credit btxn_K7IZvv32wa7g (326700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
       ],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
@@ -376,21 +317,6 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_RHMdr9mIYgFElw"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 273244,
-      "category": "PERIOD_CUTOFF",
-      "evidence_chain": [
-        "settlement setl_RHMdr9mIYgFElw settled 9 days after its latest payment capture (2026-08-24 -> 2026-09-02), beyond the normal T+N cycle"
-      ],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
         "payment_id": "pay_svotmeI4C4vXY3"
       },
       "aging_days": 0,
@@ -400,21 +326,6 @@
         "order order_tFe8CiRehkLl7j has exactly one captured payment (pay_svotmeI4C4vXY3) and it has no settlement_id"
       ],
       "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_fQ6sYuhirWZn"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 260100,
-      "category": "UNIDENTIFIED_CREDIT",
-      "evidence_chain": [
-        "credit btxn_fQ6sYuhirWZn (260100p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
-      ],
-      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
@@ -431,6 +342,21 @@
         "order order_QYAKfENORw2Iur has 2 captured payments; pay_R9JBcwXgXFFsaJ has no settlement_id while at least one sibling payment does"
       ],
       "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_f7wsWTm7avRV"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 240700,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [
+        "credit btxn_f7wsWTm7avRV (240700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+      ],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
@@ -467,13 +393,13 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_aZnB7bWj1gsX5Y"
+        "settlement_id": "setl_nmQa3jVIgI51XA"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 115606,
+      "amount_at_risk_paise": 228087,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
-        "settlement setl_aZnB7bWj1gsX5Y settled 23 days after its latest payment capture (2026-08-11 -> 2026-09-03), beyond the normal T+N cycle"
+        "settlement setl_nmQa3jVIgI51XA settled 15 days after its latest payment capture (2026-07-17 -> 2026-08-01), beyond the normal T+N cycle"
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
@@ -482,14 +408,74 @@
     },
     {
       "affected": {
-        "order_id": "order_Wg7UW6jl7AYBe9",
-        "payment_id": "pay_Wa1dl7nfKc07y3"
+        "bank_txn_id": "btxn_WLQSywZWBtsR"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 98800,
+      "amount_at_risk_paise": 183700,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [
+        "credit btxn_WLQSywZWBtsR (183700p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+      ],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_G31TKTXyuqab"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 171000,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [
+        "credit btxn_G31TKTXyuqab (171000p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+      ],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_fQ6sYuhirWZn"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 144900,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [
+        "credit btxn_fQ6sYuhirWZn (144900p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+      ],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "payment_id": "pay_A8YUtuD73yvnoT"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 141830,
+      "category": "UNEXPLAINED_VARIANCE",
+      "evidence_chain": [
+        "payment pay_A8YUtuD73yvnoT's booked net (141830p) does not match any known fee-tier, GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further"
+      ],
+      "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "order_id": "order_GTnKTFNdR7lV8K",
+        "payment_id": "pay_4fxmslUcMOza0D"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 125140,
       "category": "FX_VARIANCE",
       "evidence_chain": [
-        "international payment gross (3853200p) differs from the invoiced order gross (3952000p) by -98800p"
+        "international payment gross (3253640p) differs from the invoiced order gross (3128500p) by 125140p"
       ],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
       "severity": "STANDARD",
@@ -498,31 +484,45 @@
     },
     {
       "affected": {
-        "settlement_id": "setl_fVvUBeVnOupVVO"
+        "bank_txn_id": "btxn_HPa7BGc4W01E"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 91900,
-      "category": "PERIOD_CUTOFF",
+      "amount_at_risk_paise": 116500,
+      "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
-        "settlement setl_fVvUBeVnOupVVO settled 15 days after its latest payment capture (2026-08-18 -> 2026-09-02), beyond the normal T+N cycle"
+        "credit btxn_HPa7BGc4W01E (116500p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
       ],
-      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
     },
     {
       "affected": {
-        "booked_order_id": "order_Bx9sqCqveqMj4k",
-        "payment_id": "pay_S0ETqEi4FmFa5v"
+        "bank_txn_id": "btxn_H75xtMf548sV"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 62800,
-      "category": "REFUND_MISALLOCATION",
+      "amount_at_risk_paise": 95600,
+      "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
-        "payment pay_S0ETqEi4FmFa5v carries a refund and its gross (62800p) does not match order order_Bx9sqCqveqMj4k's gross (22200p) - the refund is likely booked against the wrong order"
+        "credit btxn_H75xtMf548sV (95600p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
       ],
-      "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_ih8zZbAtL8P7"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 56300,
+      "category": "UNIDENTIFIED_CREDIT",
+      "evidence_chain": [
+        "credit btxn_ih8zZbAtL8P7 (56300p) matches no settlement UTR, prefix, or amount/date/narration tolerance candidate"
+      ],
+      "recommended_action": "Identify the payer; likely a direct customer transfer outside the PG flow.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
       "trace_file": null
@@ -564,85 +564,10 @@
         "bank_txn_id": "btxn_rt5vNkLHxLTt"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 47300,
+      "amount_at_risk_paise": 46600,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
-        "debit btxn_rt5vNkLHxLTt (47300p) carries no dispute reference resolvable to a known payment_id"
-      ],
-      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_GSuYnVFbpMER"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 38700,
-      "category": "ORPHAN_CHARGEBACK",
-      "evidence_chain": [
-        "debit btxn_GSuYnVFbpMER (38700p) carries no dispute reference resolvable to a known payment_id"
-      ],
-      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_rPzmZfIrcLHU"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 36000,
-      "category": "ORPHAN_CHARGEBACK",
-      "evidence_chain": [
-        "debit btxn_rPzmZfIrcLHU (36000p) carries no dispute reference resolvable to a known payment_id"
-      ],
-      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_fXegrhTVAyNN"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 34900,
-      "category": "ORPHAN_CHARGEBACK",
-      "evidence_chain": [
-        "debit btxn_fXegrhTVAyNN (34900p) carries no dispute reference resolvable to a known payment_id"
-      ],
-      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_ELf5V33arYeV"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 29100,
-      "category": "ORPHAN_CHARGEBACK",
-      "evidence_chain": [
-        "debit btxn_ELf5V33arYeV (29100p) carries no dispute reference resolvable to a known payment_id"
-      ],
-      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
-      "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
-    },
-    {
-      "affected": {
-        "bank_txn_id": "btxn_SiSSwuAnOn37"
-      },
-      "aging_days": 0,
-      "amount_at_risk_paise": 28300,
-      "category": "ORPHAN_CHARGEBACK",
-      "evidence_chain": [
-        "debit btxn_SiSSwuAnOn37 (28300p) carries no dispute reference resolvable to a known payment_id"
+        "debit btxn_rt5vNkLHxLTt (46600p) carries no dispute reference resolvable to a known payment_id"
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
@@ -654,10 +579,10 @@
         "bank_txn_id": "btxn_kc66vj9N2sTg"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 26700,
+      "amount_at_risk_paise": 45200,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
-        "debit btxn_kc66vj9N2sTg (26700p) carries no dispute reference resolvable to a known payment_id"
+        "debit btxn_kc66vj9N2sTg (45200p) carries no dispute reference resolvable to a known payment_id"
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
@@ -666,13 +591,43 @@
     },
     {
       "affected": {
-        "bank_txn_id": "btxn_7khUKwPAvFJr"
+        "bank_txn_id": "btxn_ELf5V33arYeV"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 18200,
+      "amount_at_risk_paise": 37900,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
-        "debit btxn_7khUKwPAvFJr (18200p) carries no dispute reference resolvable to a known payment_id"
+        "debit btxn_ELf5V33arYeV (37900p) carries no dispute reference resolvable to a known payment_id"
+      ],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "settlement_id": "setl_twmVV5tQpjc7aW"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 37201,
+      "category": "PERIOD_CUTOFF",
+      "evidence_chain": [
+        "settlement setl_twmVV5tQpjc7aW settled 26 days after its latest payment capture (2026-06-07 -> 2026-07-03), beyond the normal T+N cycle"
+      ],
+      "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_GSuYnVFbpMER"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 27600,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [
+        "debit btxn_GSuYnVFbpMER (27600p) carries no dispute reference resolvable to a known payment_id"
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
@@ -684,10 +639,70 @@
         "bank_txn_id": "btxn_sud1yKWQMBhS"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 7700,
+      "amount_at_risk_paise": 26100,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
-        "debit btxn_sud1yKWQMBhS (7700p) carries no dispute reference resolvable to a known payment_id"
+        "debit btxn_sud1yKWQMBhS (26100p) carries no dispute reference resolvable to a known payment_id"
+      ],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_7khUKwPAvFJr"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 24900,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [
+        "debit btxn_7khUKwPAvFJr (24900p) carries no dispute reference resolvable to a known payment_id"
+      ],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_SiSSwuAnOn37"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 13200,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [
+        "debit btxn_SiSSwuAnOn37 (13200p) carries no dispute reference resolvable to a known payment_id"
+      ],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_fXegrhTVAyNN"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 13100,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [
+        "debit btxn_fXegrhTVAyNN (13100p) carries no dispute reference resolvable to a known payment_id"
+      ],
+      "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops",
+      "trace_file": null
+    },
+    {
+      "affected": {
+        "bank_txn_id": "btxn_rPzmZfIrcLHU"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 10100,
+      "category": "ORPHAN_CHARGEBACK",
+      "evidence_chain": [
+        "debit btxn_rPzmZfIrcLHU (10100p) carries no dispute reference resolvable to a known payment_id"
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
@@ -815,11 +830,17 @@
     }
   ],
   "fixtures": "data/fixtures/run_500",
-  "generated_at_unix": 1788083399.359927,
+  "generated_at_unix": 1788087272.0415518,
   "metrics": {
     "accuracy": {
-      "auto_match_rate": 0.9783080260303688,
+      "auto_match_rate": 0.9761388286334056,
       "defect_confusion": {
+        "compound_fee_tax_error": {
+          "detected": 1
+        },
+        "consolidated_payout": {
+          "correctly_resolved": 7
+        },
         "duplicate_payment": {
           "detected": 5
         },
@@ -848,7 +869,7 @@
           "correctly_resolved": 6
         },
         "settlement_split": {
-          "correctly_resolved": 3
+          "correctly_resolved": 4
         },
         "unidentified_credit": {
           "detected": 9
@@ -857,15 +878,16 @@
           "correctly_resolved": 13
         }
       },
-      "f1": 1.0,
+      "f1": 0.9995687796463993,
       "false_match_rate": 0.0,
-      "hands_off_rate": 0.9783080260303688,
+      "hands_off_rate": 0.9761388286334056,
       "layer_contribution": {
-        "L0": 0.993960310612597,
-        "L1": 0.0060396893874029335
+        "L0": 0.9775668679896462,
+        "L1": 0.007765314926660914,
+        "L2": 0.014667817083692839
       },
       "link_scoring": {
-        "f1": 1.0,
+        "f1": 0.9995687796463993,
         "false_match_rate": 0.0,
         "per_link_type": {
           "chargeback_payment": {
@@ -892,20 +914,20 @@
           "settlement_bank_txn": {
             "asserted_count": 203,
             "correct_count": 203,
-            "missing_count": 0,
-            "true_count": 203,
+            "missing_count": 1,
+            "true_count": 204,
             "wrong_count": 0
           }
         },
         "precision": 1.0,
-        "recall": 1.0,
+        "recall": 0.9991379310344828,
         "total_asserted_links": 1159,
         "total_correct_links": 1159,
-        "total_true_links": 1159
+        "total_true_links": 1160
       },
-      "matched_records": 451,
+      "matched_records": 450,
       "precision": 1.0,
-      "recall": 1.0,
+      "recall": 0.9991379310344828,
       "total_records": 461
     },
     "exceptions": {
@@ -918,25 +940,26 @@
         "PERIOD_CUTOFF": 9,
         "REFUND_MISALLOCATION": 2,
         "TAX_VARIANCE": 3,
+        "UNEXPLAINED_VARIANCE": 1,
         "UNIDENTIFIED_CREDIT": 9
       },
       "by_severity": {
         "REVIEW_REQUIRED": 1,
-        "STANDARD": 46
+        "STANDARD": 47
       },
-      "count": 47,
-      "total_amount_at_risk_paise": 28954301
+      "count": 48,
+      "total_amount_at_risk_paise": 28489399
     },
-    "records_pct_exceptioned": 0.1019522776572668,
+    "records_pct_exceptioned": 0.10412147505422993,
     "throughput": {
       "cost_per_1000_records_micros": 0,
       "cost_usd_micros": 0,
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 219089.07602972875,
+      "records_per_second": 198917.64581100745,
       "records_processed": 461,
-      "wall_clock_seconds": 0.0021041669824626297
+      "wall_clock_seconds": 0.0023175420064944774
     }
   }
 }

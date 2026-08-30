@@ -181,13 +181,13 @@ pay_syeHES7I24t5Dm,order_Tk7W5nd07xRhoF,2026-08-13T11:39:00,upi,False,232200,0,0
 pay_t6ny1O1NKdY6ox,order_l7kUNfYAQh9Cct,2026-08-21T15:38:00,upi,False,48600,0,0,48600,captured,setl_WUE94O6DcYLRgr,,0
 pay_tPBZCugIvz2pg6,order_OB0lSLMWFUs04K,2026-08-19T15:25:00,netbanking,False,453000,8607,1549,442844,captured,setl_ajnwbMTAKX6GYx,,0
 pay_tUIc6J27rcheev,order_3IFoIxkbcZaQrk,2026-08-22T18:04:00,card,False,166756,3335,600,162821,captured,setl_obuThoBpZlMaHQ,,0
-pay_u1zD42C18nSpkW,order_s5h1wAFJTXrHpw,2026-08-18T14:44:00,rupay_debit,False,1120300,0,0,1120300,captured,setl_Yv6pwcjsZc8vE9,rfnd_dwJpBEWBwv3ytG,1120300
+pay_u1zD42C18nSpkW,order_nejPF99vlwvY3O,2026-08-18T14:44:00,rupay_debit,False,1120300,0,0,1120300,captured,setl_Yv6pwcjsZc8vE9,rfnd_dwJpBEWBwv3ytG,1120300
 pay_u8SNMEj1eaJ4Wy,order_wK5U09LGu7441H,2026-08-22T13:19:00,card,False,654300,13086,3664,637550,captured,setl_obuThoBpZlMaHQ,,0
 pay_uTbwgkStNfyCeE,order_G5fnRt5Tg8P07A,2026-08-09T10:12:00,card,False,1493000,29860,5375,1457765,captured,setl_hiSUotqWr1EFET,,0
 pay_vLtK0TSrmtLYkd,order_c5nlYchGxukvQ7,2026-08-08T12:29:00,rupay_debit,False,104600,0,0,104600,captured,setl_fFlVr3pkss1wEn,,0
 pay_vMyXm9ruTWHuVe,order_aWOnGSIZh3gHRz,2026-08-24T13:48:00,upi,False,37100,0,0,37100,captured,setl_ZcE8RtDQlAvOuI,,0
 pay_vsXUXUaOLgydkj,order_M7zgFf28JetJgj,2026-08-20T11:42:00,upi,False,56300,0,0,56300,captured,setl_djyrofTxLrUnhM,,0
-pay_wAReQJLjgKPc8Y,order_j9EzIMaw9ZXRcS,2026-08-05T19:57:00,card,False,1559695,31194,5615,1522886,captured,setl_8EzsIjvNEqHCOH,,0
+pay_wAReQJLjgKPc8Y,order_j9EzIMaw9ZXRcS,2026-08-05T19:57:00,card,False,1559695,29634,3408,1526653,captured,setl_8EzsIjvNEqHCOH,,0
 pay_wmiwSSDELQQpUP,order_2YAy2Vya4XhSlj,2026-08-15T22:56:00,upi,False,572600,0,0,572600,captured,setl_QHelNGrAfNpm6i,,0
 pay_wvSIdIbQoJnw4L,order_kHmElSjS7fuO45,2026-08-25T10:31:00,rupay_debit,False,39148,0,0,39148,captured,setl_CkSEmp6HIyQYQt,,0
 pay_x3YG1dgZsv4WX3,order_rAaWKbPztNTCuy,2026-08-28T09:01:00,wallet,False,249400,4988,898,243514,captured,setl_LnCargH2cPPcg4,,0
@@ -197,7 +197,7 @@ pay_yOzcZkXC3x27SZ,order_qKRjcZaxGF04pT,2026-08-29T22:46:00,card,False,455600,91
 pay_yULGCCmPDV1UTc,order_FREykGF1LpVlie,2026-08-02T11:02:00,card,False,618900,12378,2228,604294,captured,setl_eMf42AI4clEyN4,,0
 pay_z4xxgnJy87ZIqV,order_Y2fCSsU1AB614K,,card,False,490600,0,0,0,failed,,,0
 pay_zEFL08bct0G4yn,order_nw0jToLzvdzvoC,2026-08-18T13:55:00,upi,False,69383,0,0,69383,captured,setl_ZT76A8FOzt96vh,,0
-pay_zWcvoSIq5V741h,order_hBsWH2UWlQmFvB,2026-08-11T09:58:00,card,True,3469010,104070,18733,3346207,captured,setl_I964cvBdHc1Q4e,,0
+pay_zWcvoSIq5V741h,order_hBsWH2UWlQmFvB,2026-08-11T09:58:00,card,True,3333634,100009,18002,3215623,captured,setl_I964cvBdHc1Q4e,,0
 pay_zcwUgVPtRrsscW,order_H1fOp5LjV0nl1Y,2026-08-18T20:40:00,netbanking,False,1916300,36410,6554,1873336,captured,setl_sffCoHbN6WAOrQ,,0
 pay_zg7i2YlUYBv6oT,order_PkyYoufRwvQkTe,2026-08-06T17:07:00,netbanking,False,1668100,31694,5705,1630701,captured,setl_4HSqDZHvYmBI4A,,0
 pay_zgfMlEvAlBKcap,order_tDRXgfSzbvZnaC,2026-08-31T13:11:00,card,False,633500,12670,2281,618549,captured,setl_VbtWk4w2ZSebeS,,0

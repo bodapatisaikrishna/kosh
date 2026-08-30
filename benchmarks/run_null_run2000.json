@@ -1,8 +1,8 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
-    "at_risk_paise": 1391511716,
-    "book_cash_paise": 1420076583,
+    "at_risk_paise": 1391458257,
+    "book_cash_paise": 1419788203,
     "inflow_curve": [
       {
         "date": "2026-08-31",
@@ -61,12 +61,12 @@
         "expected_inflow_paise": 0
       }
     ],
-    "reconciled_cash_paise": 1330904836,
+    "reconciled_cash_paise": 1328142877,
     "reconciliation": {
       "adjustments_paise": 125800,
       "legitimate_chargeback_paise": 0,
       "orphan_chargeback_paise": 0,
-      "settled_gross_minus_net_paise": 27471604,
+      "settled_gross_minus_net_paise": 27236683,
       "settled_refunds_paise": 23823152,
       "unidentified_credit_paise": 0,
       "unsettled_gross_paise": 50763017
@@ -250,7 +250,7 @@
         "payment_id": "pay_0D7tiJVT0gtNOg"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 2366211,
+      "amount_at_risk_paise": 2275202,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -1511,7 +1511,7 @@
         "payment_id": "pay_3egKQ6BCralBAI"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 67176,
+      "amount_at_risk_paise": 67266,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -1862,7 +1862,7 @@
         "payment_id": "pay_4fxmslUcMOza0D"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 2942306,
+      "amount_at_risk_paise": 3017751,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -3149,7 +3149,7 @@
         "payment_id": "pay_7S9wNSx5tGtUIr"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 3908737,
+      "amount_at_risk_paise": 3850973,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -5099,7 +5099,7 @@
         "payment_id": "pay_CGxRElAtCdcEK3"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 3526292,
+      "amount_at_risk_paise": 3390665,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -7075,7 +7075,7 @@
         "payment_id": "pay_HSO8eVh9hhxsYJ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1079002,
+      "amount_at_risk_paise": 1105977,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -8362,7 +8362,7 @@
         "payment_id": "pay_KSNI4wlE5kAqKX"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 3278965,
+      "amount_at_risk_paise": 3360940,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -9740,7 +9740,7 @@
         "payment_id": "pay_Nq6ZcRDxlFSonZ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 12823296,
+      "amount_at_risk_paise": 12630946,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -10195,7 +10195,7 @@
         "payment_id": "pay_OyvjU0Hc7g7Bi2"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 15518678,
+      "amount_at_risk_paise": 15747371,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -10273,7 +10273,7 @@
         "payment_id": "pay_P5bWXosFOdm5oe"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 4455842,
+      "amount_at_risk_paise": 4284464,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -11157,7 +11157,7 @@
         "payment_id": "pay_RMejvzSwrh9QXa"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 726832,
+      "amount_at_risk_paise": 726649,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -11560,7 +11560,7 @@
         "payment_id": "pay_SJnhghryQnPIUZ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 19055673,
+      "amount_at_risk_paise": 19341508,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -11612,7 +11612,7 @@
         "payment_id": "pay_SVM3vm6ZbymPkw"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 727559,
+      "amount_at_risk_paise": 746215,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -13666,7 +13666,7 @@
         "payment_id": "pay_Y3bYi2SlPWsvQy"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 2411931,
+      "amount_at_risk_paise": 2508407,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -14056,7 +14056,7 @@
         "payment_id": "pay_Yw6hEZsEyvZMNn"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 57315,
+      "amount_at_risk_paise": 57457,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -14758,7 +14758,7 @@
         "payment_id": "pay_acp0P4vDywwJ2Q"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 9011802,
+      "amount_at_risk_paise": 8665195,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -15525,7 +15525,7 @@
         "payment_id": "pay_cwlxvwluUHDrTp"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1780731,
+      "amount_at_risk_paise": 1798275,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -15655,7 +15655,7 @@
         "payment_id": "pay_dGxUjmPIxeeXo4"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 101253,
+      "amount_at_risk_paise": 101341,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -20400,7 +20400,7 @@
         "payment_id": "pay_qgQxekYFUPkGCE"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 430983,
+      "amount_at_risk_paise": 437448,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -20790,7 +20790,7 @@
         "payment_id": "pay_rgICBTq2nFDQKZ"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 4287743,
+      "amount_at_risk_paise": 4394937,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -23845,7 +23845,7 @@
         "payment_id": "pay_ymzQx3u8WEhd7G"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1502150,
+      "amount_at_risk_paise": 1498031,
       "category": "UNRECONCILED",
       "evidence_chain": [],
       "recommended_action": "No automated match found; manual reconciliation required.",
@@ -24271,11 +24271,17 @@
     }
   ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788083174.09804,
+  "generated_at_unix": 1788087272.552799,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.0,
       "defect_confusion": {
+        "compound_fee_tax_error": {
+          "misclassified": 6
+        },
+        "consolidated_payout": {
+          "correctly_resolved": 8
+        },
         "duplicate_payment": {
           "misclassified": 20
         },
@@ -24304,7 +24310,7 @@
           "false_exception_raised": 25
         },
         "settlement_split": {
-          "correctly_resolved": 10
+          "correctly_resolved": 11
         },
         "unidentified_credit": {
           "missed": 14
@@ -24345,8 +24351,8 @@
           "settlement_bank_txn": {
             "asserted_count": 0,
             "correct_count": 0,
-            "missing_count": 315,
-            "true_count": 315,
+            "missing_count": 316,
+            "true_count": 316,
             "wrong_count": 0
           }
         },
@@ -24354,7 +24360,7 @@
         "recall": 0.0,
         "total_asserted_links": 0,
         "total_correct_links": 0,
-        "total_true_links": 4161
+        "total_true_links": 4162
       },
       "matched_records": 0,
       "precision": 0.0,
@@ -24370,7 +24376,7 @@
         "STANDARD": 1779
       },
       "count": 1858,
-      "total_amount_at_risk_paise": 1391511716
+      "total_amount_at_risk_paise": 1391458257
     },
     "records_pct_exceptioned": 1.0,
     "throughput": {
@@ -24379,9 +24385,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 1182247.4471926528,
+      "records_per_second": 1212134.6516028473,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.001571583008626476
+      "wall_clock_seconds": 0.0015328330046031624
     }
   }
 }

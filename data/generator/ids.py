@@ -74,6 +74,11 @@ class IdFactory:
                 self._seen.add(candidate)
                 return candidate
 
+    def payout_ref(self) -> str:
+        """A consolidated-payout batch reference. Deliberately not UTR-shaped (3
+        leading letters, not 4+N), so UTR extraction finds nothing joinable."""
+        return "PYT" + self._token(10, _DIGITS)
+
     def invoice_no(self, sequence: int) -> str:
         return f"INV-2026-{sequence:06d}"
 

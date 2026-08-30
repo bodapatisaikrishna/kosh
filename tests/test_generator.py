@@ -150,11 +150,14 @@ def test_bank_balance_continuity(data):
 
 # --- defect coverage -----------------------------------------------------------
 
-def test_all_twelve_defect_types_present(data):
+def test_all_defect_types_present(data):
     expected_types = {
         "missing_settlement", "duplicate_payment", "rounding_drift", "fee_mismatch_wrong_tier",
         "gst_variance", "refund_misallocation", "orphan_chargeback", "period_cutoff",
         "utr_mangled", "fx_variance", "unidentified_credit", "settlement_split",
+        # The two that make L2 and L3 genuinely necessary rather than decorative:
+        "consolidated_payout",
+        "compound_fee_tax_error",
     }
     present_types = {d["type"] for d in data["ground_truth"]["defects"]}
     missing = expected_types - present_types

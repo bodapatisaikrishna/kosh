@@ -83,7 +83,13 @@ class BankTxn:
     balance_paise: int
     # Not part of the public CSV schema, but tracked internally / joined out at emit time.
     settlement_id: str | None = None
-    kind: str = "settlement_credit"  # settlement_credit | customer_credit | chargeback_debit
+    # A real PG's daily *consolidated payout* pays several settlements in ONE bank
+    # credit, with no per-settlement reference in the narration. That is a
+    # many-to-one link, which settlement_id (single) cannot express - so those
+    # credits carry their members here instead. emit.py emits ground-truth edges
+    # from both fields.
+    settlement_ids: list[str] = field(default_factory=list)
+    kind: str = "settlement_credit"  # settlement_credit | customer_credit | chargeback_debit | consolidated_credit
 
 
 @dataclass

@@ -2,6 +2,12 @@
   "accuracy": {
     "auto_match_rate": 0.0,
     "defect_confusion": {
+      "compound_fee_tax_error": {
+        "misclassified": 6
+      },
+      "consolidated_payout": {
+        "correctly_resolved": 8
+      },
       "duplicate_payment": {
         "misclassified": 20
       },
@@ -30,7 +36,7 @@
         "false_exception_raised": 25
       },
       "settlement_split": {
-        "correctly_resolved": 10
+        "correctly_resolved": 11
       },
       "unidentified_credit": {
         "missed": 14
@@ -71,8 +77,8 @@
         "settlement_bank_txn": {
           "asserted_count": 0,
           "correct_count": 0,
-          "missing_count": 315,
-          "true_count": 315,
+          "missing_count": 316,
+          "true_count": 316,
           "wrong_count": 0
         }
       },
@@ -80,7 +86,7 @@
       "recall": 0.0,
       "total_asserted_links": 0,
       "total_correct_links": 0,
-      "total_true_links": 4161
+      "total_true_links": 4162
     },
     "matched_records": 0,
     "precision": 0.0,
@@ -96,7 +102,7 @@
       "STANDARD": 1779
     },
     "count": 1858,
-    "total_amount_at_risk_paise": 1391511716
+    "total_amount_at_risk_paise": 1391458257
   },
   "records_pct_exceptioned": 1.0,
   "throughput": {

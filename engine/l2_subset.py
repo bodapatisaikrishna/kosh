@@ -272,6 +272,16 @@ def match_settlement_bank_txn(dataset, residual, already_matched_settlement_ids:
             s for s in dataset.settlements
             if s.settlement_id not in already_matched
             and 0 <= (txn_date - date.fromisoformat(s.settled_at)).days <= DATE_WINDOW_DAYS
+            # A settlement that nets to exactly Rs 0 is a degenerate subset-sum
+            # term: including or excluding it produces an identical total, so k
+            # such candidates multiply the solution count by 2^k while carrying
+            # no information at all. Left in the pool they make every genuine
+            # solve look AMBIGUOUS and the guard (correctly, but uselessly)
+            # refuses it. Excluding them lets the meaningful members resolve
+            # unambiguously; the zero-value one is simply never claimed, which is
+            # the honest answer - a credit genuinely cannot evidence whether a
+            # Rs 0 settlement rode along in it.
+            and s.net_paise != 0
         ]
         candidates = [Candidate(id=s.settlement_id, amount_paise=s.net_paise) for s in pool]
         try:
