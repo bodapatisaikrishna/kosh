@@ -46,6 +46,7 @@ RECOMMENDED_ACTIONS: dict[str, str] = {
     "UNRECONCILED": "No automated match found; manual reconciliation required.",
     "HIGH_VALUE_MATCH_REVIEW": "Match exceeds Rs 50,000 - a second reviewer should confirm before it's treated as final.",
     "AGENT_INCOMPLETE": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+    "UNEXPLAINED_VARIANCE": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
 }
 
 
