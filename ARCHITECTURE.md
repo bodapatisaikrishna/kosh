@@ -37,8 +37,9 @@ The agent never sees the ~97% that deterministic code already handled. That's th
 | Phase | Scope | Status |
 |---|---|---|
 | 1 | Synthetic data generator + ground truth | ✅ done |
-| 2 | Eval harness (metrics vs. ground truth) + null/oracle baselines | ✅ done (this repo) |
-| 3 | L0 deterministic + L1 tolerance matching | not started |
+| 2 | Eval harness (metrics vs. ground truth) + null/oracle baselines | ✅ done |
+| 3 | L0 deterministic + L1 tolerance matching | ✅ done (this repo) |
+| 4 | L2 subset-sum solver | not started |
 | 4 | L2 combinatorial (subset-sum) solver | not started |
 | 5 | L3 Claude agent + L4 exception ledger | not started |
 | 6 | Cash position + dashboard + benchmark freeze | not started |
@@ -73,9 +74,20 @@ Both are frozen in `tests/baselines/*.json` as a regression guard: if the scorin
 
 Key design point an engine must respect from Phase 3 onward: **`engine/io.py` never reads `ground_truth.json`.** Only `eval/io.py` and the oracle baseline do — the oracle exists to test the scorer, not to reconcile anything, and a real engine that read ground truth would invalidate every accuracy number this project exists to produce.
 
-## Phases 3–7 (design intent, not yet built)
+## Phase 3: L0 deterministic + L1 tolerance
 
-- **L0/L1** (`engine/`): exact-key cascade (order→payment→settlement→UTR), then amount/date/narration-similarity tolerance matching with an ambiguity guard — ties escalate, they are never guessed.
+`engine/l0_deterministic.py` runs the exact-key cascade in three steps: `orders.order_id ↔ pg_payments.order_id` and `pg_payments.settlement_id ↔ pg_settlements.settlement_id` are direct, unambiguous FK joins (confidence 1.0, always). The third step, `pg_settlements.utr ↔` a UTR pulled out of `bank_statement.narration`, is where real ambiguity can arise: `engine/normalize.py` extracts a UTR-shaped token (`[A-Z]{4}[NR]\d{1,11}`) from free text and classifies it as a full 16-char exact match, a ≥12-char truncated prefix, or nothing usable. A full match does an O(1) dict lookup against known settlement UTRs; a prefix match requires the prefix to identify *exactly one* settlement — two or more candidates means it's refused, not guessed, and falls through to L1.
+
+`engine/l1_tolerance.py` picks up whatever L0 couldn't place — in practice, a bank credit whose UTR was rekeyed with a transposed digit (still 16 chars, still syntactically valid, but matching no real settlement). It requires all three: amount within ±300 paise, date within ±3 days, and a narration-similarity score ≥0.80 against a settlement-vocabulary bag (`engine/normalize.py:settlement_narration_similarity`) that distinguishes a genuine (even truncated) settlement narration from a customer-name or chargeback one. The same rule applies: more than one settlement satisfying all three tolerances means the candidate is ambiguous and is refused, never picked by "closest".
+
+A subtlety worth naming: a bank row is excluded from settlement-matching only when it's a genuine debit (`debit_paise > 0`), never merely because `credit_paise == 0` — a settlement can legitimately net to exactly ₹0 (e.g. after a `period_cutoff` shift on a small settlement), and that's still a real credit leg, not a debit. An earlier version of `l0_deterministic.py` filtered on `credit_paise <= 0` and silently dropped these; caught by the reference-fixture recall dropping to 99.94% instead of 100%, which is exactly why every checkpoint is measured against `run_2000`, not eyeballed.
+
+`engine/fees.py` re-exports the generator's `compute_expected_fee` unchanged and adds `explain_variance(observed, expected, ...)`, which decomposes a paise delta into `MATCH` / `ROUNDING` / `FEE_TIER` / `GST_RATE` / `REFUND`, or honestly returns `UNEXPLAINED` when none of those hypotheses fit. This function does no matching itself — Phase 3's pipeline (`engine/pipeline.py`) doesn't call it yet — but it's the piece Phase 5's exception ledger and Phase 5's agent tools both build on, so it's built and tested now.
+
+Result on `data/fixtures/run_2000`: 97.85% auto-match, 100.00%/100.00% precision/recall, **0.00% false-match**, ~4ms wall clock — see [`benchmarks/phase3.json`](benchmarks/phase3.json). Phase 3's pipeline doesn't raise any exceptions yet (L2/L3/L4 don't exist), so whatever L0/L1 can't place is simply absent from the match list for now, not silently claimed as reconciled.
+
+## Phases 4–7 (design intent, not yet built)
+
 - **L2**: subset-sum solver over same-day/T+1 candidate payments for a bank credit, with an explicit `AMBIGUOUS` result when more than one subset satisfies the target — refused, not picked.
 - **L3**: a Claude agent restricted to a fixed toolset (`get_record`, `find_candidates`, `compute_expected_fee`, `explain_variance`, `solve_subset`, `propose_match`, `raise_exception`), structurally forbidden from asserting an ID it wasn't handed by a tool, and forbidden from doing its own arithmetic.
 - **L4**: an exception ledger sorted by ₹ at risk — every unresolved item, no suppression.

@@ -4,7 +4,19 @@ Three-way payment settlement reconciliation for an Indian online merchant: **Ord
 
 Built for the Razorpay AI Buildathon 2026, Track 04.
 
-> **Status: Phase 2 of 7.** This repo currently ships the synthetic data generator, its ground truth, and the eval harness — before any real matching logic exists. See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+> **Status: Phase 3 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, and now L0 (exact-key joins) + L1 (tolerance matching). See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+
+## Results — Phase 3 (L0 + L1), `data/fixtures/run_2000`
+
+| Metric | Value |
+|---|---|
+| Auto-match rate | **97.85%** |
+| Precision / Recall | **100.00% / 100.00%** |
+| **False-match rate** | **0.00%** |
+| Wall clock (2000 records) | **~4ms** |
+| Layer split | L0 99.74% · L1 0.26% |
+
+Every one of the 1,858 captured payments not affected by `missing_settlement` or `duplicate_payment` (which have no true settlement link to begin with) is matched correctly, with zero wrong links asserted. This exactly matches the oracle baseline's own auto-match rate on the same fixture — L0+L1 achieves parity with an engine that reads the ground truth directly, without ever seeing it. See [`benchmarks/phase3.json`](benchmarks/phase3.json) / [`.html`](benchmarks/phase3.html) for the full report.
 
 ## Why we generate our own data
 
@@ -108,28 +120,37 @@ python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label 
 pip install -e ".[dev]"
 python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
 python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
-python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label oracle_run2000
+python -m eval.report --fixtures data/fixtures/run_2000 --engine l0l1 --label phase3
 pytest
 ```
 
-`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, and `make eval-oracle` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, and `make eval-l0l1` wrap the same commands.
 
 ## Repo layout
 
 ```
 data/generator/   synthetic dataset generator (Phase 1)
-engine/           EngineOutput contract (Phase 2) + null/oracle baselines; L0-L4 matching layers not yet built
+engine/           EngineOutput contract (Phase 2), null/oracle baselines, L0 + L1 (Phase 3); L2-L4 not yet built
 eval/             eval harness: metrics against ground truth, benchmark reports (Phase 2)
 cash/             forward cash position (not yet built)
 api/              FastAPI layer (not yet built)
 tests/            pytest suite, incl. tests/baselines/ regression fixtures
-benchmarks/       committed example reports for the null/oracle baselines
+benchmarks/       committed example reports: null/oracle baselines, phase3
 ```
 
-## Limitations (Phase 1–2)
+## What's in Phase 3: L0 + L1
 
-- No real reconciliation logic yet (L0–L4) — only the data generator and the harness that will grade it.
-- `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py` module docstring) — a documented simplification that holds until Phase 3+ introduces partial/low-confidence matches that can diverge from full chain matches.
+`engine/l0_deterministic.py` cascades three exact-key joins: `orders.order_id ↔ pg_payments.order_id`, `pg_payments.settlement_id ↔ pg_settlements.settlement_id`, and `pg_settlements.utr ↔` a UTR extracted from `bank_statement.narration` (via `engine/normalize.py`). UTR extraction handles a full 16-character match, a truncated prefix (≥12 chars, only if it uniquely identifies one settlement), and refuses to guess otherwise. `engine/l1_tolerance.py` catches whatever L0 couldn't place — chiefly a bank credit whose UTR was rekeyed with a transposed digit — by requiring amount within ±₹3, date within ±3 days, *and* narration that reads as a genuine settlement credit, all three, and only when exactly one settlement satisfies them.
+
+`engine/fees.py` re-exports the generator's fee model unchanged (so a fee bug is a generator-test failure, never a fake match) and adds `explain_variance`, which decomposes an observed-vs-expected paise delta into a known cause — rounding, a wrong fee tier, a wrong GST rate, a known refund — or honestly returns `UNEXPLAINED`. This is the function Phase 5's exception ledger will lean on.
+
+Two ambiguity guards are load-bearing, not incidental: an L0 UTR-prefix match that fits more than one settlement is refused, and an L1 candidate set with more than one plausible settlement is refused — both escalate rather than pick. `tests/test_l0_l1.py` exercises both directly (constructed cases, since the reference fixture doesn't happen to produce a genuine collision) alongside the Phase 3 checkpoint on `run_2000`.
+
+## Limitations (Phase 1–3)
+
+- L2 (subset-sum), L3 (Claude agent), and L4 (exception ledger) don't exist yet. Whatever L0/L1 can't place is simply absent from the match list for now — Phase 3's pipeline reports zero exceptions, which is a known temporary gap, not a claim that everything reconciled.
+- `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py` module docstring) — a documented simplification that holds until a layer can leave a record neither matched nor exceptioned.
 - `false_match_rate` is computed against the engine's own asserted links (wrong / total asserted), not against total records — deliberate, so it can't be gamed by asserting very few links, but it means it must always be read next to auto-match rate, never alone.
+- The reference fixture's own truncation defect happens to either leave the UTR fully intact or remove it entirely (its longest template prefix already exceeds the 35-char cutoff) — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.
 - Volume seasonality, ticket-size distributions, and defect rates are hand-tuned to look like a mid-size D2C merchant; they are not calibrated against any real portfolio.
 - The bank calendar covers 2025–2026 national holidays only, not state-specific ones.

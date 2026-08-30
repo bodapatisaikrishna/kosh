@@ -1,0 +1,108 @@
+{
+  "engine": "l0l1",
+  "fixtures": "data/fixtures/run_2000",
+  "generated_at_unix": 1788064063.969024,
+  "metrics": {
+    "accuracy": {
+      "auto_match_rate": 0.9784714747039828,
+      "defect_confusion": {
+        "duplicate_payment": {
+          "missed": 20
+        },
+        "fee_mismatch_wrong_tier": {
+          "missed": 19
+        },
+        "fx_variance": {
+          "missed": 8
+        },
+        "gst_variance": {
+          "missed": 15
+        },
+        "missing_settlement": {
+          "missed": 20
+        },
+        "orphan_chargeback": {
+          "missed": 14
+        },
+        "period_cutoff": {
+          "missed": 14
+        },
+        "refund_misallocation": {
+          "missed": 9
+        },
+        "rounding_drift": {
+          "correctly_resolved": 25
+        },
+        "settlement_split": {
+          "correctly_resolved": 10
+        },
+        "unidentified_credit": {
+          "missed": 14
+        },
+        "utr_mangled": {
+          "correctly_resolved": 20
+        }
+      },
+      "f1": 1.0,
+      "false_match_rate": 0.0,
+      "hands_off_rate": 0.9784714747039828,
+      "layer_contribution": {
+        "L0": 0.9973513123043583,
+        "L1": 0.0026486876956417047
+      },
+      "link_scoring": {
+        "f1": 1.0,
+        "false_match_rate": 0.0,
+        "per_link_type": {
+          "order_payment": {
+            "asserted_count": 2020,
+            "correct_count": 2020,
+            "missing_count": 0,
+            "true_count": 2020,
+            "wrong_count": 0
+          },
+          "payment_settlement": {
+            "asserted_count": 1818,
+            "correct_count": 1818,
+            "missing_count": 0,
+            "true_count": 1818,
+            "wrong_count": 0
+          },
+          "settlement_bank_txn": {
+            "asserted_count": 315,
+            "correct_count": 315,
+            "missing_count": 0,
+            "true_count": 315,
+            "wrong_count": 0
+          }
+        },
+        "precision": 1.0,
+        "recall": 1.0,
+        "total_asserted_links": 4153,
+        "total_correct_links": 4153,
+        "total_true_links": 4153
+      },
+      "matched_records": 1818,
+      "precision": 1.0,
+      "recall": 1.0,
+      "total_records": 1858
+    },
+    "exceptions": {
+      "by_category": {},
+      "by_severity": {},
+      "count": 0,
+      "total_amount_at_risk_paise": 0
+    },
+    "records_pct_exceptioned": 0.0,
+    "throughput": {
+      "cost_per_1000_records_micros": 0,
+      "cost_usd_micros": 0,
+      "input_tokens": 0,
+      "llm_calls": 0,
+      "output_tokens": 0,
+      "records_per_second": 471813.10551511013,
+      "records_processed": 1858,
+      "wall_clock_seconds": 0.00393799997982569
+    }
+  }
+}

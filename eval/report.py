@@ -20,12 +20,14 @@ from pathlib import Path
 
 from engine.baselines import null_baseline, oracle_baseline
 from engine.io import load_dataset
+from engine.pipeline import run_l0_l1
 from eval.io import load_ground_truth
 from eval.metrics import compute_metrics
 
 ENGINES = {
     "null": lambda dataset, ground_truth: null_baseline(dataset),
     "oracle": lambda dataset, ground_truth: oracle_baseline(dataset, ground_truth),
+    "l0l1": lambda dataset, ground_truth: run_l0_l1(dataset),
 }
 
 
