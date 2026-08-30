@@ -4,9 +4,9 @@ Three-way payment settlement reconciliation for an Indian online merchant: **Ord
 
 Built for the Razorpay AI Buildathon 2026, Track 04.
 
-> **Status: Phase 3 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, and now L0 (exact-key joins) + L1 (tolerance matching). See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
+> **Status: Phase 4 of 7.** This repo ships the synthetic data generator with ground truth, the eval harness, L0 (exact-key joins) + L1 (tolerance matching), and now L2 (subset-sum solver). See [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) for the full 7-phase build plan and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the target system design.
 
-## Results — Phase 3 (L0 + L1), `data/fixtures/run_2000`
+## Results — Phase 4 (L0 + L1 + L2), `data/fixtures/run_2000`
 
 | Metric | Value |
 |---|---|
@@ -14,9 +14,10 @@ Built for the Razorpay AI Buildathon 2026, Track 04.
 | Precision / Recall | **100.00% / 100.00%** |
 | **False-match rate** | **0.00%** |
 | Wall clock (2000 records) | **~4ms** |
-| Layer split | L0 99.74% · L1 0.26% |
+| Layer split | L0 99.74% · L1 0.26% · L2 0.00% |
+| L2 solver p50 / p99 / max (2000 synthetic instances, n up to 40) | **2.1ms / 49.8ms / 100.9ms** (budget: 250ms) |
 
-Every one of the 1,858 captured payments not affected by `missing_settlement` or `duplicate_payment` (which have no true settlement link to begin with) is matched correctly, with zero wrong links asserted. This exactly matches the oracle baseline's own auto-match rate on the same fixture — L0+L1 achieves parity with an engine that reads the ground truth directly, without ever seeing it. See [`benchmarks/phase3.json`](benchmarks/phase3.json) / [`.html`](benchmarks/phase3.html) for the full report.
+Every one of the 1,858 captured payments not affected by `missing_settlement` or `duplicate_payment` (which have no true settlement link to begin with) is matched correctly, with zero wrong links asserted — unchanged from Phase 3, and **honestly so**: L2 contributes zero matches on this fixture, because L0+L1 already resolve every tie-outable settlement link (the split-settlement and mangled-UTR defects both turn out resolvable one layer up — see Limitations). L2 is real and unit-tested (a genuine multi-settlement batch, its ambiguity guard, the timeout escalation path), and its own solve-time distribution is verified directly against synthetic instances at realistic scale since this dataset doesn't hand it any residual to time. See [`benchmarks/phase4.json`](benchmarks/phase4.json) / [`.html`](benchmarks/phase4.html) and [`benchmarks/phase4_solver_perf.json`](benchmarks/phase4_solver_perf.json).
 
 ## Why we generate our own data
 
@@ -120,22 +121,23 @@ python -m eval.report --fixtures data/fixtures/run_2000 --engine oracle --label 
 pip install -e ".[dev]"
 python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
 python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
-python -m eval.report --fixtures data/fixtures/run_2000 --engine l0l1 --label phase3
+python -m eval.report --fixtures data/fixtures/run_2000 --engine l0l1l2 --label phase4
+python -m engine.l2_subset --profile --trials 2000 --seed 42
 pytest
 ```
 
-`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, and `make eval-l0l1` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, and `make l2-profile` wrap the same commands.
 
 ## Repo layout
 
 ```
 data/generator/   synthetic dataset generator (Phase 1)
-engine/           EngineOutput contract (Phase 2), null/oracle baselines, L0 + L1 (Phase 3); L2-L4 not yet built
+engine/           EngineOutput contract (Phase 2), null/oracle baselines, L0 + L1 (Phase 3), L2 (Phase 4); L3-L4 not yet built
 eval/             eval harness: metrics against ground truth, benchmark reports (Phase 2)
 cash/             forward cash position (not yet built)
 api/              FastAPI layer (not yet built)
 tests/            pytest suite, incl. tests/baselines/ regression fixtures
-benchmarks/       committed example reports: null/oracle baselines, phase3
+benchmarks/       committed example reports: null/oracle baselines, phase3, phase4, phase4_solver_perf
 ```
 
 ## What's in Phase 3: L0 + L1
@@ -146,9 +148,18 @@ benchmarks/       committed example reports: null/oracle baselines, phase3
 
 Two ambiguity guards are load-bearing, not incidental: an L0 UTR-prefix match that fits more than one settlement is refused, and an L1 candidate set with more than one plausible settlement is refused — both escalate rather than pick. `tests/test_l0_l1.py` exercises both directly (constructed cases, since the reference fixture doesn't happen to produce a genuine collision) alongside the Phase 3 checkpoint on `run_2000`.
 
-## Limitations (Phase 1–3)
+## What's in Phase 4: L2
 
-- L2 (subset-sum), L3 (Claude agent), and L4 (exception ledger) don't exist yet. Whatever L0/L1 can't place is simply absent from the match list for now — Phase 3's pipeline reports zero exceptions, which is a known temporary gap, not a claim that everything reconciled.
+`engine/l2_subset.py` solves the "one bank credit is a batch" problem the brief describes: given a still-unresolved credit and a pool of settlements within a same-day/T+1 date window, find the subset that sums to it. The two approaches the spec suggests both have a scaling trap in this domain — meet-in-the-middle costs O(2^(n/2)) in the candidate count (dangerous at n=40), and a naive bitset DP, while cheap for a one-off feasibility check, costs O(bit-length) *per node* if reused during subset recovery — and bit-length here means paise, so it scales with money magnitude, not candidate count. Profiling this directly is what caught it: an early version blew the 250ms budget on nothing more exotic than 40 candidates around ₹50,000 each. The shipped solver instead runs a depth-first search pruned by a cheap O(1) sum-bound at every node, so per-node cost depends only on n, and a node-count-based time check gives a real, predictable worst case: **p50 ~2ms, p99 ~50ms, max ~101ms** against 2,000 synthetic instances at n up to 40 — see [`benchmarks/phase4_solver_perf.json`](benchmarks/phase4_solver_perf.json).
+
+The ambiguity guard here is the same principle as L0/L1's, applied to subsets rather than single candidates: if more than one distinct subset satisfies the target, the solver returns `AMBIGUOUS` with every alternative it found (capped at 2, since "more than one exists" is all that matters) rather than picking one. A pool over `max_terms` (40) or a search that hits its time budget both escalate the same way `NONE` does — L2 simply doesn't match that credit, leaving it for L3/L4.
+
+**Honestly: L2 contributes zero matches on `run_2000`.** L0+L1 already achieve 100% recall on every tie-outable `settlement_bank_txn` link in this fixture — a split settlement is resolved by both bank credits sharing the same UTR (L0), and a mangled UTR is resolved by amount+date+narration tolerance (L1) — so nothing genuinely batched-and-unrecoverable reaches L2 here. This is verified, not assumed: `tests/test_l2_subset.py` covers the solver and its pipeline wrapper (a genuine multi-settlement batch, the ambiguity guard, the already-matched exclusion, the date-window prune) against constructed cases, and `tests/test_l2_subset_perf.py` is the p99-under-250ms regression guard, run against synthetic instances rather than this dataset.
+
+## Limitations (Phase 1–4)
+
+- L3 (Claude agent) and L4 (exception ledger) don't exist yet. Whatever L0/L1/L2 can't place is simply absent from the match list for now — Phase 4's pipeline reports zero exceptions, which is a known temporary gap, not a claim that everything reconciled.
+- L2 has no real residual to solve on the reference fixture (see above) — its correctness and timing are verified by direct unit/perf tests, not by this fixture's own numbers.
 - `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py` module docstring) — a documented simplification that holds until a layer can leave a record neither matched nor exceptioned.
 - `false_match_rate` is computed against the engine's own asserted links (wrong / total asserted), not against total records — deliberate, so it can't be gamed by asserting very few links, but it means it must always be read next to auto-match rate, never alone.
 - The reference fixture's own truncation defect happens to either leave the UTR fully intact or remove it entirely (its longest template prefix already exceeds the 35-char cutoff) — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.

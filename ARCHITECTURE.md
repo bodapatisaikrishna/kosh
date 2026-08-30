@@ -38,8 +38,9 @@ The agent never sees the ~97% that deterministic code already handled. That's th
 |---|---|---|
 | 1 | Synthetic data generator + ground truth | ✅ done |
 | 2 | Eval harness (metrics vs. ground truth) + null/oracle baselines | ✅ done |
-| 3 | L0 deterministic + L1 tolerance matching | ✅ done (this repo) |
-| 4 | L2 subset-sum solver | not started |
+| 3 | L0 deterministic + L1 tolerance matching | ✅ done |
+| 4 | L2 subset-sum solver | ✅ done (this repo) |
+| 5 | L3 Claude agent + L4 exception ledger | not started |
 | 4 | L2 combinatorial (subset-sum) solver | not started |
 | 5 | L3 Claude agent + L4 exception ledger | not started |
 | 6 | Cash position + dashboard + benchmark freeze | not started |
@@ -86,9 +87,20 @@ A subtlety worth naming: a bank row is excluded from settlement-matching only wh
 
 Result on `data/fixtures/run_2000`: 97.85% auto-match, 100.00%/100.00% precision/recall, **0.00% false-match**, ~4ms wall clock — see [`benchmarks/phase3.json`](benchmarks/phase3.json). Phase 3's pipeline doesn't raise any exceptions yet (L2/L3/L4 don't exist), so whatever L0/L1 can't place is simply absent from the match list for now, not silently claimed as reconciled.
 
-## Phases 4–7 (design intent, not yet built)
+## Phase 4: L2 subset-sum solver
 
-- **L2**: subset-sum solver over same-day/T+1 candidate payments for a bank credit, with an explicit `AMBIGUOUS` result when more than one subset satisfies the target — refused, not picked.
+`engine/l2_subset.py` handles the "one bank credit is a batch" problem literally: given a credit L0/L1 couldn't place, and a pool of settlements within a same-day/T+1 date window (excluding any settlement already confidently matched elsewhere), find the subset whose net amounts sum to it within tolerance.
+
+Both algorithms the spec suggests have a scaling trap specific to this domain. Meet-in-the-middle costs O(2^(n/2)) in the candidate count — dangerous at the spec's own `max_terms=40`. A bitset DP (one Python bigint, one bit per achievable paise value) is the classic alternative, and it's genuinely cheap as a one-off feasibility check — but reusing it *per DFS node* during subset recovery costs O(bit-length) at every node, and bit-length here tracks money magnitude (paise), not candidate count. This was caught by profiling, not by inspection: an early version comfortably passed correctness tests, then blew the 250ms budget (p99 over 1.2s) on nothing more exotic than 40 candidates around ₹50,000 each, because every prune check was building or shifting a multi-megabit integer.
+
+The shipped solver drops the bitset entirely and prunes with a plain O(1) sum-bound at every DFS node (the most any remaining branch could still add) — weaker pruning in theory, but its cost depends only on n, so a node-count-based time check gives a real, predictable worst case regardless of how large the amounts are. Result: **p50 ~2ms, p99 ~50ms, max ~101ms** over 2,000 synthetic instances at n up to 40 (`benchmarks/phase4_solver_perf.json`) — comfortably inside the 250ms cap with margin, not hugging it.
+
+The ambiguity guard mirrors L0/L1's: more than one distinct subset satisfying the target returns `AMBIGUOUS` with the alternatives found (capped at 2 — "more than one exists" is all that matters), never a pick. A pool over `max_terms`, or a search that exhausts its time budget, both escalate the same way as a genuine `NONE` — this layer simply declines to match, leaving the credit for L3/L4.
+
+**On `data/fixtures/run_2000`, L2 contributes zero matches.** L0+L1 already achieve 100% recall on every tie-outable `settlement_bank_txn` link — a split settlement resolves via both credits sharing one UTR (L0), and a mangled UTR resolves via amount+date+narration tolerance (L1) — so nothing genuinely batched-and-unrecoverable reaches this layer in the current defect suite. Rather than manufacture a residual to make L2 look busy, this is reported as-is: L2's correctness (a genuine multi-settlement batch, the ambiguity guard, the already-matched exclusion, the date-window prune) and its timing are verified directly, by `tests/test_l2_subset.py` and `tests/test_l2_subset_perf.py` respectively, independent of whether this dataset happens to invoke it.
+
+## Phases 5–7 (design intent, not yet built)
+
 - **L3**: a Claude agent restricted to a fixed toolset (`get_record`, `find_candidates`, `compute_expected_fee`, `explain_variance`, `solve_subset`, `propose_match`, `raise_exception`), structurally forbidden from asserting an ID it wasn't handed by a tool, and forbidden from doing its own arithmetic.
 - **L4**: an exception ledger sorted by ₹ at risk — every unresolved item, no suppression.
 - **Cash** (`cash/`): unsettled-payment SLA forecasting, a 14-day inflow curve, and reconciled-vs-book cash where the delta is fully explained by the exception ledger.
