@@ -10,11 +10,39 @@ The judging bar: *"Throughput plus measured accuracy plus an honest exception li
 
 | Records | Auto-match | Precision / Recall | **False-match** | Exceptions | Wall clock |
 |---|---|---|---|---|---|
-| 500 | 97.83% | 100.00% / 100.00% | **0.00%** | 47 | ~2ms |
-| 2,000 | 97.85% | 100.00% / 100.00% | **0.00%** | 132 | ~7ms |
-| 10,000 | 97.83% | 100.00% / 100.00% | **0.00%** | 521 | ~31ms |
+| 500 | 97.61% | 100.00% / 99.91% | **0.00%** | 48 | ~2ms |
+| 2,000 | 97.74% | 100.00% / 99.95% | **0.00%** | 139 | ~7ms |
+| 10,000 | 97.83% | 100.00% / 100.00% | **0.00%** | 550 | ~32ms |
 
-**False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads **0.00%** at every scale tested, including a real, non-scripted LLM run (below) — that's checked directly, not asserted.
+**False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads **0.00%** at every scale tested, including a real, non-scripted LLM run (below) — that's checked directly, not asserted. It's also not a vacuous zero: the harness is mutation-tested (inject 10 wrong links and it reports 0.24%, drop half the matches and recall halves), so it demonstrably fails when the engine is wrong.
+
+**Every layer earns its place** — this is measured, not asserted:
+
+| Layer | 500 | 2,000 | 10,000 | What only it can do |
+|---|---|---|---|---|
+| L0 exact-key | 97.76% | 99.33% | 99.82% | UTR/FK joins |
+| L1 tolerance | 0.78% | 0.26% | 0.06% | UTR rekeyed with a transposed digit |
+| L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
+| L3 agent | residual only | 6 records | — | variances no deterministic rule can decompose |
+
+L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens — that *is* the deterministic-first thesis, quantified.
+
+**Per-defect-class scoring on `run_2000` — 14/14 types, zero misses, zero misclassifications, zero false exceptions:**
+
+| Correctly flagged as exceptions | | Correctly resolved *silently* (must NOT become exceptions) | |
+|---|---|---|---|
+| `missing_settlement` | 20/20 | `rounding_drift` | 25/25 |
+| `duplicate_payment` | 20/20 | `utr_mangled` | 20/20 |
+| `fee_mismatch_wrong_tier` | 19/19 | `settlement_split` | 11/11 |
+| `gst_variance` | 15/15 | `consolidated_payout` | 8/8 |
+| `period_cutoff` | 14/14 | | |
+| `orphan_chargeback` | 14/14 | | |
+| `unidentified_credit` | 14/14 | | |
+| `refund_misallocation` | 9/9 | | |
+| `fx_variance` | 8/8 | | |
+| `compound_fee_tax_error` | 6/6 | | |
+
+The right-hand column is the half most systems get wrong: four defect types exist specifically to punish an engine that flags everything it doesn't instantly recognise. Precision on *not* raising a false alarm is scored just as hard as recall on real defects.
 
 **L3, run for real against a live model.** `run_2000`'s residual for the agent is empty — L0–L2 and L4's deterministic classifier already resolve everything, the same honest "nothing left to do" story L2 tells on its own. So the agent's tool-use and constraint enforcement were proven on a small synthetic exercise set instead, run against `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM (the brief specs Anthropic; no key was available — a documented deviation, not a silent one). The first live run surfaced a genuine false-match bug, fixed with regression tests, then re-run clean:
 
@@ -39,17 +67,19 @@ Opens `benchmarks/run_demo.html` — the full 4-panel dashboard (headline, layer
 
 ## Architecture
 
-Deterministic first, LLM last — five layers, each seeing only what the one above it couldn't resolve:
+Deterministic first, LLM last — five layers, each seeing only what the one above it couldn't resolve (shares from `run_2000`):
 
 ```
-L0  Deterministic joins   (exact keys)         → 99.7% of matched links
-L1  Tolerance matching    (±amount, ±date)     → 0.3%
-L2  Combinatorial solver  (subset-sum)         → tested, 0% on this fixture (see below)
-L3  LLM agent             (residual only)      → tested live, 0% on this fixture (see below)
-L4  Exception ledger      (honest remainder)   → 132 exceptions, every category covered
+L0  Deterministic joins   (exact keys)         → 99.33% of matched links
+L1  Tolerance matching    (±amount, ±date)     → 0.26%
+L2  Combinatorial solver  (subset-sum)         → 0.41%
+L3  LLM agent             (residual only)      → 6 records (0.32% of all records)
+L4  Exception ledger      (honest remainder)   → 139 exceptions, every category covered
 ```
 
-L2 and L3 both report **zero contribution on the reference fixture** — not a bug, the honest result of L0/L1/L4 already resolving everything real production data would need them for. Both are still fully built and independently verified: L2 against 2,000 synthetic subset-sum instances (`benchmarks/phase4_solver_perf.json`), L3 against the live NIM run above. A system that only ever showed you the happy path wouldn't have caught either of the two false-match bugs this build actually found and fixed (`propose_match`'s link-type inference; `eval/metrics.py`'s defect-confusion matching) — see [`ARCHITECTURE.md`](ARCHITECTURE.md) for the full build history, including every bug found and how it was caught, phase by phase.
+Each layer refuses rather than guesses when evidence is ambiguous — that's what holds false-match at zero. L0 won't pick between two settlements sharing a UTR prefix; L1 won't pick the "closest" of two candidates in tolerance; L2 returns `AMBIGUOUS` rather than choosing one of several valid subsets; L3's tool layer structurally rejects any ID it didn't hand the model, any match under 0.85 confidence, and recomputes severity itself rather than trusting the model.
+
+The generator is deliberately adversarial to its own engine: it injects **consolidated payouts** (one credit, several settlements, no per-settlement reference — solvable only by subset-sum) and **compound fee+tax errors** (two overlapping causes, so no single-cause hypothesis can decompose them — genuinely UNEXPLAINED, real work for L3). That's what makes the layer shares above real measurements rather than a diagram. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the full build history, including every bug found and how it was caught — among them two genuine false-match bugs, one surfaced by a live model mid-run.
 
 **Stack**: Python 3.11+, pydantic-free dataclasses, integer paise everywhere (enforced by an AST lint, `tests/test_no_floats.py`), stdlib `csv`/`json` for the generator (no float-formatting risk), `anthropic`/`openai` SDKs behind a provider-agnostic `LLMClient` interface for L3.
 
@@ -76,8 +106,9 @@ Same `--seed` → byte-identical output, every time. A small companion fixture, 
 
 ## Limitations
 
-- L2 and L3 both have no real residual to work on in the reference fixture — their correctness and timing are verified by direct unit/perf tests and the live NIM run, not by `run_2000`'s own numbers. See Architecture above.
-- `PERIOD_CUTOFF` recall is 13/14 (92.9%) on `run_2000` — one boundary case (a 3-day settlement gap) is genuinely indistinguishable from ~20 normal same-gap settlements using the available signal; reported as a miss rather than guessed at the cost of false positives.
+- Recall is 99.95% on `run_2000`, not 100%: two settlements that net to exactly ₹0 are never claimed as members of the consolidated payout that paid them. That's deliberate — a zero-value term is degenerate in a subset-sum (including or excluding it gives an identical total), so a bank credit genuinely cannot evidence whether it rode along. Refusing costs 2 links; guessing would risk the false-match rate this project exists to protect.
+- `PERIOD_CUTOFF` recall is 14/14 on `run_2000` at the current threshold, but that threshold (a >4-day settlement gap) was calibrated against this fixture's observed distribution. It is a tuned constant, not a law — on a different merchant's cycle it would need re-derivation, and one boundary case at exactly 3 days remains genuinely indistinguishable from a slow weekend.
+- The defect *rates* are tuned so all 14 types appear at N=2000; at N=500 some types fire only once or twice, so per-class recall at that scale is a small-sample number and should be read as such.
 - `propose_match`'s rationale-citation check is a best-effort structural check (does the text contain a known record id), not a semantic verification that the citation actually supports the claim.
 - Two of the five live L3 exercise records ended in `AGENT_INCOMPLETE` — both were thorough, correct investigation that simply didn't fit inside the 8-turn budget. That's constraint 6's infrastructure-level fallback working as designed, not a false positive, but it's an honest sign the turn budget is tight for a genuinely uncertain case.
 - `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py`) — holds until a layer can leave a record neither matched nor exceptioned.
