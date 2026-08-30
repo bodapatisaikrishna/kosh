@@ -138,9 +138,23 @@ def emit(world: World, defect_log: DefectLog, out_dir: Path) -> None:
         ],
         key=lambda r: (r["settlement_id"], r["bank_txn_id"]),
     )
+    # A legitimate chargeback's narration carries a dispute reference derived
+    # directly from its payment_id (see ids.py:derive_dispute_ref) - a real
+    # engine-detectable link, not just a ground-truth label. Orphan chargebacks
+    # (defects.py) are deliberately excluded: their reference doesn't resolve to
+    # any real payment_id, which is exactly what makes them orphan.
+    chargeback_to_payment = sorted(
+        [{"payment_id": cb.payment_id, "bank_txn_id": cb.bank_txn_id} for cb in world.chargebacks],
+        key=lambda r: (r["payment_id"], r["bank_txn_id"]),
+    )
+    legitimate_chargeback_txn_ids = {cb.bank_txn_id for cb in world.chargebacks}
 
     unmatched_payment_ids = sorted(p.payment_id for p in payments_sorted if p.status == "captured" and not p.settlement_id)
-    unmatched_bank_txn_ids = sorted(t.bank_txn_id for t in bank_sorted if t.kind != "settlement_credit")
+    unmatched_bank_txn_ids = sorted(
+        t.bank_txn_id
+        for t in bank_sorted
+        if t.kind != "settlement_credit" and t.bank_txn_id not in legitimate_chargeback_txn_ids
+    )
 
     ground_truth = {
         "schema_version": 1,
@@ -154,6 +168,7 @@ def emit(world: World, defect_log: DefectLog, out_dir: Path) -> None:
             "order_to_payment": order_to_payment,
             "payment_to_settlement": payment_to_settlement,
             "settlement_to_bank_txn": settlement_to_bank_txn,
+            "chargeback_to_payment": chargeback_to_payment,
         },
         "defects": [
             {

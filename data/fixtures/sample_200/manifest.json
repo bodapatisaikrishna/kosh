@@ -15,8 +15,8 @@
   "defect_rate_pct_of_orders": "11.5",
   "defect_total": 23,
   "files": {
-    "bank_statement.csv": "197941dfe30c82baa91277c2591756dd2a0c571043c517cf7c8b59108a709268",
-    "ground_truth.json": "b590989913ca040cb65d4e290ae06b1cf70a02662ec2202f5f3402317e9ca783",
+    "bank_statement.csv": "e765d21d5f074bce1ce1b7e900fe497dda539da78f1a390310d43d0bf4a7893e",
+    "ground_truth.json": "a122fa12a9c0e0a7ce8fd84ecebe5e464d551be77b1373c843e46d77d5b28eb5",
     "orders.csv": "dbf480cc68d36e9a6f9e8f3a972950b0304230374332b5203e63c14aabe9587f",
     "pg_payments.csv": "a2d7b78bc76a7a43d4a503a519f4abdc128d2834eb7d6d50b80660eabc4bf18d",
     "pg_settlements.csv": "485b35b28ea0535d49ed288d408abb30bb730f849f5f90aabbbefe20b36249e4"

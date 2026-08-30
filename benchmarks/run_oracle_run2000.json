@@ -1,7 +1,7 @@
 {
   "engine": "oracle",
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788029100.524362,
+  "generated_at_unix": 1788068150.357564,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9784714747039828,
@@ -53,6 +53,13 @@
         "f1": 1.0,
         "false_match_rate": 0.0,
         "per_link_type": {
+          "chargeback_payment": {
+            "asserted_count": 8,
+            "correct_count": 8,
+            "missing_count": 0,
+            "true_count": 8,
+            "wrong_count": 0
+          },
           "order_payment": {
             "asserted_count": 2020,
             "correct_count": 2020,
@@ -77,9 +84,9 @@
         },
         "precision": 1.0,
         "recall": 1.0,
-        "total_asserted_links": 4153,
-        "total_correct_links": 4153,
-        "total_true_links": 4153
+        "total_asserted_links": 4161,
+        "total_correct_links": 4161,
+        "total_true_links": 4161
       },
       "matched_records": 1818,
       "precision": 1.0,
@@ -112,9 +119,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 690043.7269034337,
+      "records_per_second": 531363.1536347092,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.0026925829879473895
+      "wall_clock_seconds": 0.0034966669918503612
     }
   }
 }

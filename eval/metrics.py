@@ -65,6 +65,7 @@ def _true_link_sets(ground_truth: dict) -> dict[str, set[tuple[str, str]]]:
         "order_payment": {(l["order_id"], l["payment_id"]) for l in links["order_to_payment"]},
         "payment_settlement": {(l["payment_id"], l["settlement_id"]) for l in links["payment_to_settlement"]},
         "settlement_bank_txn": {(l["settlement_id"], l["bank_txn_id"]) for l in links["settlement_to_bank_txn"]},
+        "chargeback_payment": {(l["payment_id"], l["bank_txn_id"]) for l in links["chargeback_to_payment"]},
     }
 
 

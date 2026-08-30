@@ -58,6 +58,8 @@ def oracle_baseline(dataset: Dataset, ground_truth: dict) -> EngineOutput:
         matches.append(Match(layer="ORACLE", link_type="payment_settlement", left_id=link["payment_id"], right_id=link["settlement_id"], confidence=1.0, evidence=("ground_truth",)))
     for link in ground_truth["links"]["settlement_to_bank_txn"]:
         matches.append(Match(layer="ORACLE", link_type="settlement_bank_txn", left_id=link["settlement_id"], right_id=link["bank_txn_id"], confidence=1.0, evidence=("ground_truth",)))
+    for link in ground_truth["links"]["chargeback_to_payment"]:
+        matches.append(Match(layer="ORACLE", link_type="chargeback_payment", left_id=link["payment_id"], right_id=link["bank_txn_id"], confidence=1.0, evidence=("ground_truth",)))
 
     exceptions = [
         ReconException(

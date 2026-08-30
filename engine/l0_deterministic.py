@@ -3,6 +3,8 @@
     1. orders.order_id       <-> pg_payments.order_id
     2. pg_payments.settlement_id <-> pg_settlements.settlement_id
     3. pg_settlements.utr    <-> UTR extracted from bank_statement.narration
+    4. pg_payments.payment_id <-> a dispute reference extracted from a bank
+       debit's narration (derive_dispute_ref - see engine/normalize.py)
 
 Every match is exact and carries confidence 1.0 - there is no fuzziness here by
 design. The one place ambiguity can arise (a truncated UTR prefix shared by more
@@ -14,7 +16,13 @@ from __future__ import annotations
 
 from .contract import Match
 from .io import BankRow, Dataset
-from .normalize import FULL_UTR_LEN, MIN_PREFIX_LEN, best_utr_token
+from .normalize import (
+    FULL_UTR_LEN,
+    MIN_PREFIX_LEN,
+    best_utr_token,
+    derive_dispute_ref,
+    extract_dispute_ref,
+)
 
 
 def match_order_payment(dataset: Dataset) -> list[Match]:
@@ -106,5 +114,37 @@ def match_settlement_bank_txn(dataset: Dataset) -> tuple[list[Match], list[BankR
             continue
 
         residual.append(txn)
+
+    return matches, residual
+
+
+def match_chargeback_payment(dataset: Dataset) -> tuple[list[Match], list[BankRow]]:
+    """Returns (matches, residual). residual is every debit-bearing bank row that
+    doesn't resolve to a known payment - a genuine ORPHAN_CHARGEBACK candidate for
+    the exception ledger, not a matching failure to escalate further: there is no
+    L1/L2 tolerance concept for a chargeback (no amount/date fuzziness makes an
+    unlinkable dispute suddenly linkable), so an unresolved one here is final.
+    """
+    payment_by_ref = {derive_dispute_ref(p.payment_id): p.payment_id for p in dataset.payments}
+    matches: list[Match] = []
+    residual: list[BankRow] = []
+
+    for txn in dataset.bank:
+        if txn.debit_paise <= 0:
+            continue  # only debits can be chargebacks
+
+        ref = extract_dispute_ref(txn.narration)
+        payment_id = payment_by_ref.get(ref) if ref else None
+        if payment_id is not None:
+            matches.append(Match(
+                layer="L0",
+                link_type="chargeback_payment",
+                left_id=payment_id,
+                right_id=txn.bank_txn_id,
+                confidence=1.0,
+                evidence=(f"narration dispute ref {ref} exactly matches derive_dispute_ref(pg_payments.payment_id)",),
+            ))
+        else:
+            residual.append(txn)
 
     return matches, residual

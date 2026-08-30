@@ -11,6 +11,26 @@ from __future__ import annotations
 
 import re
 
+from data.generator.ids import DISPUTE_REF_LEN, DISPUTE_REF_PREFIX, derive_dispute_ref
+
+# Re-exported so callers only ever need `engine.normalize` - same "one source of
+# truth, imported not reimplemented" pattern as engine/fees.py.
+__all__ = [
+    "extract_utr_tokens", "best_utr_token", "tokenize_narration",
+    "settlement_narration_similarity", "extract_dispute_ref", "derive_dispute_ref",
+]
+
+DISPUTE_REF_RE = re.compile(re.escape(DISPUTE_REF_PREFIX) + r"[A-Z0-9]{" + str(DISPUTE_REF_LEN - len(DISPUTE_REF_PREFIX)) + r"}")
+
+
+def extract_dispute_ref(narration: str) -> str | None:
+    """The dispute-reference-shaped token in a chargeback debit's narration, if
+    any - exact-shape only, no truncation/prefix case (unlike UTRs, a dispute ref
+    is short enough that the generator never truncates it away mid-token)."""
+    match = DISPUTE_REF_RE.search(narration.upper())
+    return match.group(0) if match else None
+
+
 # A UTR here is 4 uppercase letters (bank code) + one of N/R + up to 11 digits.
 # \d{1,11} is deliberately variable-length: it lets one regex catch both a full
 # 16-char UTR and a truncated fragment of it, differentiated afterwards by length.

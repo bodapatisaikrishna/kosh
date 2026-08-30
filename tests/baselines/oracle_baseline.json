@@ -49,6 +49,13 @@
       "f1": 1.0,
       "false_match_rate": 0.0,
       "per_link_type": {
+        "chargeback_payment": {
+          "asserted_count": 8,
+          "correct_count": 8,
+          "missing_count": 0,
+          "true_count": 8,
+          "wrong_count": 0
+        },
         "order_payment": {
           "asserted_count": 2020,
           "correct_count": 2020,
@@ -73,9 +80,9 @@
       },
       "precision": 1.0,
       "recall": 1.0,
-      "total_asserted_links": 4153,
-      "total_correct_links": 4153,
-      "total_true_links": 4153
+      "total_asserted_links": 4161,
+      "total_correct_links": 4161,
+      "total_true_links": 4161
     },
     "matched_records": 1818,
     "precision": 1.0,

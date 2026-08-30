@@ -22,6 +22,7 @@ LINK_TYPES: dict[str, tuple[str, str]] = {
     "order_payment": ("order_id", "payment_id"),
     "payment_settlement": ("payment_id", "settlement_id"),
     "settlement_bank_txn": ("settlement_id", "bank_txn_id"),
+    "chargeback_payment": ("payment_id", "bank_txn_id"),
 }
 
 # Two severities for now; Phase 5's agent constraints introduce a stricter escalation

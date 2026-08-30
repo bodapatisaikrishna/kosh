@@ -173,3 +173,51 @@ def test_manifest_gmv_matches_orders(data):
 
 def test_manifest_defect_total_matches_ground_truth(data):
     assert data["manifest"]["defect_total"] == len(data["ground_truth"]["defects"])
+
+
+# --- chargeback dispute-ref linkage (Phase 5 fix) -----------------------------
+
+def test_legitimate_chargeback_narration_embeds_a_recoverable_dispute_ref(data):
+    """A legitimate chargeback's narration must carry a reference the engine can
+    independently derive from the payment_id alone - this is the whole point of
+    the fix: without it, no engine could ever tell a legitimate chargeback apart
+    from an orphan one."""
+    from data.generator.ids import derive_dispute_ref
+
+    links = data["ground_truth"]["links"]["chargeback_to_payment"]
+    assert links, "expected at least one legitimate chargeback in the reference fixture"
+
+    bank_by_id = {row["bank_txn_id"]: row for row in data["bank"]}
+    for link in links:
+        narration = bank_by_id[link["bank_txn_id"]]["narration"]
+        expected_ref = derive_dispute_ref(link["payment_id"])
+        assert expected_ref in narration.upper(), (
+            f"derive_dispute_ref({link['payment_id']!r}) = {expected_ref!r} not found in "
+            f"narration {narration!r}"
+        )
+
+
+def test_orphan_chargeback_dispute_ref_never_collides_with_a_real_payment(data):
+    """An orphan chargeback's narration is deliberately the same *shape* as a
+    legitimate one, but must never accidentally resolve to a real payment_id."""
+    from data.generator.ids import derive_dispute_ref
+    from engine.normalize import extract_dispute_ref
+
+    real_refs = {derive_dispute_ref(p["payment_id"]) for p in data["payments"]}
+    linked_txn_ids = {link["bank_txn_id"] for link in data["ground_truth"]["links"]["chargeback_to_payment"]}
+    orphan_defect_txn_ids = {
+        d["affected"]["bank_txn_id"] for d in data["ground_truth"]["defects"] if d["type"] == "orphan_chargeback"
+    }
+    assert orphan_defect_txn_ids, "expected at least one orphan_chargeback defect in the reference fixture"
+
+    bank_by_id = {row["bank_txn_id"]: row for row in data["bank"]}
+    for txn_id in orphan_defect_txn_ids:
+        assert txn_id not in linked_txn_ids
+        ref = extract_dispute_ref(bank_by_id[txn_id]["narration"])
+        assert ref is None or ref not in real_refs
+
+
+def test_unmatched_by_design_excludes_legitimate_chargebacks(data):
+    linked_txn_ids = {link["bank_txn_id"] for link in data["ground_truth"]["links"]["chargeback_to_payment"]}
+    unmatched = set(data["ground_truth"]["unmatched_by_design"]["bank_txn_ids"])
+    assert not (linked_txn_ids & unmatched), "a legitimately-linked chargeback must not also be listed as unmatched"

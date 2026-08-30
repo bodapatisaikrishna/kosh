@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 
 from .fees import GST_BPS, compute_expected_fee, mdr_bps, round_half_up_div
+from .ids import derive_dispute_ref
 from .narration import customer_narration, transpose_digits, truncate
 from .world import BankTxn, World
 
@@ -309,6 +310,11 @@ def _inject_refund_misallocation(world, rng, log, rate, touched_payments):
 def _inject_orphan_chargeback(world, rng, log, rate, touched_bank_txns):
     from .narration import chargeback_narration
 
+    # A same-shaped but non-derivable dispute reference - this is what makes an
+    # orphan chargeback textually indistinguishable from a legitimate one *in
+    # format*; only the lookup against a real payment_id fails. See ids.py.
+    real_dispute_refs = {derive_dispute_ref(p.payment_id) for p in world.payments}
+
     count = _sample_target_count(rng, max(len(world.settlements), 1), rate)
     for _ in range(count):
         if not world.bank_txns:
@@ -316,11 +322,11 @@ def _inject_orphan_chargeback(world, rng, log, rate, touched_bank_txns):
         anchor = rng.choice(world.bank_txns)
         amount = rng.randrange(50_00, 500_00)
         amount = amount - (amount % 100)
-        ref = world.ids.bank_txn()
+        orphan_ref = world.ids.orphan_dispute_ref(real_dispute_refs)
         txn = BankTxn(
             bank_txn_id=world.ids.bank_txn(),
             value_date=anchor.value_date,
-            narration=chargeback_narration(rng, ref),
+            narration=chargeback_narration(rng, orphan_ref),
             credit_paise=0,
             debit_paise=amount,
             balance_paise=anchor.balance_paise - amount,

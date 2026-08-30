@@ -16,10 +16,11 @@ from __future__ import annotations
 from datetime import date
 from pathlib import Path
 
+from data.generator.ids import derive_dispute_ref
 from engine.contract import EngineOutput
 from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
 from engine.io import load_dataset
-from engine.l0_deterministic import match_settlement_bank_txn
+from engine.l0_deterministic import match_chargeback_payment, match_settlement_bank_txn
 from engine.l1_tolerance import match_settlement_bank_txn as l1_match_settlement_bank_txn
 from engine.pipeline import run_l0_l1
 from eval.io import load_ground_truth
@@ -131,3 +132,49 @@ def test_a_real_debit_is_never_a_settlement_candidate():
     matches, residual = match_settlement_bank_txn(dataset)
     assert matches == []
     assert residual == []  # a genuine debit is excluded outright, not left as a residual credit candidate
+
+
+# --- L0 chargeback-to-payment matching -----------------------------------
+
+def _payment(payment_id: str) -> PaymentRow:
+    return PaymentRow(
+        payment_id=payment_id, order_id="order_x", captured_at="2026-08-01T10:00:00", method="upi",
+        international=False, gross_paise=100_00, fee_paise=0, gst_paise=0, net_paise=100_00,
+        status="captured", settlement_id="setl_x", refund_id=None, refund_paise=0,
+    )
+
+
+def test_legitimate_chargeback_matches_its_payment():
+    payment = _payment("pay_ABCDEFGHIJKLMN")
+    ref = derive_dispute_ref(payment.payment_id)
+    debit = BankRow("btxn_1", "2026-08-05", f"CHARGEBACK DR-{ref}-RAZORPAY SOFTWARE", 0, 500_00, 0)
+    dataset = Dataset(orders=[], payments=[payment], settlements=[], bank=[debit])
+
+    matches, residual = match_chargeback_payment(dataset)
+    assert len(matches) == 1
+    assert matches[0].left_id == payment.payment_id
+    assert matches[0].right_id == "btxn_1"
+    assert matches[0].link_type == "chargeback_payment"
+    assert residual == []
+
+
+def test_orphan_chargeback_never_guesses_a_payment():
+    payment = _payment("pay_ABCDEFGHIJKLMN")
+    debit = BankRow("btxn_1", "2026-08-05", "CHARGEBACK DR-DSPZZZZZZZZ-RAZORPAY SOFTWARE", 0, 500_00, 0)
+    dataset = Dataset(orders=[], payments=[payment], settlements=[], bank=[debit])
+
+    matches, residual = match_chargeback_payment(dataset)
+    assert matches == []
+    assert residual == [debit]
+
+
+def test_credit_rows_are_never_chargeback_candidates():
+    payment = _payment("pay_ABCDEFGHIJKLMN")
+    ref = derive_dispute_ref(payment.payment_id)
+    # Same reference text, but this is a credit, not a debit - must never match.
+    credit = BankRow("btxn_1", "2026-08-05", f"NEFT-{ref}-RAZORPAY SOFTWARE", 500_00, 0, 0)
+    dataset = Dataset(orders=[], payments=[payment], settlements=[], bank=[credit])
+
+    matches, residual = match_chargeback_payment(dataset)
+    assert matches == []
+    assert residual == []

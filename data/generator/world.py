@@ -14,7 +14,7 @@ from datetime import date, datetime, timedelta
 
 from .calendar import days_in_window, next_banking_day, settlement_date
 from .fees import compute_expected_fee
-from .ids import IdFactory
+from .ids import IdFactory, derive_dispute_ref
 from .profiles import (
     ADJUSTMENT_MAX_PAISE,
     ADJUSTMENT_PER_1000_SETTLEMENTS,
@@ -242,8 +242,15 @@ def build_clean_world(records: int, seed: int, months: int, end_date: date) -> W
     for cb_index, cb in enumerate(world.chargebacks):
         payment = next(p for p in world.payments if p.payment_id == cb.payment_id)
         cb_value_date = next_banking_day(payment.captured_at.date() + timedelta(days=bank_rng.randrange(5, 20)))
-        ref = ids.bank_txn()
-        events.append((cb_value_date, "cb_" + ref, 0, cb.amount_paise, chargeback_narration(bank_rng, ref), None, cb_index))
+        tiebreak = ids.bank_txn()
+        # The dispute reference embedded in a legitimate chargeback's narration is
+        # derived directly from its payment_id - the same "engine can independently
+        # recompute this" pattern a settlement's UTR already uses. This is what
+        # lets engine/l0_deterministic.py:match_chargeback_payment tell a real
+        # chargeback apart from an orphan one (defects.py mints a same-shaped but
+        # non-derivable token for those).
+        dispute_ref = derive_dispute_ref(cb.payment_id)
+        events.append((cb_value_date, "cb_" + tiebreak, 0, cb.amount_paise, chargeback_narration(bank_rng, dispute_ref), None, cb_index))
 
     events.sort(key=lambda e: (e[0], e[1]))
 

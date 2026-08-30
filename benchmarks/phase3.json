@@ -1,7 +1,7 @@
 {
   "engine": "l0l1",
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788064063.969024,
+  "generated_at_unix": 1788068150.113154,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9784714747039828,
@@ -47,13 +47,20 @@
       "false_match_rate": 0.0,
       "hands_off_rate": 0.9784714747039828,
       "layer_contribution": {
-        "L0": 0.9973513123043583,
-        "L1": 0.0026486876956417047
+        "L0": 0.9973564047104061,
+        "L1": 0.0026435952895938475
       },
       "link_scoring": {
         "f1": 1.0,
         "false_match_rate": 0.0,
         "per_link_type": {
+          "chargeback_payment": {
+            "asserted_count": 8,
+            "correct_count": 8,
+            "missing_count": 0,
+            "true_count": 8,
+            "wrong_count": 0
+          },
           "order_payment": {
             "asserted_count": 2020,
             "correct_count": 2020,
@@ -78,9 +85,9 @@
         },
         "precision": 1.0,
         "recall": 1.0,
-        "total_asserted_links": 4153,
-        "total_correct_links": 4153,
-        "total_true_links": 4153
+        "total_asserted_links": 4161,
+        "total_correct_links": 4161,
+        "total_true_links": 4161
       },
       "matched_records": 1818,
       "precision": 1.0,
@@ -100,9 +107,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 471813.10551511013,
+      "records_per_second": 416716.47762794956,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.00393799997982569
+      "wall_clock_seconds": 0.004458666982827708
     }
   }
 }

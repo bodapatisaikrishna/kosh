@@ -20,27 +20,31 @@ from .contract import EngineMeta, EngineOutput
 from .io import Dataset
 
 
-def _l0_l1_matches(dataset: Dataset) -> tuple[list, list]:
-    """Returns (matches, still_unresolved_bank_rows) - shared by both entry points
-    so L2's residual is exactly what L0+L1 actually left behind, not recomputed."""
+def _l0_l1_matches(dataset: Dataset) -> tuple[list, list, list]:
+    """Returns (matches, still_unresolved_credit_rows, still_unresolved_debit_rows)
+    - shared by every entry point so L2's residual (and, later, L4's) is exactly
+    what L0+L1 actually left behind, not recomputed."""
     matches = []
     matches += l0_deterministic.match_order_payment(dataset)
     matches += l0_deterministic.match_payment_settlement(dataset)
     sb_matches, l0_residual = l0_deterministic.match_settlement_bank_txn(dataset)
     matches += sb_matches
 
+    cb_matches, debit_residual = l0_deterministic.match_chargeback_payment(dataset)
+    matches += cb_matches
+
     l1_matches = l1_tolerance.match_settlement_bank_txn(dataset, l0_residual)
     matches += l1_matches
     l1_matched_txn_ids = {m.right_id for m in l1_matches}
     still_residual = [t for t in l0_residual if t.bank_txn_id not in l1_matched_txn_ids]
 
-    return matches, still_residual
+    return matches, still_residual, debit_residual
 
 
 def run_l0_l1(dataset: Dataset) -> EngineOutput:
     """Phase 3 pipeline: exact-key cascade + tolerance matching only."""
     start = time.perf_counter()
-    matches, _residual = _l0_l1_matches(dataset)
+    matches, _credit_residual, _debit_residual = _l0_l1_matches(dataset)
     elapsed = time.perf_counter() - start
     return EngineOutput(matches=matches, exceptions=[], meta=EngineMeta(wall_clock_seconds=elapsed))
 
@@ -50,7 +54,7 @@ def run_l0_l1_l2(dataset: Dataset) -> EngineOutput:
     place. On the reference fixture this residual is empty (see
     ARCHITECTURE.md) - L2 is real and tested, but contributes zero matches there."""
     start = time.perf_counter()
-    matches, residual = _l0_l1_matches(dataset)
+    matches, residual, _debit_residual = _l0_l1_matches(dataset)
     already_matched_settlement_ids = {m.left_id for m in matches if m.link_type == "settlement_bank_txn"}
     matches += l2_subset.match_settlement_bank_txn(dataset, residual, already_matched_settlement_ids)
     elapsed = time.perf_counter() - start
