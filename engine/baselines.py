@@ -15,21 +15,8 @@ from __future__ import annotations
 
 import time
 
-from .contract import EngineMeta, EngineOutput, Match, ReconException, severity_for_amount
+from .contract import RECOMMENDED_ACTIONS, EngineMeta, EngineOutput, Match, ReconException, severity_for_amount
 from .io import Dataset
-
-RECOMMENDED_ACTIONS: dict[str, str] = {
-    "MISSING_SETTLEMENT": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
-    "DUPLICATE_PAYMENT": "Void or refund the duplicate payment after confirming with the PG.",
-    "FEE_VARIANCE": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
-    "TAX_VARIANCE": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
-    "REFUND_MISALLOCATION": "Reassign the refund to the correct order and notify accounts of the correction.",
-    "ORPHAN_CHARGEBACK": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
-    "PERIOD_CUTOFF": "Confirm the settlement period for month-end close; may require an accrual entry.",
-    "FX_VARIANCE": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
-    "UNIDENTIFIED_CREDIT": "Identify the payer; likely a direct customer transfer outside the PG flow.",
-    "UNRECONCILED": "No automated match found; manual reconciliation required.",
-}
 
 
 def null_baseline(dataset: Dataset) -> EngineOutput:

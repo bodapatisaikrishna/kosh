@@ -58,6 +58,33 @@ DEFECT_IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "settlement_split": ("bank_txn_id_a", "bank_txn_id_b"),
 }
 
+# The symmetric counterpart to DEFECT_IDENTITY_FIELDS, keyed by exception category
+# instead of defect type: which field(s) of an exception's own `affected` dict are
+# ITS identity, as opposed to incidental context. Needed because an exception can
+# legitimately carry a *different* record's id as context - e.g. a FEE_VARIANCE
+# exception's affected dict is {"payment_id": ..., "settlement_id": ...}, where
+# settlement_id is just "which settlement this payment belongs to", not a claim
+# about that settlement. Without this, compute_defect_confusion would credit (or
+# blame) that FEE_VARIANCE exception for an unrelated PERIOD_CUTOFF defect on the
+# same settlement, just because the settlement_id happens to appear in both.
+CATEGORY_IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
+    "MISSING_SETTLEMENT": ("payment_id",),
+    # Both key names: the oracle baseline copies a defect's affected dict verbatim
+    # (which has both "payment_id" [the original] and "duplicate_payment_id" [the
+    # flagged one]); engine/exceptions.py's classifier only ever has "payment_id"
+    # (holding the flagged one's own id). Either producer's convention must match
+    # the defect's own identity (duplicate_payment_id), so both fields are checked.
+    "DUPLICATE_PAYMENT": ("payment_id", "duplicate_payment_id"),
+    "FEE_VARIANCE": ("payment_id",),
+    "TAX_VARIANCE": ("payment_id",),
+    "REFUND_MISALLOCATION": ("payment_id",),
+    "FX_VARIANCE": ("payment_id",),
+    "PERIOD_CUTOFF": ("settlement_id",),
+    "ORPHAN_CHARGEBACK": ("bank_txn_id",),
+    "UNIDENTIFIED_CREDIT": ("bank_txn_id",),
+    "UNRECONCILED": ("payment_id",),  # the null baseline's catch-all category
+}
+
 
 def _true_link_sets(ground_truth: dict) -> dict[str, set[tuple[str, str]]]:
     links = ground_truth["links"]
@@ -182,12 +209,17 @@ def compute_defect_confusion(engine_output: EngineOutput, ground_truth: dict) ->
     non-resolvable defect types, and correctly_resolved / false_exception_raised for
     the 3 resolvable ones (rounding_drift, utr_mangled, settlement_split)."""
     exceptions = engine_output.exceptions
+
+    def exception_identity(e) -> set[str]:
+        fields = CATEGORY_IDENTITY_FIELDS.get(e.category, ())
+        return {e.affected[f] for f in fields if f in e.affected}
+
     result: dict[str, Counter] = {}
     for defect in ground_truth["defects"]:
         dtype = defect["type"]
         identity_fields = DEFECT_IDENTITY_FIELDS[dtype]
         identity_ids = {defect["affected"][f] for f in identity_fields if f in defect["affected"]}
-        matching = [e for e in exceptions if identity_ids & set(e.affected.values())]
+        matching = [e for e in exceptions if identity_ids & exception_identity(e)]
         bucket = result.setdefault(dtype, Counter())
         if dtype in RESOLVABLE_DEFECT_TYPES:
             if matching:

@@ -30,6 +30,24 @@ LINK_TYPES: dict[str, tuple[str, str]] = {
 SEVERITIES = ("STANDARD", "REVIEW_REQUIRED")
 REVIEW_REQUIRED_THRESHOLD_PAISE = 50_000_00  # INR 50,000
 
+# One recommended action per exception category, shared by the oracle baseline,
+# the deterministic L4 classifier (engine/exceptions.py), and L3's tool layer -
+# a single place so the wording (and the category list) can't drift apart.
+RECOMMENDED_ACTIONS: dict[str, str] = {
+    "MISSING_SETTLEMENT": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
+    "DUPLICATE_PAYMENT": "Void or refund the duplicate payment after confirming with the PG.",
+    "FEE_VARIANCE": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
+    "TAX_VARIANCE": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
+    "REFUND_MISALLOCATION": "Reassign the refund to the correct order and notify accounts of the correction.",
+    "ORPHAN_CHARGEBACK": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
+    "PERIOD_CUTOFF": "Confirm the settlement period for month-end close; may require an accrual entry.",
+    "FX_VARIANCE": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
+    "UNIDENTIFIED_CREDIT": "Identify the payer; likely a direct customer transfer outside the PG flow.",
+    "UNRECONCILED": "No automated match found; manual reconciliation required.",
+    "HIGH_VALUE_MATCH_REVIEW": "Match exceeds Rs 50,000 - a second reviewer should confirm before it's treated as final.",
+    "AGENT_INCOMPLETE": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+}
+
 
 @dataclass(frozen=True)
 class Match:
@@ -58,6 +76,8 @@ class ReconException:
     affected: dict[str, str]
     recommended_action: str
     aging_days: int = 0
+    evidence_chain: tuple[str, ...] = ()
+    suggested_owner: str = "Reconciliation Ops"
 
     def __post_init__(self) -> None:
         if self.severity not in SEVERITIES:
