@@ -196,11 +196,24 @@ def solve_subset_tool(ctx: ToolContext, target_paise: int, candidate_ids: list[s
 
 # --- propose_match / raise_exception (the two ways to close the loop) --------
 
-def _infer_link_type(id_a: str, id_b: str) -> str | None:
+def _infer_link_type(dataset: Dataset, id_a: str, id_b: str) -> str | None:
     table_a, table_b = _table_for_id(id_a), _table_for_id(id_b)
     if table_a is None or table_b is None or table_a == table_b:
         return None
-    return _TABLE_PAIR_TO_LINK_TYPE.get(frozenset({table_a, table_b}))
+    link_type = _TABLE_PAIR_TO_LINK_TYPE.get(frozenset({table_a, table_b}))
+    if link_type == "chargeback_payment":
+        # A (payment, bank) pair is only ever a chargeback_payment link when the
+        # bank row is a genuine debit. A payment's own settlement credit is also
+        # a (payment, bank) pair by table alone - asserting chargeback_payment
+        # for that would be a false link (caught in the live NIM run: the model
+        # correctly traced payment -> settlement -> settlement's own bank
+        # credit, and bundling all three ids into one propose_match call made
+        # this code mislabel the third leg as a chargeback that never happened).
+        bank_id = id_a if table_a == "bank" else id_b
+        bank_row = _find_record(dataset, "bank", bank_id)
+        if bank_row is None or bank_row.debit_paise <= 0:
+            return None
+    return link_type
 
 
 def _order_ids_for_link(link_type: str, a: str, b: str) -> tuple[str, str]:
@@ -243,9 +256,13 @@ def propose_match(ctx: ToolContext, record_ids: list[str], confidence: float, ra
 
     matches = []
     for other_id in others:
-        link_type = _infer_link_type(ctx.residual_id, other_id)
+        link_type = _infer_link_type(ctx.dataset, ctx.residual_id, other_id)
         if link_type is None:
-            raise ToolError(f"cannot infer a link type between {ctx.residual_id!r} and {other_id!r}")
+            raise ToolError(
+                f"cannot infer a valid link type between {ctx.residual_id!r} and {other_id!r} - if you were trying "
+                f"to also assert a link between two OTHER records (e.g. a settlement and its own bank credit), "
+                f"drop it from this call: propose_match only asserts links to the record under investigation"
+            )
         left_id, right_id = _order_ids_for_link(link_type, ctx.residual_id, other_id)
         matches.append(Match(layer="L3", link_type=link_type, left_id=left_id, right_id=right_id, confidence=confidence, evidence=(rationale,)))
 
@@ -331,7 +348,13 @@ TOOL_SPECS: list[ToolSpec] = [
         },
         "required": ["target_paise", "candidate_ids"],
     }),
-    ToolSpec("propose_match", "Assert that the record under investigation links to one or more other known records. Requires confidence >= 0.85.", {
+    ToolSpec("propose_match", (
+        "Assert that the record under investigation links to one or more other known records. "
+        "Every id in record_ids must relate DIRECTLY to the record under investigation - do not "
+        "include a record that only relates to one of the OTHER ids you're proposing (e.g. a "
+        "settlement's own bank credit, when you are investigating the payment, not the settlement). "
+        "Requires confidence >= 0.85."
+    ), {
         "type": "object",
         "properties": {
             "record_ids": {"type": "array", "items": {"type": "string"}},

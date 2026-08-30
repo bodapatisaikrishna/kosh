@@ -216,3 +216,40 @@ def test_dispatch_tool_returns_ok_for_a_successful_call():
     ctx = _ctx()
     result = dispatch_tool(ctx, "get_record", {"source": "settlements", "record_id": "setl_1"})
     assert result["status"] == "ok"
+
+
+# --- regression: a payment must never link directly to a CREDIT bank row -----
+# Caught in a real NIM run: the model correctly traced payment -> settlement ->
+# the settlement's own bank credit, bundled all three ids into one
+# propose_match call, and the tool mislabeled the third leg as a
+# chargeback_payment link (which only makes sense for a debit) - a genuine
+# false match. See engine/l3_agent.py's synthetic exercise notes.
+
+def test_propose_match_rejects_a_payment_linked_directly_to_a_settlement_credit():
+    dataset = _dataset()  # bank[0] is a CREDIT row (net_paise, debit_paise=0)
+    ctx = _ctx(residual_id="pay_1", residual_source="payments")
+    get_record(ctx, "settlements", "setl_1")
+    get_record(ctx, "bank", "btxn_1")
+    try:
+        propose_match(
+            ctx, record_ids=["pay_1", "setl_1", "btxn_1"], confidence=0.98,
+            rationale="setl_1 matches pay_1 and btxn_1 is setl_1's own bank credit",
+        )
+        assert False, "expected ToolError - a payment must not link directly to a settlement's own credit"
+    except ToolError:
+        pass
+    assert ctx.result is None  # the whole call is rejected, not partially applied
+
+
+def test_propose_match_still_allows_a_genuine_chargeback_debit_link():
+    dataset = _dataset()
+    ctx = _ctx(residual_id="pay_1", residual_source="payments")
+    debit = BankRow("btxn_chargeback", "2026-08-05", "CHARGEBACK DR-ref-RAZORPAY SOFTWARE", 0, 500_00, 0)
+    ctx.dataset.bank.append(debit)
+    ctx.known_ids.add("btxn_chargeback")
+    result = propose_match(
+        ctx, record_ids=["pay_1", "btxn_chargeback"], confidence=0.95,
+        rationale="btxn_chargeback is a genuine chargeback debit against pay_1",
+    )
+    assert result["status"] == "ok"
+    assert result["matches"][0]["link_type"] == "chargeback_payment"
