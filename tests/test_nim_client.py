@@ -6,8 +6,9 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock
 
-import openai
 import pytest
+
+openai = pytest.importorskip("openai", reason="optional 'llm' extra not installed - pip install -e '.[llm]'")
 
 from engine.llm.base import Message, RateLimitedError, ToolCall, ToolSpec
 from engine.llm.nim_client import NimClient

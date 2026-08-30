@@ -8,8 +8,9 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-import anthropic
 import pytest
+
+anthropic = pytest.importorskip("anthropic", reason="optional 'llm' extra not installed - pip install -e '.[llm]'")
 
 from engine.llm.anthropic_client import AnthropicClient
 from engine.llm.base import Message, RateLimitedError, ToolSpec
