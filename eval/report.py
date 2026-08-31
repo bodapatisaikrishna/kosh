@@ -86,6 +86,22 @@ def _rupees(paise: int) -> str:
     return f"{sign}₹{abs(paise) / 100:,.2f}"
 
 
+def _llm_cost_card(thr: dict) -> str:
+    """A 6th headline card for real $ LLM cost - only when L3 actually ran
+    (llm_calls > 0). Omitted otherwise so a deterministic-only run (the
+    `make demo` default) never shows a misleading "$0.00", since that would
+    read as "free" rather than "L3 didn't run"."""
+    if not thr.get("llm_calls"):
+        return ""
+    cost_usd = thr["cost_usd_micros"] / 1_000_000
+    per_1000_usd = thr["cost_per_1000_records_micros"] / 1_000_000
+    return (
+        '<div class="card"><div class="label">LLM cost (L3)</div>'
+        f'<div class="value" style="font-size:1.4rem">${cost_usd:.4f}</div>'
+        f'<div class="muted" style="font-size:0.7rem">${per_1000_usd:.4f} / 1000 records</div></div>'
+    )
+
+
 def render_html(report: dict) -> str:
     m = report["metrics"]
     acc = m["accuracy"]
@@ -190,6 +206,7 @@ def render_html(report: dict) -> str:
     <div class="card risk"><div class="label">False-match rate</div><div class="value">{_pct(acc['false_match_rate'])}</div></div>
     <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">{_rupees(cash['reconciled_cash_paise'])}</div></div>
     <div class="card"><div class="label">Wall clock</div><div class="value">{thr['wall_clock_seconds']:.3f}s</div></div>
+    {_llm_cost_card(thr)}
   </div>
 
   <section>

@@ -100,5 +100,6 @@ def run_full(dataset: Dataset, client: LLMClient | None = None, model_name: str 
         llm_calls=l3_output.meta.llm_calls if l3_output else 0,
         input_tokens=l3_output.meta.input_tokens if l3_output else 0,
         output_tokens=l3_output.meta.output_tokens if l3_output else 0,
+        cost_usd_micros=l3_output.meta.cost_usd_micros if l3_output else 0,
     )
     return EngineOutput(matches=all_matches, exceptions=ledger, meta=meta)

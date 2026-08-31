@@ -78,6 +78,27 @@ def test_render_html_is_valid_enough_to_write(tmp_path):
     assert path.read_text(encoding="utf-8").startswith("<!doctype html>")
 
 
+def test_render_html_omits_llm_cost_card_when_l3_never_ran():
+    # The `make demo` default path (engine=full, no client): llm_calls is 0,
+    # so cost_usd_micros is 0 too - not because it's free, but because L3
+    # never ran. Showing "$0.00" here would misleadingly read as "free".
+    report = run_eval(FIXTURES, "full")
+    assert report["metrics"]["throughput"]["llm_calls"] == 0
+    out = render_html(report)
+    assert "LLM cost" not in out
+
+
+def test_render_html_shows_real_llm_cost_when_l3_ran():
+    report = run_eval(FIXTURES, "full")
+    report["metrics"]["throughput"]["llm_calls"] = 6
+    report["metrics"]["throughput"]["cost_usd_micros"] = 74890
+    report["metrics"]["throughput"]["cost_per_1000_records_micros"] = 40320
+    out = render_html(report)
+    assert "LLM cost" in out
+    assert "$0.0749" in out
+    assert "$0.0403" in out
+
+
 def test_render_html_escapes_exception_content():
     report = run_eval(FIXTURES, "full")
     if report["exceptions_detail"]:

@@ -22,6 +22,7 @@ from .fees import compute_expected_fee
 from .io import Dataset
 from .l3_tools import TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
 from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError, TransientBackendError
+from .llm.pricing import cost_usd_micros
 
 PROMPT_VERSION = 1
 DEFAULT_MAX_TURNS = 8
@@ -62,6 +63,7 @@ class AgentTrace:
     llm_calls: int = 0
     input_tokens: int = 0
     output_tokens: int = 0
+    cost_usd_micros: int = 0
     from_cache: bool = False
 
 
@@ -177,6 +179,7 @@ def run_agent_on_record(
         record_id=record_id, source=source, model=model_name, backend=backend_name,
         turns=turns, final_decision=final_decision, result=result_payload,
         llm_calls=len(turns), input_tokens=total_input_tokens, output_tokens=total_output_tokens,
+        cost_usd_micros=cost_usd_micros(model_name, total_input_tokens, total_output_tokens),
         from_cache=False,
     )
     _write_cache(cache_file, trace)
@@ -256,11 +259,12 @@ async def run_l3_async(
 
     matches: list[Match] = []
     exceptions: list[ReconException] = []
-    total_calls = total_input = total_output = 0
+    total_calls = total_input = total_output = total_cost = 0
     for trace in traces:
         total_calls += trace.llm_calls
         total_input += trace.input_tokens
         total_output += trace.output_tokens
+        total_cost += trace.cost_usd_micros
         if not trace.result:
             continue
         if trace.final_decision == "match":
@@ -273,7 +277,10 @@ async def run_l3_async(
 
     return EngineOutput(
         matches=matches, exceptions=exceptions,
-        meta=EngineMeta(wall_clock_seconds=elapsed, llm_calls=total_calls, input_tokens=total_input, output_tokens=total_output),
+        meta=EngineMeta(
+            wall_clock_seconds=elapsed, llm_calls=total_calls,
+            input_tokens=total_input, output_tokens=total_output, cost_usd_micros=total_cost,
+        ),
     )
 
 
@@ -385,8 +392,9 @@ def _profile(backend: str, model: str | None, out_path: str | None, traces_dir: 
     )
 
     report = {
-        "note": "SYNTHETIC exercise set, not run_2000 residual (which is empty - see ARCHITECTURE.md). "
-                "Exercises every hard constraint and tool against a real LLM backend.",
+        "note": "SYNTHETIC exercise set, hand-built to exercise every hard constraint and tool at "
+                "least once against a real LLM backend - complements benchmarks/phase5_live_residual.json, "
+                "which is the real run_2000 residual (non-empty after dataset hardening; see ARCHITECTURE.md).",
         "backend": backend_name,
         "model": model_name,
         "records": len(SYNTHETIC_RESIDUAL_ITEMS),
@@ -394,6 +402,7 @@ def _profile(backend: str, model: str | None, out_path: str | None, traces_dir: 
         "llm_calls": output.meta.llm_calls,
         "input_tokens": output.meta.input_tokens,
         "output_tokens": output.meta.output_tokens,
+        "cost_usd_micros": output.meta.cost_usd_micros,
         "matches": [asdict(m) for m in output.matches],
         "exceptions": [asdict(e) for e in output.exceptions],
     }

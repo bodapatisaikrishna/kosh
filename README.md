@@ -52,7 +52,7 @@ The right-hand column is the half most systems get wrong: four defect types exis
 | `pay_dGxUjmPIxeeXo4` | Correctly matched to its order — same independent check |
 | 4 records | `AGENT_INCOMPLETE` — honest turn-budget exhaustion (constraint 6's infrastructure fallback), not a wrong answer |
 
-Zero false matches, verified by hand against ground truth for every asserted link, not just read off the summary. 48 real LLM calls, 109s wall clock. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/).
+Zero false matches, verified by hand against ground truth for every asserted link, not just read off the summary. 48 real LLM calls, 109s wall clock, **$0.0749 total → $0.0403 per 1000 records** (well inside the brief's own <$0.50/1000 target), computed from real token counts against NIM's published per-token rate — not estimated. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/).
 
 The agent's tool-use and hard-constraint enforcement are additionally proven on a small hand-built synthetic exercise set ([`benchmarks/phase5_synthetic.json`](benchmarks/phase5_synthetic.json), [`benchmarks/sample_traces/`](benchmarks/sample_traces/)) covering every constraint at least once — an unexplained variance, an ambiguous refusal, a subset-sum batch, a high-value review flag, and a turn-budget exhaustion — the same live model, same zero false matches. The first live run of that set surfaced a genuine false-match bug, fixed with regression tests, then re-run clean.
 

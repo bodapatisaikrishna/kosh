@@ -103,6 +103,8 @@
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
   "note": "SYNTHETIC exercise set, hand-built to exercise every hard constraint and tool at least once against a real LLM backend - complements benchmarks/phase5_live_residual.json, which is the real run_2000 residual (non-empty after dataset hardening; see ARCHITECTURE.md).",
   "output_tokens": 13851,
+  "cost_usd_micros": 73326,
+  "cost_note": "$0.073326 total for these 5 hand-built adversarial records (computed via engine/llm/pricing.py). Deliberately not extrapolated to a per-1000-records rate - these 5 are chosen to be hard, not representative of typical volume. The real per-1000-records figure for the Phase 5 cost checkpoint is in benchmarks/phase5_live_residual.json, against actual run_2000 records.",
   "records": 5,
   "wall_clock_seconds": 641.3605986250041
 }
