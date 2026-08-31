@@ -1,0 +1,305 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 17172,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 1331,
+  "record_id": "pay_ymzQx3u8WEhd7G",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_ymzQx3u8WEhd7G",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 1498031,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_ymzQx3u8WEhd7G",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-18T09:26:00",
+            "fee_paise": 30732,
+            "gross_paise": 1536600,
+            "gst_paise": 7837,
+            "international": false,
+            "method": "netbanking",
+            "net_paise": 1498031,
+            "order_id": "order_xGrxGJd2AdZowS",
+            "payment_id": "pay_ymzQx3u8WEhd7G",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_p7l4JVGHn8xQmP",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 1536600,
+            "international": false,
+            "method": "netbanking"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 29195,
+              "gst_paise": 5255,
+              "net_paise": 1502150
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 1536600,
+              "international": false,
+              "method": "netbanking"
+            },
+            "expected_paise": 29195,
+            "observed_paise": 30732
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": 1537,
+              "detail": "1537 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 1536600,
+              "international": false,
+              "method": "netbanking"
+            },
+            "expected_paise": 5255,
+            "observed_paise": 7837
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": 2582,
+              "detail": "2582 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "expected_paise": 1502150,
+            "observed_paise": 1498031
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -4119,
+              "detail": "-4119 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_xGrxGJd2AdZowS",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_uq0Wi0tMSYeM",
+            "gross_paise": 1536600,
+            "intended_method": "netbanking",
+            "invoice_no": "INV-2026-001681",
+            "order_date": "2026-08-18",
+            "order_id": "order_xGrxGJd2AdZowS",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_p7l4JVGHn8xQmP",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 64155,
+              "gross_paise": 3295700,
+              "gst_paise": 13853,
+              "net_paise": 3217692,
+              "num_payments": 3,
+              "settled_at": "2026-08-20",
+              "settlement_id": "setl_p7l4JVGHn8xQmP",
+              "utr": "ICICN44644118766"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 5000000,
+            "date_window_days": 10,
+            "limit": 10,
+            "record_id": "setl_p7l4JVGHn8xQmP"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 1062299110,
+                "bank_txn_id": "btxn_MwUBgmDjxHQr",
+                "credit_paise": 649400,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-UTIBN30560176231",
+                "table": "bank",
+                "value_date": "2026-08-10"
+              },
+              {
+                "balance_paise": 1094001392,
+                "bank_txn_id": "btxn_tED1oSVznmrs",
+                "credit_paise": 221642,
+                "debit_paise": 0,
+                "narration": "IMPS/UTIBN39819604755/RAZORPAYSOFT/",
+                "table": "bank",
+                "value_date": "2026-08-10"
+              },
+              {
+                "balance_paise": 1110363726,
+                "bank_txn_id": "btxn_UsN8ZQhQrySG",
+                "credit_paise": 400981,
+                "debit_paise": 0,
+                "narration": "SBINN30798074743 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-08-11"
+              },
+              {
+                "balance_paise": 1129317625,
+                "bank_txn_id": "btxn_tWtj73uet8SL",
+                "credit_paise": 114900,
+                "debit_paise": 0,
+                "narration": "UPI/CR/HDFCN25986975559/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-08-11"
+              },
+              {
+                "balance_paise": 1131889073,
+                "bank_txn_id": "btxn_LbUjbbgxB8RL",
+                "credit_paise": 2571448,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-ICICN25664173739",
+                "table": "bank",
+                "value_date": "2026-08-12"
+              },
+              {
+                "balance_paise": 1131906691,
+                "bank_txn_id": "btxn_W1OnX70xNW7O",
+                "credit_paise": 17618,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-SBINN62545215044",
+                "table": "bank",
+                "value_date": "2026-08-12"
+              },
+              {
+                "balance_paise": 1132270491,
+                "bank_txn_id": "btxn_ZNcPwbbfawcr",
+                "credit_paise": 363800,
+                "debit_paise": 0,
+                "narration": "KKBKN91947344706 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-08-12"
+              },
+              {
+                "balance_paise": 1146206845,
+                "bank_txn_id": "btxn_utAUYtLlkOw6",
+                "credit_paise": 1624517,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-ICICN65605537138",
+                "table": "bank",
+                "value_date": "2026-08-12"
+              },
+              {
+                "balance_paise": 1149604447,
+                "bank_txn_id": "btxn_57cFS9qSi0SN",
+                "credit_paise": 3397602,
+                "debit_paise": 0,
+                "narration": "UPI/CR/ICICN64006300293/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-08-13"
+              },
+              {
+                "balance_paise": 1149639550,
+                "bank_txn_id": "btxn_AcCvcOH6I0VO",
+                "credit_paise": 35103,
+                "debit_paise": 0,
+                "narration": "IMPS/KKBKN80214555450/RAZORPAYSOFT/",
+                "table": "bank",
+                "value_date": "2026-08-13"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

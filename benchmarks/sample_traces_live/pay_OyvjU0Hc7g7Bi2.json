@@ -1,0 +1,274 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 17389,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 1016,
+  "record_id": "pay_OyvjU0Hc7g7Bi2",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_OyvjU0Hc7g7Bi2",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 15747371,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "REVIEW_REQUIRED",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_OyvjU0Hc7g7Bi2",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-07-06T15:30:00",
+            "fee_paise": 305676,
+            "gross_paise": 16088200,
+            "gst_paise": 35153,
+            "international": true,
+            "method": "card",
+            "net_paise": 15747371,
+            "order_id": "order_hwH6n7tcYXXLVk",
+            "payment_id": "pay_OyvjU0Hc7g7Bi2",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_ay2LvNyOtg9dGE",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 16088200,
+            "international": true,
+            "method": "card"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 482646,
+              "gst_paise": 86876,
+              "net_paise": 15518678
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 16088200,
+              "international": true,
+              "method": "card"
+            },
+            "expected_paise": 482646,
+            "observed_paise": 305676
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -176970,
+              "detail": "-176970 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 16088200,
+              "international": true,
+              "method": "card"
+            },
+            "expected_paise": 86876,
+            "observed_paise": 35153
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -51723,
+              "detail": "-51723 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 16088200,
+              "international": true,
+              "method": "card"
+            },
+            "expected_paise": 15518678,
+            "observed_paise": 15747371
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": 228693,
+              "detail": "228693 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_ay2LvNyOtg9dGE",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 345992,
+              "gross_paise": 18104000,
+              "gst_paise": 42409,
+              "net_paise": 17715599,
+              "num_payments": 4,
+              "settled_at": "2026-08-03",
+              "settlement_id": "setl_ay2LvNyOtg9dGE",
+              "utr": "SBINN00901929385"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_hwH6n7tcYXXLVk",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "USD",
+            "customer_id": "cust_22vzJpZ02kax",
+            "gross_paise": 16088200,
+            "intended_method": "card",
+            "invoice_no": "INV-2026-000745",
+            "order_date": "2026-07-06",
+            "order_id": "order_hwH6n7tcYXXLVk",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 1000000,
+            "date_window_days": 30,
+            "limit": 20,
+            "record_id": "setl_ay2LvNyOtg9dGE"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 757752976,
+                "bank_txn_id": "btxn_W2EX89lJZfo9",
+                "credit_paise": 18217496,
+                "debit_paise": 0,
+                "narration": "UPI/CR/HDFCN89990061843/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-07-21"
+              },
+              {
+                "balance_paise": 828720366,
+                "bank_txn_id": "btxn_6frLSZDJ4nZ0",
+                "credit_paise": 17874948,
+                "debit_paise": 0,
+                "narration": "UPI/CR/ICICN64513440417/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-07-28"
+              },
+              {
+                "balance_paise": 922021745,
+                "bank_txn_id": "btxn_4RhBsx5rYikt",
+                "credit_paise": 17715599,
+                "debit_paise": 0,
+                "narration": "NEFT-SBINN00901929385-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-03"
+              },
+              {
+                "balance_paise": 1240848458,
+                "bank_txn_id": "btxn_amIZdAuQ9OeY",
+                "credit_paise": 18407329,
+                "debit_paise": 0,
+                "narration": "SBINN95799477500 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-08-21"
+              },
+              {
+                "balance_paise": 1261769183,
+                "bank_txn_id": "btxn_dtm569GXjtRW",
+                "credit_paise": 17865007,
+                "debit_paise": 0,
+                "narration": "NEFT-KKBKN16209956384-RAZORPAY SOFT",
+                "table": "bank",
+                "value_date": "2026-08-24"
+              },
+              {
+                "balance_paise": 1361424738,
+                "bank_txn_id": "btxn_Xe5zyaFrlqa1",
+                "credit_paise": 16764464,
+                "debit_paise": 0,
+                "narration": "NEFT-SBINN64225953623-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-28"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+{
+  "backend": "nim",
+  "final_decision": "match",
+  "from_cache": false,
+  "input_tokens": 17129,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 1768,
+  "record_id": "pay_dGxUjmPIxeeXo4",
+  "result": {
+    "companion_exception": null,
+    "matches": [
+      {
+        "confidence": 0.92,
+        "evidence": [
+          "Payment pay_dGxUjmPIxeeXo4 links to order order_iLGCndXcyGvAlX (matching order_id, gross_paise 103700, method wallet, status paid) and settlement setl_WCpMEdv6RwTwIE (matching settlement_id, payment captured 2026-08-26, settlement settled 2026-08-28). Fee_paise 2074 matches compute_expected_fee exactly. Settlement net_paise 248973 matches bank credit btxn_kS3xaS8PQ38Z (NEFT-KKBKN59193770124) perfectly. The only variance is GST: expected 373 paise vs actual 285 paise (-88 paise, UNEXPLAINED per explain_variance), which is immaterial (Rs 0.88). All IDs trace through correctly."
+        ],
+        "layer": "L3",
+        "left_id": "order_iLGCndXcyGvAlX",
+        "link_type": "order_payment",
+        "right_id": "pay_dGxUjmPIxeeXo4"
+      },
+      {
+        "confidence": 0.92,
+        "evidence": [
+          "Payment pay_dGxUjmPIxeeXo4 links to order order_iLGCndXcyGvAlX (matching order_id, gross_paise 103700, method wallet, status paid) and settlement setl_WCpMEdv6RwTwIE (matching settlement_id, payment captured 2026-08-26, settlement settled 2026-08-28). Fee_paise 2074 matches compute_expected_fee exactly. Settlement net_paise 248973 matches bank credit btxn_kS3xaS8PQ38Z (NEFT-KKBKN59193770124) perfectly. The only variance is GST: expected 373 paise vs actual 285 paise (-88 paise, UNEXPLAINED per explain_variance), which is immaterial (Rs 0.88). All IDs trace through correctly."
+        ],
+        "layer": "L3",
+        "left_id": "pay_dGxUjmPIxeeXo4",
+        "link_type": "payment_settlement",
+        "right_id": "setl_WCpMEdv6RwTwIE"
+      }
+    ]
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_dGxUjmPIxeeXo4",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-26T10:49:00",
+            "fee_paise": 2074,
+            "gross_paise": 103700,
+            "gst_paise": 285,
+            "international": false,
+            "method": "wallet",
+            "net_paise": 101341,
+            "order_id": "order_iLGCndXcyGvAlX",
+            "payment_id": "pay_dGxUjmPIxeeXo4",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_WCpMEdv6RwTwIE",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 103700,
+            "international": false,
+            "method": "wallet"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 2074,
+              "gst_paise": 373,
+              "net_paise": 101253
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 103700,
+              "international": false,
+              "method": "wallet"
+            },
+            "expected_paise": 373,
+            "observed_paise": 285
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -88,
+              "detail": "-88 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_WCpMEdv6RwTwIE",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 5098,
+              "gross_paise": 254900,
+              "gst_paise": 829,
+              "net_paise": 248973,
+              "num_payments": 6,
+              "settled_at": "2026-08-28",
+              "settlement_id": "setl_WCpMEdv6RwTwIE",
+              "utr": "KKBKN59193770124"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_iLGCndXcyGvAlX",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_VOLBw3oTC4H5",
+            "gross_paise": 103700,
+            "intended_method": "wallet",
+            "invoice_no": "INV-2026-001877",
+            "order_date": "2026-08-26",
+            "order_id": "order_iLGCndXcyGvAlX",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 0,
+            "date_window_days": 10,
+            "limit": 10,
+            "record_id": "pay_dGxUjmPIxeeXo4"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 1000,
+            "date_window_days": 10,
+            "limit": 10,
+            "record_id": "setl_WCpMEdv6RwTwIE"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 1361636011,
+                "bank_txn_id": "btxn_kS3xaS8PQ38Z",
+                "credit_paise": 248973,
+                "debit_paise": 0,
+                "narration": "NEFT-KKBKN59193770124-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-28"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "confidence": 0.92,
+            "rationale": "Payment pay_dGxUjmPIxeeXo4 links to order order_iLGCndXcyGvAlX (matching order_id, gross_paise 103700, method wallet, status paid) and settlement setl_WCpMEdv6RwTwIE (matching settlement_id, payment captured 2026-08-26, settlement settled 2026-08-28). Fee_paise 2074 matches compute_expected_fee exactly. Settlement net_paise 248973 matches bank credit btxn_kS3xaS8PQ38Z (NEFT-KKBKN59193770124) perfectly. The only variance is GST: expected 373 paise vs actual 285 paise (-88 paise, UNEXPLAINED per explain_variance), which is immaterial (Rs 0.88). All IDs trace through correctly.",
+            "record_ids": [
+              "order_iLGCndXcyGvAlX",
+              "setl_WCpMEdv6RwTwIE"
+            ]
+          },
+          "name": "propose_match",
+          "result": {
+            "companion_exception": null,
+            "matches": [
+              {
+                "confidence": 0.92,
+                "evidence": [
+                  "Payment pay_dGxUjmPIxeeXo4 links to order order_iLGCndXcyGvAlX (matching order_id, gross_paise 103700, method wallet, status paid) and settlement setl_WCpMEdv6RwTwIE (matching settlement_id, payment captured 2026-08-26, settlement settled 2026-08-28). Fee_paise 2074 matches compute_expected_fee exactly. Settlement net_paise 248973 matches bank credit btxn_kS3xaS8PQ38Z (NEFT-KKBKN59193770124) perfectly. The only variance is GST: expected 373 paise vs actual 285 paise (-88 paise, UNEXPLAINED per explain_variance), which is immaterial (Rs 0.88). All IDs trace through correctly."
+                ],
+                "layer": "L3",
+                "left_id": "order_iLGCndXcyGvAlX",
+                "link_type": "order_payment",
+                "right_id": "pay_dGxUjmPIxeeXo4"
+              },
+              {
+                "confidence": 0.92,
+                "evidence": [
+                  "Payment pay_dGxUjmPIxeeXo4 links to order order_iLGCndXcyGvAlX (matching order_id, gross_paise 103700, method wallet, status paid) and settlement setl_WCpMEdv6RwTwIE (matching settlement_id, payment captured 2026-08-26, settlement settled 2026-08-28). Fee_paise 2074 matches compute_expected_fee exactly. Settlement net_paise 248973 matches bank credit btxn_kS3xaS8PQ38Z (NEFT-KKBKN59193770124) perfectly. The only variance is GST: expected 373 paise vs actual 285 paise (-88 paise, UNEXPLAINED per explain_variance), which is immaterial (Rs 0.88). All IDs trace through correctly."
+                ],
+                "layer": "L3",
+                "left_id": "pay_dGxUjmPIxeeXo4",
+                "link_type": "payment_settlement",
+                "right_id": "setl_WCpMEdv6RwTwIE"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

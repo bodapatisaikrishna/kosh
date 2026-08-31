@@ -1,0 +1,229 @@
+{
+  "backend": "nim",
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 17161,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 1000,
+  "record_id": "pay_RMejvzSwrh9QXa",
+  "result": {
+    "exception": {
+      "affected": {
+        "record_id": "pay_RMejvzSwrh9QXa",
+        "source": "payments"
+      },
+      "aging_days": 0,
+      "amount_at_risk_paise": 726649,
+      "category": "AGENT_INCOMPLETE",
+      "evidence_chain": [
+        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+      ],
+      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "severity": "STANDARD",
+      "suggested_owner": "Reconciliation Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_RMejvzSwrh9QXa",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-07-07T20:38:00",
+            "fee_paise": 14144,
+            "gross_paise": 744400,
+            "gst_paise": 3607,
+            "international": false,
+            "method": "card",
+            "net_paise": 726649,
+            "order_id": "order_gjPcrL9beElhAk",
+            "payment_id": "pay_RMejvzSwrh9QXa",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_P65ExMApYLxX4s",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 744400,
+            "international": false,
+            "method": "card"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 14888,
+              "gst_paise": 2680,
+              "net_paise": 726832
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 744400,
+              "international": false,
+              "method": "card"
+            },
+            "expected_paise": 14888,
+            "observed_paise": 14144
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -744,
+              "detail": "-744 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 744400,
+              "international": false,
+              "method": "card"
+            },
+            "expected_paise": 2680,
+            "observed_paise": 3607
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": 927,
+              "detail": "927 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 744400,
+              "international": false,
+              "method": "card"
+            },
+            "expected_paise": 726832,
+            "observed_paise": 726649
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -183,
+              "detail": "-183 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_P65ExMApYLxX4s",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 27096,
+              "gross_paise": 1392000,
+              "gst_paise": 6779,
+              "net_paise": 1358125,
+              "num_payments": 3,
+              "settled_at": "2026-07-09",
+              "settlement_id": "setl_P65ExMApYLxX4s",
+              "utr": "ICICN69759676563"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_gjPcrL9beElhAk",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_TcWFcMwmMOLG",
+            "gross_paise": 744400,
+            "intended_method": "card",
+            "invoice_no": "INV-2026-000767",
+            "order_date": "2026-07-07",
+            "order_id": "order_gjPcrL9beElhAk",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 100000,
+            "date_window_days": 5,
+            "limit": 20,
+            "record_id": "setl_P65ExMApYLxX4s"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 598118774,
+                "bank_txn_id": "btxn_DvckK3sHHqcV",
+                "credit_paise": 1358125,
+                "debit_paise": 0,
+                "narration": "ICICN69759676563 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-07-09"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    }
+  ]
+}

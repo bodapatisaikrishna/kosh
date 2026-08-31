@@ -25,7 +25,7 @@ The judging bar: *"Throughput plus measured accuracy plus an honest exception li
 | L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
 | L3 agent | residual only | 6 records | — | variances no deterministic rule can decompose |
 
-L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens — that *is* the deterministic-first thesis, quantified.
+L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens — that *is* the deterministic-first thesis, quantified. Run for real against those 6, L3 correctly matched 2 and honestly deferred the other 4 (details further down).
 
 **Per-defect-class scoring on `run_2000` — 14/14 types, zero misses, zero misclassifications, zero false exceptions:**
 
@@ -44,16 +44,17 @@ L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens —
 
 The right-hand column is the half most systems get wrong: four defect types exist specifically to punish an engine that flags everything it doesn't instantly recognise. Precision on *not* raising a false alarm is scored just as hard as recall on real defects.
 
-**L3, run for real against a live model.** `run_2000`'s residual for the agent is empty — L0–L2 and L4's deterministic classifier already resolve everything, the same honest "nothing left to do" story L2 tells on its own. So the agent's tool-use and constraint enforcement were proven on a small synthetic exercise set instead, run against `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM (the brief specs Anthropic; no key was available — a documented deviation, not a silent one). The first live run surfaced a genuine false-match bug, fixed with regression tests, then re-run clean:
+**L3, run for real, against the real `run_2000` residual** ([`benchmarks/phase5_live_residual.json`](benchmarks/phase5_live_residual.json)) — 6 records that L0–L2 and L4's deterministic classifier genuinely could not resolve, sent to `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM (the brief specs Anthropic; no key was available — a documented deviation, not a silent one):
 
 | Record | Outcome |
 |---|---|
-| Genuinely unexplained variance | Correctly raised `UNEXPLAINED_VARIANCE` |
-| Two identical-amount settlement candidates | Correctly refused to guess |
-| A real 2-settlement batch | Correctly chained `find_candidates` → `solve_subset` → `propose_match`, both linked |
-| 2 records needing deeper investigation | `AGENT_INCOMPLETE` — thorough, correct reasoning that ran past its 8-turn budget |
+| `pay_3egKQ6BCralBAI` | Correctly matched to its order — independently checked against `ground_truth.json`, not just the pipeline's own score |
+| `pay_dGxUjmPIxeeXo4` | Correctly matched to its order — same independent check |
+| 4 records | `AGENT_INCOMPLETE` — honest turn-budget exhaustion (constraint 6's infrastructure fallback), not a wrong answer |
 
-Zero false matches. Full traces: [`benchmarks/sample_traces/`](benchmarks/sample_traces/).
+Zero false matches, verified by hand against ground truth for every asserted link, not just read off the summary. 48 real LLM calls, 109s wall clock. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/).
+
+The agent's tool-use and hard-constraint enforcement are additionally proven on a small hand-built synthetic exercise set ([`benchmarks/phase5_synthetic.json`](benchmarks/phase5_synthetic.json), [`benchmarks/sample_traces/`](benchmarks/sample_traces/)) covering every constraint at least once — an unexplained variance, an ambiguous refusal, a subset-sum batch, a high-value review flag, and a turn-budget exhaustion — the same live model, same zero false matches. The first live run of that set surfaced a genuine false-match bug, fixed with regression tests, then re-run clean.
 
 ## Reproduce
 
@@ -110,7 +111,7 @@ Same `--seed` → byte-identical output, every time. A small companion fixture, 
 - `PERIOD_CUTOFF` recall is 14/14 on `run_2000` at the current threshold, but that threshold (a >4-day settlement gap) was calibrated against this fixture's observed distribution. It is a tuned constant, not a law — on a different merchant's cycle it would need re-derivation, and one boundary case at exactly 3 days remains genuinely indistinguishable from a slow weekend.
 - The defect *rates* are tuned so all 14 types appear at N=2000; at N=500 some types fire only once or twice, so per-class recall at that scale is a small-sample number and should be read as such.
 - `propose_match`'s rationale-citation check is a best-effort structural check (does the text contain a known record id), not a semantic verification that the citation actually supports the claim.
-- Two of the five live L3 exercise records ended in `AGENT_INCOMPLETE` — both were thorough, correct investigation that simply didn't fit inside the 8-turn budget. That's constraint 6's infrastructure-level fallback working as designed, not a false positive, but it's an honest sign the turn budget is tight for a genuinely uncertain case.
+- The 8-turn budget is tight for a genuinely uncertain case: 2 of 5 synthetic exercise records, and 4 of 6 real `run_2000` residual records, ended in `AGENT_INCOMPLETE` rather than a decision. That's constraint 6's infrastructure-level fallback working as designed, not a false positive or a crash — but a majority-incomplete rate on real residual is an honest signal the budget (or the prompting) has room to improve, not a result to undersell.
 - `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py`) — holds until a layer can leave a record neither matched nor exceptioned.
 - `false_match_rate` is computed against the engine's own asserted links, not total records — deliberate, so it can't be gamed by asserting fewer links, but it must always be read next to auto-match rate, never alone.
 - The reference fixture's own UTR-truncation defect happens to either leave the UTR fully intact or remove it entirely — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.

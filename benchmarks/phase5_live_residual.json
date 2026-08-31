@@ -1,0 +1,20 @@
+{
+  "note": "L3 run against the REAL residual from data/fixtures/run_2000 - the payments that L0-L2 matching and L4's deterministic classifier genuinely could not explain. Not a synthetic exercise set.",
+  "backend": "nim",
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "wall_clock_seconds": 109.61433696746826,
+  "llm_calls": 48,
+  "input_tokens": 105556,
+  "output_tokens": 10051,
+  "auto_match_rate": 0.9773950484391819,
+  "false_match_rate": 0.0,
+  "precision": 1.0,
+  "recall": 0.9995194617972128,
+  "layer_contribution": {
+    "L0": 0.9923076923076923,
+    "L1": 0.0026442307692307694,
+    "L2": 0.004086538461538462,
+    "L3": 0.0009615384615384616
+  },
+  "exceptions_total": 137
+}
