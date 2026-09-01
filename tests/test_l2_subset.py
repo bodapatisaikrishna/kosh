@@ -85,15 +85,24 @@ def test_too_many_candidates_raises():
 
 
 def test_timeout_returns_timeout_status_not_a_hang():
-    # An adversarial instance with many candidates all sharing the same amount and
-    # a target with a huge number of equal-cardinality solutions - forces deep
-    # exploration. A near-zero time budget must return TIMEOUT quickly rather than
-    # exhaustively search or silently pick a wrong answer.
+    # This used to target 2000_00 with 40 equal-100_00 candidates - reachable in
+    # exactly 20-of-40 ways, so MAX_SOLUTIONS_TO_DETECT (2) is satisfied within
+    # the first few root-to-leaf paths, almost always well under the first
+    # 200-node deadline check. Verified empirically: that version returned
+    # AMBIGUOUS in under 0.1ms, every time - the TIMEOUT branch was never
+    # actually exercised despite the test's name and a loose assertion that
+    # accepted AMBIGUOUS/SOLVED too, silently passing regardless.
+    #
+    # 2050_00 is not a multiple of 100_00, so with tolerance_paise=0 it is
+    # exactly unreachable - zero solutions ever exist, so the search can never
+    # short-circuit on MAX_SOLUTIONS_TO_DETECT and must explore the space for
+    # real. Confirmed empirically to genuinely require >250ms even at a full
+    # 10s budget, and to hit TIMEOUT deterministically (5/5 trials) at 50ms.
     candidates = [_c(f"c{i}", 100_00) for i in range(40)]
     started = time.perf_counter()
-    result = solve_subset(2000_00, candidates, tolerance_paise=0, time_budget_seconds=0.001)
+    result = solve_subset(2050_00, candidates, tolerance_paise=0, time_budget_seconds=0.05)
     elapsed = time.perf_counter() - started
-    assert result.status in ("TIMEOUT", "AMBIGUOUS", "SOLVED")
+    assert result.status == "TIMEOUT"
     assert elapsed < 1.0
 
 

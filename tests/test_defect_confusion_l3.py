@@ -30,7 +30,7 @@ def _ground_truth_with_one_defect(dtype: str, category: str, payment_id: str = "
 
 def test_l3_fee_variance_exception_is_detected_not_missed():
     ctx = ToolContext(dataset=_dataset(), residual_id="pay_1", residual_source="payments")
-    result = raise_exception(
+    raise_exception(
         ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=500,
         recommended_action="x", rationale="a real reason",
     )
