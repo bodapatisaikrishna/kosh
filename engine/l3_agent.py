@@ -20,7 +20,9 @@ from pathlib import Path
 from .contract import RECOMMENDED_ACTIONS, EngineMeta, EngineOutput, Match, ReconException, severity_for_amount
 from .fees import compute_expected_fee
 from .io import Dataset
-from .l3_tools import _ID_FIELD, TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
+from .io import aging_days as _aging_days
+from .io import infer_as_of_date
+from .l3_tools import _DATE_FIELD, _ID_FIELD, TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
 from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError, TransientBackendError
 from .llm.pricing import cost_usd_micros
 
@@ -76,6 +78,16 @@ def _amount_hint(dataset: Dataset, source: str, record_id: str) -> int:
     if hasattr(row, "credit_paise"):
         return max(row.credit_paise, row.debit_paise)
     return 0
+
+
+def _aging_days_hint(dataset: Dataset, source: str, record_id: str) -> int:
+    """Same convention as l3_tools._residual_aging_days, for the upstream-
+    failure fallback path that never reaches a ToolContext."""
+    row = _find_record(dataset, source, record_id)
+    date_field = _DATE_FIELD.get(source)
+    if row is None or date_field is None:
+        return 0
+    return _aging_days(infer_as_of_date(dataset), getattr(row, date_field))
 
 
 def _cache_key(record_id: str, dataset: Dataset, source: str, model: str, max_turns: int) -> str:
@@ -266,6 +278,7 @@ async def run_l3_async(
                         amount_at_risk_paise=amount,
                         affected=failed_affected,
                         recommended_action=RECOMMENDED_ACTIONS["AGENT_INCOMPLETE"],
+                        aging_days=_aging_days_hint(dataset, source, record_id),
                         evidence_chain=(f"agent run failed against {backend_name}: {type(exc).__name__}: {exc}",),
                     ))},
                 )

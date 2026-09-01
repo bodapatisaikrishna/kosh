@@ -10,14 +10,13 @@ from datetime import date
 from pathlib import Path
 
 from cash.forecast import (
-    _infer_as_of_date,
     compute_cash_reconciliation,
     compute_forecast,
     compute_inflow_curve,
     compute_stuck,
 )
 from engine.contract import Match, ReconException
-from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow, load_dataset
+from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow, infer_as_of_date, load_dataset
 from engine.pipeline import run_full
 
 FIXTURES_2000 = Path(__file__).resolve().parent.parent / "data" / "fixtures" / "run_2000"
@@ -112,7 +111,7 @@ def test_as_of_date_uses_only_capture_dates_not_settlement_or_bank_dates():
     settlement = SettlementRow("setl_1", "2026-08-10", "HDFCN00000000001", 1, 100_00, 0, 0, 0, 100_00)
     bank = BankRow("btxn_1", "2026-08-10", "NEFT-HDFCN00000000001-RAZORPAY SOFTWARE PVT LTD", 100_00, 0, 0)
     dataset = Dataset(orders=[], payments=[payment], settlements=[settlement], bank=[bank])
-    assert _infer_as_of_date(dataset) == date(2026, 8, 1)
+    assert infer_as_of_date(dataset) == date(2026, 8, 1)
 
 
 # --- reconciliation components, on a constructed case --------------------------

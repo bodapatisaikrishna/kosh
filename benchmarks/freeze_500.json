@@ -90,7 +90,7 @@
       "affected": {
         "settlement_id": "setl_whJK6kLvvWeLKN"
       },
-      "aging_days": 0,
+      "aging_days": 28,
       "amount_at_risk_paise": 5929189,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -105,7 +105,7 @@
       "affected": {
         "settlement_id": "setl_Ii7Ni9IDogWiCw"
       },
-      "aging_days": 0,
+      "aging_days": 28,
       "amount_at_risk_paise": 3995428,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -135,7 +135,7 @@
       "affected": {
         "payment_id": "pay_FmHQod0BCW5HvK"
       },
-      "aging_days": 0,
+      "aging_days": 57,
       "amount_at_risk_paise": 3008698,
       "category": "MISSING_SETTLEMENT",
       "evidence_chain": [
@@ -150,7 +150,7 @@
       "affected": {
         "settlement_id": "setl_mGZUepHFicXWMa"
       },
-      "aging_days": 0,
+      "aging_days": 60,
       "amount_at_risk_paise": 1883200,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -165,7 +165,7 @@
       "affected": {
         "bank_txn_id": "btxn_EUxMEwITGAKw"
       },
-      "aging_days": 0,
+      "aging_days": 69,
       "amount_at_risk_paise": 1662600,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -181,7 +181,7 @@
         "booked_order_id": "order_aBTMS5ji51lyaP",
         "payment_id": "pay_t3PpStwBXwSJuE"
       },
-      "aging_days": 0,
+      "aging_days": 82,
       "amount_at_risk_paise": 1200000,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [
@@ -197,7 +197,7 @@
         "booked_order_id": "order_1sC0bnPmNTZxvA",
         "payment_id": "pay_Vn7dFZMAH8WKaW"
       },
-      "aging_days": 0,
+      "aging_days": 61,
       "amount_at_risk_paise": 1089800,
       "category": "REFUND_MISALLOCATION",
       "evidence_chain": [
@@ -212,7 +212,7 @@
       "affected": {
         "settlement_id": "setl_mt66YttWwKuy1u"
       },
-      "aging_days": 0,
+      "aging_days": 59,
       "amount_at_risk_paise": 829940,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -228,7 +228,7 @@
         "order_id": "order_BB7uFwEjiQIy8b",
         "payment_id": "pay_pwEzH5377DN8Y6"
       },
-      "aging_days": 0,
+      "aging_days": 84,
       "amount_at_risk_paise": 773800,
       "category": "DUPLICATE_PAYMENT",
       "evidence_chain": [
@@ -274,7 +274,7 @@
       "affected": {
         "settlement_id": "setl_ZDkQ57JRUJQSGs"
       },
-      "aging_days": 0,
+      "aging_days": 61,
       "amount_at_risk_paise": 342600,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -289,7 +289,7 @@
       "affected": {
         "bank_txn_id": "btxn_K7IZvv32wa7g"
       },
-      "aging_days": 0,
+      "aging_days": 40,
       "amount_at_risk_paise": 326700,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -304,7 +304,7 @@
       "affected": {
         "payment_id": "pay_eBAWYVVpu0Zms0"
       },
-      "aging_days": 0,
+      "aging_days": 21,
       "amount_at_risk_paise": 292300,
       "category": "MISSING_SETTLEMENT",
       "evidence_chain": [
@@ -319,7 +319,7 @@
       "affected": {
         "payment_id": "pay_svotmeI4C4vXY3"
       },
-      "aging_days": 0,
+      "aging_days": 8,
       "amount_at_risk_paise": 272732,
       "category": "MISSING_SETTLEMENT",
       "evidence_chain": [
@@ -335,7 +335,7 @@
         "order_id": "order_QYAKfENORw2Iur",
         "payment_id": "pay_R9JBcwXgXFFsaJ"
       },
-      "aging_days": 0,
+      "aging_days": 75,
       "amount_at_risk_paise": 251700,
       "category": "DUPLICATE_PAYMENT",
       "evidence_chain": [
@@ -350,7 +350,7 @@
       "affected": {
         "bank_txn_id": "btxn_f7wsWTm7avRV"
       },
-      "aging_days": 0,
+      "aging_days": 38,
       "amount_at_risk_paise": 240700,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -365,7 +365,7 @@
       "affected": {
         "payment_id": "pay_qZsfV6iA1YScoa"
       },
-      "aging_days": 0,
+      "aging_days": 59,
       "amount_at_risk_paise": 239600,
       "category": "MISSING_SETTLEMENT",
       "evidence_chain": [
@@ -380,7 +380,7 @@
       "affected": {
         "payment_id": "pay_p2DMYa4Zyd05Yo"
       },
-      "aging_days": 0,
+      "aging_days": 11,
       "amount_at_risk_paise": 230300,
       "category": "MISSING_SETTLEMENT",
       "evidence_chain": [
@@ -395,7 +395,7 @@
       "affected": {
         "settlement_id": "setl_nmQa3jVIgI51XA"
       },
-      "aging_days": 0,
+      "aging_days": 30,
       "amount_at_risk_paise": 228087,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -410,7 +410,7 @@
       "affected": {
         "bank_txn_id": "btxn_WLQSywZWBtsR"
       },
-      "aging_days": 0,
+      "aging_days": 13,
       "amount_at_risk_paise": 183700,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -425,7 +425,7 @@
       "affected": {
         "bank_txn_id": "btxn_G31TKTXyuqab"
       },
-      "aging_days": 0,
+      "aging_days": 30,
       "amount_at_risk_paise": 171000,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -440,7 +440,7 @@
       "affected": {
         "bank_txn_id": "btxn_fQ6sYuhirWZn"
       },
-      "aging_days": 0,
+      "aging_days": 81,
       "amount_at_risk_paise": 144900,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -455,7 +455,7 @@
       "affected": {
         "payment_id": "pay_A8YUtuD73yvnoT"
       },
-      "aging_days": 0,
+      "aging_days": 73,
       "amount_at_risk_paise": 141830,
       "category": "UNEXPLAINED_VARIANCE",
       "evidence_chain": [
@@ -471,7 +471,7 @@
         "order_id": "order_GTnKTFNdR7lV8K",
         "payment_id": "pay_4fxmslUcMOza0D"
       },
-      "aging_days": 0,
+      "aging_days": 69,
       "amount_at_risk_paise": 125140,
       "category": "FX_VARIANCE",
       "evidence_chain": [
@@ -486,7 +486,7 @@
       "affected": {
         "bank_txn_id": "btxn_HPa7BGc4W01E"
       },
-      "aging_days": 0,
+      "aging_days": 40,
       "amount_at_risk_paise": 116500,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -501,7 +501,7 @@
       "affected": {
         "bank_txn_id": "btxn_H75xtMf548sV"
       },
-      "aging_days": 0,
+      "aging_days": 10,
       "amount_at_risk_paise": 95600,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -516,7 +516,7 @@
       "affected": {
         "bank_txn_id": "btxn_ih8zZbAtL8P7"
       },
-      "aging_days": 0,
+      "aging_days": 38,
       "amount_at_risk_paise": 56300,
       "category": "UNIDENTIFIED_CREDIT",
       "evidence_chain": [
@@ -532,7 +532,7 @@
         "order_id": "order_XNtFr11jojG5t0",
         "payment_id": "pay_g4fGEbUoE9gKH3"
       },
-      "aging_days": 0,
+      "aging_days": 62,
       "amount_at_risk_paise": 54914,
       "category": "DUPLICATE_PAYMENT",
       "evidence_chain": [
@@ -548,7 +548,7 @@
         "order_id": "order_1QilypdtZwBVNP",
         "payment_id": "pay_LpbTmrNyue0rgM"
       },
-      "aging_days": 0,
+      "aging_days": 29,
       "amount_at_risk_paise": 50675,
       "category": "DUPLICATE_PAYMENT",
       "evidence_chain": [
@@ -563,7 +563,7 @@
       "affected": {
         "bank_txn_id": "btxn_rt5vNkLHxLTt"
       },
-      "aging_days": 0,
+      "aging_days": 67,
       "amount_at_risk_paise": 46600,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -578,7 +578,7 @@
       "affected": {
         "bank_txn_id": "btxn_kc66vj9N2sTg"
       },
-      "aging_days": 0,
+      "aging_days": 55,
       "amount_at_risk_paise": 45200,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -593,7 +593,7 @@
       "affected": {
         "bank_txn_id": "btxn_ELf5V33arYeV"
       },
-      "aging_days": 0,
+      "aging_days": 77,
       "amount_at_risk_paise": 37900,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -608,7 +608,7 @@
       "affected": {
         "settlement_id": "setl_twmVV5tQpjc7aW"
       },
-      "aging_days": 0,
+      "aging_days": 59,
       "amount_at_risk_paise": 37201,
       "category": "PERIOD_CUTOFF",
       "evidence_chain": [
@@ -623,7 +623,7 @@
       "affected": {
         "bank_txn_id": "btxn_GSuYnVFbpMER"
       },
-      "aging_days": 0,
+      "aging_days": 62,
       "amount_at_risk_paise": 27600,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -638,7 +638,7 @@
       "affected": {
         "bank_txn_id": "btxn_sud1yKWQMBhS"
       },
-      "aging_days": 0,
+      "aging_days": 70,
       "amount_at_risk_paise": 26100,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -653,7 +653,7 @@
       "affected": {
         "bank_txn_id": "btxn_7khUKwPAvFJr"
       },
-      "aging_days": 0,
+      "aging_days": 70,
       "amount_at_risk_paise": 24900,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -668,7 +668,7 @@
       "affected": {
         "bank_txn_id": "btxn_SiSSwuAnOn37"
       },
-      "aging_days": 0,
+      "aging_days": 58,
       "amount_at_risk_paise": 13200,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -683,7 +683,7 @@
       "affected": {
         "bank_txn_id": "btxn_fXegrhTVAyNN"
       },
-      "aging_days": 0,
+      "aging_days": 83,
       "amount_at_risk_paise": 13100,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -698,7 +698,7 @@
       "affected": {
         "bank_txn_id": "btxn_rPzmZfIrcLHU"
       },
-      "aging_days": 0,
+      "aging_days": 56,
       "amount_at_risk_paise": 10100,
       "category": "ORPHAN_CHARGEBACK",
       "evidence_chain": [
@@ -714,7 +714,7 @@
         "payment_id": "pay_I565evkl7wo2Fh",
         "settlement_id": "setl_whJK6kLvvWeLKN"
       },
-      "aging_days": 0,
+      "aging_days": 49,
       "amount_at_risk_paise": 7165,
       "category": "FEE_VARIANCE",
       "evidence_chain": [
@@ -731,7 +731,7 @@
         "payment_id": "pay_nN9YwP5MvrWxQi",
         "settlement_id": "setl_72MhgZEl90SZOi"
       },
-      "aging_days": 0,
+      "aging_days": 21,
       "amount_at_risk_paise": 4844,
       "category": "FEE_VARIANCE",
       "evidence_chain": [
@@ -748,7 +748,7 @@
         "payment_id": "pay_NzOgyBrgV2m4LU",
         "settlement_id": "setl_QCbWkAocgKpqxw"
       },
-      "aging_days": 0,
+      "aging_days": 56,
       "amount_at_risk_paise": 1944,
       "category": "TAX_VARIANCE",
       "evidence_chain": [
@@ -765,7 +765,7 @@
         "payment_id": "pay_4EM6X3L2b7Kecc",
         "settlement_id": "setl_z6ugOStWr2QZPN"
       },
-      "aging_days": 0,
+      "aging_days": 34,
       "amount_at_risk_paise": 651,
       "category": "FEE_VARIANCE",
       "evidence_chain": [
@@ -782,7 +782,7 @@
         "payment_id": "pay_tt2sEHBipyVTno",
         "settlement_id": "setl_OCHKjduAKra4ow"
       },
-      "aging_days": 0,
+      "aging_days": 31,
       "amount_at_risk_paise": 380,
       "category": "FEE_VARIANCE",
       "evidence_chain": [
@@ -799,7 +799,7 @@
         "payment_id": "pay_llIfAgfWjoFG9L",
         "settlement_id": "setl_gi15qdCzpcP1Rs"
       },
-      "aging_days": 0,
+      "aging_days": 87,
       "amount_at_risk_paise": 222,
       "category": "TAX_VARIANCE",
       "evidence_chain": [
@@ -816,7 +816,7 @@
         "payment_id": "pay_ui8Ef669M6Asze",
         "settlement_id": "setl_jEnJZ82vJM59HD"
       },
-      "aging_days": 0,
+      "aging_days": 44,
       "amount_at_risk_paise": 135,
       "category": "TAX_VARIANCE",
       "evidence_chain": [
@@ -830,7 +830,7 @@
     }
   ],
   "fixtures": "data/fixtures/run_500",
-  "generated_at_unix": 1788087272.0415518,
+  "generated_at_unix": 1788234111.9680588,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9761388286334056,
@@ -957,9 +957,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 198917.64581100745,
+      "records_per_second": 191173.9843996102,
       "records_processed": 461,
-      "wall_clock_seconds": 0.0023175420064944774
+      "wall_clock_seconds": 0.002411415975075215
     }
   }
 }

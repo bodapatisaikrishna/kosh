@@ -6,6 +6,8 @@ not get mis-forced into a category.
 
 from __future__ import annotations
 
+from datetime import date
+
 from engine.exceptions import build_ledger, classify_deterministic
 from engine.fees import compute_expected_fee
 from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
@@ -35,9 +37,9 @@ def _settlement(**overrides) -> SettlementRow:
     return SettlementRow(**defaults)
 
 
-def _classify(orders=(), payments=(), settlements=(), credit_residual=(), debit_residual=()):
+def _classify(orders=(), payments=(), settlements=(), credit_residual=(), debit_residual=(), as_of=None):
     dataset = Dataset(orders=list(orders), payments=list(payments), settlements=list(settlements), bank=[])
-    return classify_deterministic(dataset, list(credit_residual), list(debit_residual))
+    return classify_deterministic(dataset, list(credit_residual), list(debit_residual), as_of=as_of)
 
 
 def test_clean_record_raises_nothing():
@@ -62,6 +64,34 @@ def test_missing_settlement():
     assert exceptions[0].affected == {"payment_id": "pay_1"}
     assert exceptions[0].recommended_action
     assert exceptions[0].evidence_chain
+
+
+def test_aging_days_is_computed_from_the_payments_own_capture_date():
+    # aging_days must never be a hardcoded 0 - it's a real field the brief's
+    # own exception-ledger shape asks for, and the dashboard shows it.
+    payment = _payment(settlement_id=None, captured_at="2026-08-01T10:00:00")
+    exceptions, _ = _classify(orders=[_order()], payments=[payment], as_of=date(2026, 8, 15))
+    assert exceptions[0].aging_days == 14
+
+
+def test_aging_days_for_period_cutoff_uses_the_settlement_date_not_capture():
+    settlement = _settlement(settled_at="2026-08-10")
+    exceptions, _ = _classify(orders=[_order()], payments=[_payment()], settlements=[settlement], as_of=date(2026, 8, 20))
+    assert exceptions[0].category == "PERIOD_CUTOFF"
+    assert exceptions[0].aging_days == 10  # from settled_at (Aug 10), not captured_at (Aug 1)
+
+
+def test_aging_days_for_orphan_chargeback_uses_the_bank_value_date():
+    debit = BankRow("btxn_1", "2026-08-05", "CHARGEBACK DEBIT", 0, 3_000_00, 0)
+    exceptions, _ = _classify(debit_residual=[debit], as_of=date(2026, 8, 12))
+    assert exceptions[0].category == "ORPHAN_CHARGEBACK"
+    assert exceptions[0].aging_days == 7
+
+
+def test_aging_days_never_negative_even_if_as_of_predates_the_event():
+    payment = _payment(settlement_id=None, captured_at="2026-08-10T00:00:00")
+    exceptions, _ = _classify(orders=[_order()], payments=[payment], as_of=date(2026, 8, 1))
+    assert exceptions[0].aging_days == 0
 
 
 def test_duplicate_payment():

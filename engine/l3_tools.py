@@ -27,6 +27,8 @@ from .contract import (
 from .fees import UnknownFeeTier, compute_expected_fee
 from .fees import explain_variance as _explain_variance
 from .io import Dataset
+from .io import aging_days as _aging_days
+from .io import infer_as_of_date
 from .l2_subset import Candidate, TooManyCandidates
 from .l2_subset import solve_subset as _solve_subset
 from .llm.base import ToolSpec
@@ -34,6 +36,7 @@ from .llm.base import ToolSpec
 MIN_MATCH_CONFIDENCE = 0.85
 
 _ID_FIELD = {"orders": "order_id", "payments": "payment_id", "settlements": "settlement_id", "bank": "bank_txn_id"}
+_DATE_FIELD = {"orders": "order_date", "payments": "captured_at", "settlements": "settled_at", "bank": "value_date"}
 _PREFIX_TO_TABLE = {"order_": "orders", "pay_": "payments", "setl_": "settlements", "btxn_": "bank"}
 _FIELD_TO_TABLE = {"order_id": "orders", "payment_id": "payments", "settlement_id": "settlements", "bank_txn_id": "bank"}
 _TABLE_PAIR_TO_LINK_TYPE = {
@@ -62,6 +65,19 @@ def _find_record(dataset: Dataset, table: str, record_id: str):
         if getattr(row, id_field) == record_id:
             return row
     return None
+
+
+def _residual_aging_days(ctx: "ToolContext") -> int:
+    """How long the record under investigation has been sitting, per its own
+    underlying event (capture/settle/value date) - same convention and same
+    "now" (infer_as_of_date) as engine/exceptions.py's deterministic
+    exceptions, so the ledger reads consistently regardless of which layer
+    raised a given row."""
+    row = _find_record(ctx.dataset, ctx.residual_source, ctx.residual_id)
+    date_field = _DATE_FIELD.get(ctx.residual_source)
+    if row is None or date_field is None:
+        return 0
+    return _aging_days(infer_as_of_date(ctx.dataset), getattr(row, date_field))
 
 
 def json_safe(obj):
@@ -270,12 +286,16 @@ def propose_match(ctx: ToolContext, record_ids: list[str], confidence: float, ra
     amount_at_risk = _amount_for(ctx, ctx.residual_id) or 0
     companion_exception = None
     if amount_at_risk > REVIEW_REQUIRED_THRESHOLD_PAISE:
+        companion_affected = {"record_id": ctx.residual_id, "source": ctx.residual_source}
+        if ctx.residual_source in _ID_FIELD:
+            companion_affected[_ID_FIELD[ctx.residual_source]] = ctx.residual_id
         companion_exception = ReconException(
             category="HIGH_VALUE_MATCH_REVIEW",
             severity="REVIEW_REQUIRED",
             amount_at_risk_paise=amount_at_risk,
-            affected={"record_id": ctx.residual_id},
+            affected=companion_affected,
             recommended_action=RECOMMENDED_ACTIONS["HIGH_VALUE_MATCH_REVIEW"],
+            aging_days=_residual_aging_days(ctx),
             evidence_chain=(rationale,),
         )
 
@@ -318,6 +338,7 @@ def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_ri
         amount_at_risk_paise=amount_at_risk_paise,
         affected=affected,
         recommended_action=recommended_action or RECOMMENDED_ACTIONS.get(category, "Manual review required."),
+        aging_days=_residual_aging_days(ctx),
         evidence_chain=(rationale,) if rationale else (),
     )
     if not exc.evidence_chain:

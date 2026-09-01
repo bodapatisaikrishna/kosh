@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
+from datetime import date, datetime
 from pathlib import Path
 
 
@@ -137,3 +138,46 @@ def load_dataset(fixtures_dir: Path) -> Dataset:
         for r in _rows(fixtures_dir / "bank_statement.csv")
     ]
     return Dataset(orders=orders, payments=payments, settlements=settlements, bank=bank)
+
+
+def aging_days(as_of: date, event_date_str: str) -> int:
+    """Days between some event (a payment's capture, a settlement's date, a
+    bank line's value date) and "now". Clamped at 0: never negative - a
+    negative value would only mean a data-quality issue in the fixture
+    itself (an event dated after "now"), and no ledger should ever display
+    a number that reads as "this hasn't happened yet". Shared by
+    engine/exceptions.py and engine/l3_tools.py so both compute this
+    identically."""
+    return max(0, (as_of - _as_date(event_date_str)).days)
+
+
+def infer_as_of_date(dataset: Dataset) -> date:
+    """The latest CAPTURE date - the dataset's implicit "today". Shared by
+    cash/forecast.py's 14-day forecast and engine/exceptions.py's aging_days,
+    so both agree on what "now" means for the same fixture - one source of
+    truth, same pattern as compute_expected_fee being shared between the
+    generator and the engine.
+
+    Deliberately not the latest settlement/bank date: those trail captures by
+    the T+N settlement lag, so including them would push "today" past every
+    unsettled payment's own expected settle date. A real system would pass
+    this in explicitly (see the Limitations section on this); here it's
+    derived so both are reproducible from the fixture alone.
+
+    Falls back to the latest settlement/bank date if there are no payments at
+    all (a settlement-only or bank-only dataset slice - real for an isolated
+    classifier test, and not impossible for a partial real-world batch), and
+    to today's real date only if the dataset carries no dates whatsoever -
+    a fully empty dataset has no fixture-derived "now" to fall back to."""
+    captured_dates = [_as_date(p.captured_at) for p in dataset.payments if p.captured_at]
+    if captured_dates:
+        return max(captured_dates)
+    other_dates = [
+        *(_as_date(s.settled_at) for s in dataset.settlements if s.settled_at),
+        *(_as_date(b.value_date) for b in dataset.bank if b.value_date),
+    ]
+    return max(other_dates) if other_dates else date.today()
+
+
+def _as_date(value: str) -> date:
+    return datetime.fromisoformat(value).date() if "T" in value else date.fromisoformat(value)

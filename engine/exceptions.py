@@ -21,9 +21,11 @@ from .contract import RECOMMENDED_ACTIONS, ReconException, severity_for_amount
 from .fees import compute_expected_fee
 from .fees import explain_variance as _explain_variance
 from .io import BankRow, Dataset, OrderRow, PaymentRow
+from .io import aging_days as _aging_days
+from .io import infer_as_of_date
 
 
-def _exc(category: str, amount_at_risk_paise: int, affected: dict[str, str], evidence_chain: tuple[str, ...]) -> ReconException:
+def _exc(category: str, amount_at_risk_paise: int, affected: dict[str, str], evidence_chain: tuple[str, ...], aging_days: int = 0) -> ReconException:
     return ReconException(
         category=category,
         severity=severity_for_amount(amount_at_risk_paise),
@@ -31,10 +33,11 @@ def _exc(category: str, amount_at_risk_paise: int, affected: dict[str, str], evi
         affected=affected,
         recommended_action=RECOMMENDED_ACTIONS[category],
         evidence_chain=evidence_chain,
+        aging_days=aging_days,
     )
 
 
-def _classify_missing_settlement_and_duplicates(dataset: Dataset) -> list[ReconException]:
+def _classify_missing_settlement_and_duplicates(dataset: Dataset, as_of: date) -> list[ReconException]:
     """An order with exactly one captured, unsettled payment is missing its
     settlement. An order with two or more captured payments where some lack a
     settlement_id has a duplicate: the settled one is presumed the original, and
@@ -57,6 +60,7 @@ def _classify_missing_settlement_and_duplicates(dataset: Dataset) -> list[ReconE
             exceptions.append(_exc(
                 "MISSING_SETTLEMENT", p.net_paise, {"payment_id": p.payment_id},
                 (f"order {order_id} has exactly one captured payment ({p.payment_id}) and it has no settlement_id",),
+                aging_days=_aging_days(as_of, p.captured_at),
             ))
         else:
             for p in unsettled:
@@ -66,11 +70,12 @@ def _classify_missing_settlement_and_duplicates(dataset: Dataset) -> list[ReconE
                         f"order {order_id} has {len(payments)} captured payments; {p.payment_id} has no "
                         f"settlement_id while at least one sibling payment does",
                     ),
+                    aging_days=_aging_days(as_of, p.captured_at),
                 ))
     return exceptions
 
 
-def _classify_fee_and_tax_variance(dataset: Dataset) -> tuple[list[ReconException], set[str]]:
+def _classify_fee_and_tax_variance(dataset: Dataset, as_of: date) -> tuple[list[ReconException], set[str]]:
     """Recomputes the expected fee/GST for every settled payment and asks
     explain_variance to decompose any delta. Returns (exceptions, unexplained_
     payment_ids) - the latter is this function's honest residual for L3."""
@@ -94,11 +99,13 @@ def _classify_fee_and_tax_variance(dataset: Dataset) -> tuple[list[ReconExceptio
                 "FEE_VARIANCE", abs(explanation.delta_paise), {"payment_id": p.payment_id, "settlement_id": p.settlement_id},
                 (f"compute_expected_fee({p.gross_paise}, {p.method!r}, {p.international}) disagrees with the booked "
                  f"net by {explanation.delta_paise}p", explanation.detail),
+                aging_days=_aging_days(as_of, p.captured_at),
             ))
         elif explanation.cause == "GST_RATE":
             exceptions.append(_exc(
                 "TAX_VARIANCE", abs(explanation.delta_paise), {"payment_id": p.payment_id, "settlement_id": p.settlement_id},
                 (f"booked GST does not match 18% of the fee; delta {explanation.delta_paise}p", explanation.detail),
+                aging_days=_aging_days(as_of, p.captured_at),
             ))
         else:  # REFUND (unexpected here, no known_refund_paise passed) or UNEXPLAINED
             unexplained.add(p.payment_id)
@@ -106,7 +113,7 @@ def _classify_fee_and_tax_variance(dataset: Dataset) -> tuple[list[ReconExceptio
     return exceptions, unexplained
 
 
-def _classify_gross_mismatch(dataset: Dataset) -> tuple[list[ReconException], set[str]]:
+def _classify_gross_mismatch(dataset: Dataset, as_of: date) -> tuple[list[ReconException], set[str]]:
     """A settled payment whose gross_paise disagrees with its (current)
     order's gross_paise is either a misallocated refund (the order link itself
     is wrong) or an FX-drifted international payment (the order link is right,
@@ -127,12 +134,14 @@ def _classify_gross_mismatch(dataset: Dataset) -> tuple[list[ReconException], se
                 "REFUND_MISALLOCATION", p.refund_paise, {"payment_id": p.payment_id, "booked_order_id": p.order_id},
                 (f"payment {p.payment_id} carries a refund and its gross ({p.gross_paise}p) does not match "
                  f"order {p.order_id}'s gross ({order.gross_paise}p) - the refund is likely booked against the wrong order",),
+                aging_days=_aging_days(as_of, p.captured_at),
             ))
         elif p.international:
             exceptions.append(_exc(
                 "FX_VARIANCE", abs(delta), {"payment_id": p.payment_id, "order_id": p.order_id},
                 (f"international payment gross ({p.gross_paise}p) differs from the invoiced order gross "
                  f"({order.gross_paise}p) by {delta}p",),
+                aging_days=_aging_days(as_of, p.captured_at),
             ))
         else:
             unexplained.add(p.payment_id)
@@ -152,7 +161,7 @@ def _classify_gross_mismatch(dataset: Dataset) -> tuple[list[ReconException], se
 PERIOD_CUTOFF_GAP_THRESHOLD_DAYS = 4
 
 
-def _classify_period_cutoff(dataset: Dataset) -> list[ReconException]:
+def _classify_period_cutoff(dataset: Dataset, as_of: date) -> list[ReconException]:
     """A settlement that landed unusually late relative to its own payments'
     captures - materially beyond a normal T+N cycle - is a month-end cutoff
     concern."""
@@ -174,26 +183,29 @@ def _classify_period_cutoff(dataset: Dataset) -> list[ReconException]:
                 "PERIOD_CUTOFF", s.net_paise, {"settlement_id": s.settlement_id},
                 (f"settlement {s.settlement_id} settled {gap_days} days after its latest payment capture "
                  f"({latest_capture.isoformat()} -> {s.settled_at}), beyond the normal T+N cycle",),
+                aging_days=_aging_days(as_of, s.settled_at),
             ))
     return exceptions
 
 
-def _classify_orphan_chargebacks(unresolved_debit_rows: list[BankRow]) -> list[ReconException]:
+def _classify_orphan_chargebacks(unresolved_debit_rows: list[BankRow], as_of: date) -> list[ReconException]:
     return [
         _exc(
             "ORPHAN_CHARGEBACK", txn.debit_paise, {"bank_txn_id": txn.bank_txn_id},
             (f"debit {txn.bank_txn_id} ({txn.debit_paise}p) carries no dispute reference resolvable to a known payment_id",),
+            aging_days=_aging_days(as_of, txn.value_date),
         )
         for txn in unresolved_debit_rows
     ]
 
 
-def _classify_unidentified_credits(unresolved_credit_rows: list[BankRow]) -> list[ReconException]:
+def _classify_unidentified_credits(unresolved_credit_rows: list[BankRow], as_of: date) -> list[ReconException]:
     return [
         _exc(
             "UNIDENTIFIED_CREDIT", txn.credit_paise, {"bank_txn_id": txn.bank_txn_id},
             (f"credit {txn.bank_txn_id} ({txn.credit_paise}p) matches no settlement UTR, prefix, or "
              f"amount/date/narration tolerance candidate",),
+            aging_days=_aging_days(as_of, txn.value_date),
         )
         for txn in unresolved_credit_rows
     ]
@@ -203,6 +215,7 @@ def classify_deterministic(
     dataset: Dataset,
     unresolved_credit_rows: list[BankRow],
     unresolved_debit_rows: list[BankRow],
+    as_of: date | None = None,
 ) -> tuple[list[ReconException], set[str]]:
     """Runs every deterministic rule and returns (exceptions, unexplained_payment_ids).
 
@@ -210,34 +223,41 @@ def classify_deterministic(
     disagrees with every known explanation (fee tier, GST rate, refund, rounding,
     order-gross mismatch) this classifier knows how to check. That residual - not
     "everything L0-L2 didn't touch" - is what L3 should actually see.
+
+    as_of defaults to infer_as_of_date(dataset) - the same "today" cash/forecast.py
+    uses - so every exception's aging_days (how long it's been sitting, per its
+    own underlying event: capture date, settlement date, or bank value date)
+    agrees with the cash panel's own notion of "now" for the same fixture.
     """
+    as_of = as_of or infer_as_of_date(dataset)
     exceptions: list[ReconException] = []
     unexplained: set[str] = set()
 
-    exceptions += _classify_missing_settlement_and_duplicates(dataset)
+    exceptions += _classify_missing_settlement_and_duplicates(dataset, as_of)
 
-    fee_tax_exceptions, fee_tax_unexplained = _classify_fee_and_tax_variance(dataset)
+    fee_tax_exceptions, fee_tax_unexplained = _classify_fee_and_tax_variance(dataset, as_of)
     exceptions += fee_tax_exceptions
     unexplained |= fee_tax_unexplained
 
-    gross_exceptions, gross_unexplained = _classify_gross_mismatch(dataset)
+    gross_exceptions, gross_unexplained = _classify_gross_mismatch(dataset, as_of)
     exceptions += gross_exceptions
     unexplained |= gross_unexplained
 
-    exceptions += _classify_period_cutoff(dataset)
-    exceptions += _classify_orphan_chargebacks(unresolved_debit_rows)
-    exceptions += _classify_unidentified_credits(unresolved_credit_rows)
+    exceptions += _classify_period_cutoff(dataset, as_of)
+    exceptions += _classify_orphan_chargebacks(unresolved_debit_rows, as_of)
+    exceptions += _classify_unidentified_credits(unresolved_credit_rows, as_of)
 
     return exceptions, unexplained
 
 
-def unexplained_to_fallback_exceptions(dataset: Dataset, unexplained_payment_ids: set[str]) -> list[ReconException]:
+def unexplained_to_fallback_exceptions(dataset: Dataset, unexplained_payment_ids: set[str], as_of: date | None = None) -> list[ReconException]:
     """When no L3 client is configured, a genuinely unexplained payment must
     still never be silently dropped - it becomes an honest UNEXPLAINED_VARIANCE
     exception saying exactly that, rather than vanishing from the ledger
     entirely. When a client IS configured, the pipeline routes these to the
     agent instead of calling this function - see engine/pipeline.py::run_full.
     """
+    as_of = as_of or infer_as_of_date(dataset)
     payments_by_id = {p.payment_id: p for p in dataset.payments}
     exceptions_out = []
     for payment_id in sorted(unexplained_payment_ids):
@@ -248,6 +268,7 @@ def unexplained_to_fallback_exceptions(dataset: Dataset, unexplained_payment_ids
             "UNEXPLAINED_VARIANCE", abs(p.net_paise), {"payment_id": payment_id},
             (f"payment {payment_id}'s booked net ({p.net_paise}p) does not match any known fee-tier, "
              f"GST-rate, refund, or order-gross hypothesis, and no L3 agent was configured to investigate further",),
+            aging_days=_aging_days(as_of, p.captured_at),
         ))
     return exceptions_out
 

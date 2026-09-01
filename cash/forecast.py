@@ -15,7 +15,7 @@ from datetime import date, datetime, timedelta
 from data.generator.calendar import settlement_date
 
 from engine.contract import Match, ReconException
-from engine.io import Dataset
+from engine.io import Dataset, infer_as_of_date
 
 INFLOW_WINDOW_DAYS = 14
 STUCK_GRACE_DAYS = 1  # "past SLA + 1 day, still unsettled"
@@ -35,17 +35,6 @@ class ForecastResult:
 
 def _as_date(value: str) -> date:
     return datetime.fromisoformat(value).date() if "T" in value else date.fromisoformat(value)
-
-
-def _infer_as_of_date(dataset: Dataset) -> date:
-    """The latest CAPTURE date - the forecast's implicit "today". Deliberately
-    not the latest settlement/bank date: those trail captures by the T+N
-    settlement lag, so including them would push "today" past every unsettled
-    payment's own expected settle date and make the 14-day curve trivially
-    zero (everything still open would already read as overdue). A real system
-    would pass this in explicitly; here it's derived so the forecast is
-    reproducible from the fixture alone."""
-    return max(_as_date(p.captured_at) for p in dataset.payments if p.captured_at)
 
 
 def compute_inflow_curve(dataset: Dataset, as_of_date: date) -> list[dict]:
@@ -139,7 +128,7 @@ def compute_cash_reconciliation(dataset: Dataset, matches: list[Match], exceptio
 def compute_forecast(
     dataset: Dataset, matches: list[Match], exceptions: list[ReconException], as_of_date: date | None = None
 ) -> ForecastResult:
-    as_of = as_of_date or _infer_as_of_date(dataset)
+    as_of = as_of_date or infer_as_of_date(dataset)
     inflow_curve = compute_inflow_curve(dataset, as_of)
     stuck_paise, stuck_ids = compute_stuck(dataset, as_of)
     at_risk_paise = sum(e.amount_at_risk_paise for e in exceptions)

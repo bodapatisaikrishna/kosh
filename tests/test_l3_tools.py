@@ -242,6 +242,25 @@ def test_raise_exception_affected_uses_bank_txn_id_for_bank_source():
     assert result["exception"]["affected"]["bank_txn_id"] == "btxn_1"
 
 
+def test_raise_exception_computes_real_aging_days_not_zero():
+    # aging_days must never be a hardcoded 0 for an L3-raised exception either -
+    # same bug class as the deterministic classifier's, same fix.
+    order = OrderRow("order_1", "2026-08-01", "cust_1", 100_000_00, "INR", "upi", "paid", "INV-1")
+    fee, gst, net = compute_expected_fee(100_000_00, "upi", False)
+    old_payment = PaymentRow("pay_old", "order_1", "2026-08-01T10:00:00", "upi", False, 100_000_00, fee, gst, net, "captured", None, None, 0)
+    new_payment = PaymentRow("pay_new", "order_1", "2026-08-15T10:00:00", "upi", False, 100_000_00, fee, gst, net, "captured", None, None, 0)
+    dataset = Dataset(orders=[order], payments=[old_payment, new_payment], settlements=[], bank=[])
+    ctx = ToolContext(dataset=dataset, residual_id="pay_old", residual_source="payments")
+
+    result = raise_exception(
+        ctx, category="UNEXPLAINED_VARIANCE", severity="STANDARD", amount_at_risk_paise=500,
+        recommended_action="x", rationale="a real reason",
+    )
+    # "now" is inferred as the latest capture in the dataset (Aug 15, from
+    # pay_new); pay_old was captured Aug 1 - 14 days old.
+    assert result["exception"]["aging_days"] == 14
+
+
 # --- dispatch_tool --------------------------------------------------------------
 
 def test_dispatch_tool_reports_an_unknown_tool_name_as_a_result_not_an_exception():
