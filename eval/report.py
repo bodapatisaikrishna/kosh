@@ -30,6 +30,7 @@ from engine.baselines import null_baseline, oracle_baseline
 from engine.io import load_dataset
 from engine.pipeline import run_full, run_l0_l1, run_l0_l1_l2
 from eval.io import load_ground_truth
+from eval.manifest import build_run_manifest
 from eval.metrics import compute_metrics
 
 ENGINES = {
@@ -55,7 +56,7 @@ def _exception_dicts(engine_output) -> list[dict]:
     return out
 
 
-def run_eval(fixtures_dir: Path, engine_name: str) -> dict:
+def run_eval(fixtures_dir: Path, engine_name: str, seed: int | None = None, model_name: str | None = None) -> dict:
     dataset = load_dataset(fixtures_dir)
     ground_truth = load_ground_truth(fixtures_dir)
 
@@ -66,6 +67,7 @@ def run_eval(fixtures_dir: Path, engine_name: str) -> dict:
 
     metrics = compute_metrics(dataset, engine_output, ground_truth)
     forecast = compute_forecast(dataset, engine_output.matches, engine_output.exceptions)
+    manifest = build_run_manifest(fixtures_dir, engine_name, dataset, seed=seed, model_name=model_name)
 
     return {
         "engine": engine_name,
@@ -74,6 +76,7 @@ def run_eval(fixtures_dir: Path, engine_name: str) -> dict:
         "metrics": metrics,
         "exceptions_detail": _exception_dicts(engine_output),
         "cash": asdict(forecast),
+        "manifest": manifest,
     }
 
 
@@ -147,6 +150,15 @@ def render_html(report: dict) -> str:
           </td>
         </tr>""")
     exception_table_body = "".join(exception_rows) or '<tr><td colspan="5">no exceptions</td></tr>'
+
+    manifest = report.get("manifest") or {}
+    dirty = manifest.get("git_dirty")
+    dirty_html = ' <strong style="color:#b00020">(dirty tree)</strong>' if dirty else ""
+    sha = manifest.get("git_commit_sha") or "unknown"
+    footer_html = (
+        f'<p class="muted">commit <code>{esc(sha[:12] if sha != "unknown" else sha)}</code>{dirty_html} '
+        f'&middot; generated {esc(manifest.get("generated_at_utc", "unknown"))}</p>'
+    )
 
     max_inflow = max((row["expected_inflow_paise"] for row in cash["inflow_curve"]), default=0) or 1
     inflow_bars = "".join(
@@ -238,6 +250,8 @@ def render_html(report: dict) -> str:
     <h2>Per-defect-class confusion</h2>
     <table><tr><th>Defect type</th><th>Outcome counts</th></tr>{confusion_rows}</table>
   </section>
+
+  <footer>{footer_html}</footer>
 
 <script>
   // Per-column ascending state, so sorting by category then by amount doesn't

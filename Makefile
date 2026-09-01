@@ -1,6 +1,6 @@
 PY ?= python3
 
-.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed adversarial clean
+.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed adversarial verify-deterministic clean
 
 gen:
 	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -46,6 +46,9 @@ multiseed:
 
 adversarial:
 	$(PY) -m scripts.run_adversarial
+
+verify-deterministic:
+	$(PY) -m pytest tests/test_determinism.py -v
 
 clean:
 	rm -rf data/fixtures/run_* .pytest_cache
