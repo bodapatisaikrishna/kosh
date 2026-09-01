@@ -224,3 +224,33 @@ def test_unmatched_by_design_excludes_legitimate_chargebacks(data):
     linked_txn_ids = {link["bank_txn_id"] for link in data["ground_truth"]["links"]["chargeback_to_payment"]}
     unmatched = set(data["ground_truth"]["unmatched_by_design"]["bank_txn_ids"])
     assert not (linked_txn_ids & unmatched), "a legitimately-linked chargeback must not also be listed as unmatched"
+
+
+# --- bank-credit adjustment never goes negative ------------------------------
+
+def test_settlement_net_adjustment_never_drives_a_bank_credit_negative():
+    """A large negative net delta applied to an already-small settlement credit
+    must floor the bank credit at 0, not push it below zero - a negative bank
+    credit isn't a real thing (money moving the other way is a debit). Regression
+    for the multiseed sweep finding of a real `credit_paise: -34800` bank row
+    (scripts/multiseed.py; surfaced at seed=100, still reproducible at seed=1
+    after the intervening hardening commits shifted the RNG landscape).
+    """
+    from data.generator.defects import _adjust_bank_credit_for_settlement
+    from data.generator.world import BankTxn, Settlement, World
+
+    world = World(seed=0, end_date=date(2026, 8, 31), months=1)
+    world.settlements.append(Settlement(settlement_id="setl_x", settled_at=date(2026, 8, 1), utr="UTR-X", net_paise=500))
+    world.bank_txns.append(BankTxn(
+        bank_txn_id="bank_x",
+        value_date=date(2026, 8, 2),
+        narration="NEFT SETL setl_x",
+        credit_paise=500,
+        debit_paise=0,
+        balance_paise=0,
+        settlement_id="setl_x",
+    ))
+
+    _adjust_bank_credit_for_settlement(world, "setl_x", delta_paise=-35_300)
+
+    assert world.bank_txns[0].credit_paise == 0, "bank credit must floor at 0, never go negative"

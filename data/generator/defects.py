@@ -147,7 +147,13 @@ def _adjust_bank_credit_for_settlement(world: World, settlement_id: str, delta_p
     linked = [t for t in world.bank_txns if t.settlement_id == settlement_id]
     if len(linked) != 1:
         return  # already split or otherwise irregular; leave it to the split/period injectors
-    linked[0].credit_paise += delta_paise
+    # Floor at zero. A large negative delta on an already-small credit could
+    # otherwise drive credit_paise below zero, and a negative bank credit is not a
+    # real thing - money that moved the other way is a debit, not a negative
+    # credit. The settlement is already broken by whichever injector called this,
+    # so the resulting credit-vs-net mismatch is itself a legitimate variance for
+    # the engine to surface; an impossible negative-credit row is not.
+    linked[0].credit_paise = max(0, linked[0].credit_paise + delta_paise)
     _resequence_balances(world)
 
 

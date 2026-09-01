@@ -276,16 +276,16 @@ def load_dataset(fixtures_dir: Path) -> Dataset:
             # direction per column - "a negative credit" is not a real thing
             # (money that moved the other way is a debit, not a negative
             # credit), so both are validated non-negative.
-            # credit_paise/debit_paise are deliberately NOT validated non-negative:
-            # a defect injector can drive a bank credit negative via a large
-            # negative delta applied to an already-small credit (see
-            # data/generator/defects.py's settlement-net-adjustment helper) -
-            # rare, empirically never seen in the four committed fixtures, but
-            # confirmed to occur at at least one of the multiseed hardening
-            # sprint's six seeds. Flagged as a separate generator-side finding
-            # rather than papered over here; see ARCHITECTURE.md.
-            credit_paise=_parse_int(bank_file, i, r, "credit_paise"),
-            debit_paise=_parse_int(bank_file, i, r, "debit_paise"),
+            # This was briefly relaxed while a defect injector in
+            # data/generator/defects.py could drive a bank credit negative
+            # (a large negative net-adjustment delta on an already-small
+            # credit). That injector now floors the adjusted credit at 0
+            # (_adjust_bank_credit_for_settlement), and all six multiseed
+            # seeds plus the run_{500,2000,10000}/sample_200 fixtures were
+            # re-verified to carry no negative credit/debit, so the check is
+            # back on. See ARCHITECTURE.md.
+            credit_paise=_parse_int(bank_file, i, r, "credit_paise", non_negative=True),
+            debit_paise=_parse_int(bank_file, i, r, "debit_paise", non_negative=True),
             balance_paise=_parse_int(bank_file, i, r, "balance_paise"),
         ))
 

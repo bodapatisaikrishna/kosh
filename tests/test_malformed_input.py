@@ -69,12 +69,22 @@ def test_non_integer_amount(tmp_path):
 
 def test_negative_value_where_only_positive_is_valid(tmp_path):
     # An order's gross amount is never negative in the real world - unlike
-    # e.g. adjustment_paise, which is a genuinely signed figure (see
-    # engine/io.py's own comment on why credit_paise is NOT checked here).
+    # e.g. settlement.adjustment_paise, which is a genuinely signed figure.
     broken_row = "order_1,2026-08-01,cust_1,-100000,INR,upi,paid,INV-1"
     exc = _expect_error(tmp_path, orders=f"{ORDERS_HEADER}\n{broken_row}\n")
     assert exc.filename == "orders.csv"
     assert exc.field == "gross_paise"
+    assert "negative" in str(exc).lower()
+
+
+def test_negative_bank_credit_is_rejected(tmp_path):
+    # "A negative credit" is not a real bank-statement value (money moving the
+    # other way is a debit). The generator's defect injector used to be able to
+    # produce one; it now floors at 0, so io.py enforces non-negativity again.
+    broken_row = "btxn_1,2026-08-03,NEFT-HDFCN00000000001-RAZORPAY,-34800,0,0"
+    exc = _expect_error(tmp_path, bank=f"{BANK_HEADER}\n{broken_row}\n")
+    assert exc.filename == "bank_statement.csv"
+    assert exc.field == "credit_paise"
     assert "negative" in str(exc).lower()
 
 
