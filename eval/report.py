@@ -128,7 +128,7 @@ def render_html(report: dict) -> str:
             if e.get("trace_file") else '<span class="muted">no agent trace (deterministically classified)</span>'
         )
         exception_rows.append(f"""
-        <tr class="exc-row" data-amount="{e['amount_at_risk_paise']}" onclick="document.getElementById('detail-{i}').classList.toggle('open')">
+        <tr class="exc-row" data-amount="{e['amount_at_risk_paise']}" data-category="{esc(e['category'])}" onclick="document.getElementById('detail-{i}').classList.toggle('open')">
           <td>{esc(e['category'])}</td>
           <td><span class="pill pill-{esc(e['severity'].lower())}">{esc(e['severity'])}</span></td>
           <td class="num">{_rupees(e['amount_at_risk_paise'])}</td>
@@ -219,7 +219,7 @@ def render_html(report: dict) -> str:
     <h2>Exception queue</h2>
     <p>{exc['count']} exceptions &middot; {_rupees(exc['total_amount_at_risk_paise'])} at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
     <table>
-      <tr><th class="sortable" onclick="sortExceptions()">Category</th><th>Severity</th><th class="num">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
+      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
       {exception_table_body}
     </table>
   </section>
@@ -240,15 +240,26 @@ def render_html(report: dict) -> str:
   </section>
 
 <script>
-  let sortAsc = true;
-  function sortExceptions() {{
+  // Per-column ascending state, so sorting by category then by amount doesn't
+  // share one toggle (each column remembers its own direction independently).
+  const sortAscByColumn = {{amount: true, category: true}};
+  function sortExceptions(column) {{
+    // column is "amount" (the brief's own explicit ask: "sortable by Rs at
+    // risk") or "category" (the header's own label - previously wired to
+    // amount regardless of which header you clicked, a real bug: the
+    // "Category" header silently re-sorted by rupee amount, which looked
+    // plausible only because the table's default order is already
+    // amount-descending).
     const table = document.querySelectorAll("table")[1];
     const rows = Array.from(table.querySelectorAll("tr.exc-row"));
+    const asc = sortAscByColumn[column];
     rows.sort((a, b) => {{
-      const diff = Number(a.dataset.amount) - Number(b.dataset.amount);
-      return sortAsc ? diff : -diff;
+      const diff = column === "amount"
+        ? Number(a.dataset.amount) - Number(b.dataset.amount)
+        : a.dataset.category.localeCompare(b.dataset.category);
+      return asc ? diff : -diff;
     }});
-    sortAsc = !sortAsc;
+    sortAscByColumn[column] = !asc;
     for (const row of rows) {{
       const detail = row.nextElementSibling;
       table.appendChild(row);

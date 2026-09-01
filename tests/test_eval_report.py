@@ -70,6 +70,27 @@ def test_render_html_includes_all_four_panels():
     assert "function sortExceptions" in out
 
 
+def test_category_header_actually_sorts_by_category_not_amount():
+    # Regression: the "Category" header's onclick called sortExceptions()
+    # with no argument, and the function only ever sorted by dataset.amount -
+    # clicking "Category" silently re-sorted by rupee amount instead. Only a
+    # substring check for "function sortExceptions" existed before, which
+    # can't catch a header wired to the wrong column - this checks the
+    # header actually names its own column.
+    report = run_eval(FIXTURES, "full")
+    out = render_html(report)
+    assert 'onclick="sortExceptions(\'category\')">Category<' in out
+    assert 'onclick="sortExceptions(\'amount\')">Rs at risk<' in out
+
+
+def test_exception_rows_carry_both_sortable_data_attributes():
+    report = run_eval(FIXTURES, "full")
+    out = render_html(report)
+    exc = report["exceptions_detail"][0]
+    assert f'data-amount="{exc["amount_at_risk_paise"]}"' in out
+    assert f'data-category="{exc["category"]}"' in out
+
+
 def test_render_html_is_valid_enough_to_write(tmp_path):
     report = run_eval(FIXTURES, "full")
     out = render_html(report)

@@ -2010,7 +2010,7 @@
     }
   ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788237263.7171772,
+  "generated_at_unix": 1788243252.2582881,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9784714747039828,
@@ -2135,9 +2135,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 730298.2598823078,
+      "records_per_second": 727035.3911532069,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.0025441659963689744
+      "wall_clock_seconds": 0.0025555839820299298
     }
   }
 }

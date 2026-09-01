@@ -7,6 +7,9 @@ venv/
 .DS_Store
 traces/
 
+# Local dev-tool config (e.g. a browser-preview launch config) - not a project artifact.
+.claude/
+
 # Generated fixtures are reproducible from the seed - only the small sample is committed.
 data/fixtures/*
 !data/fixtures/sample_200/
