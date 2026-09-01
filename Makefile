@@ -1,6 +1,6 @@
 PY ?= python3
 
-.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed clean
+.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed adversarial clean
 
 gen:
 	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -43,6 +43,9 @@ demo:
 
 multiseed:
 	$(PY) -m scripts.multiseed
+
+adversarial:
+	$(PY) -m scripts.run_adversarial
 
 clean:
 	rm -rf data/fixtures/run_* .pytest_cache

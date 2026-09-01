@@ -285,6 +285,19 @@ Adversarial attack (Task 3, attack f): the identical UTR text appears in two sep
 
 **Verified properly this time**, having just been burned by shipping a plausible-looking guard without full verification: the fix was checked against both scenarios directly (a real collision, refused correctly; a legitimate split, both parts still match) before touching the test suite, then all 8 committed benchmark/baseline reports were regenerated and diffed byte-for-byte against their committed values (only the expected volatile timing fields changed) - not just the one test that had caught the regression the first time.
 
+**The other six attacks** in `tests/adversarial/attacks.py` (`REFUSED`/`CORRECT`/`FALSE_MATCH`, run via `run_full(client=None)` - no LLM involved) all came back clean on the first attempt, no fixes needed:
+
+| # | Attack | Layer | Outcome |
+|---|---|---|---|
+| a | Two settlements, identical amount/date, UTRs differing by the last two digits (transposed); narration truncated to a shared 14-char prefix | L0 | `REFUSED` |
+| b | A bank credit's amount coincidentally equals the sum of two unrelated settlements dated 60 days earlier | L2's date window | `REFUSED` |
+| c | Duplicate payment on one order, only one genuinely settled | L0/L4 | `CORRECT` (flagged `DUPLICATE_PAYMENT`, no false settlement link) |
+| d | A refund reduces one settlement's net to coincidentally match a second, unrelated settlement's net | L1 | `REFUSED` |
+| e | A card settlement's fee-adjusted net coincidentally equals a different, zero-fee settlement's gross; a third stray credit carries that amount | L1 | `REFUSED` |
+| g | Three settlements where two different subsets both sum to one bank credit | L2's ambiguity guard | `REFUSED` |
+
+Every attack shares one fixture-builder module and one `run_all_attacks()` function with the pytest suite (`tests/adversarial/test_adversarial.py`) and the regenerable artifact (`scripts/run_adversarial.py` → `benchmarks/adversarial.json`), so the committed JSON and what the tests actually checked can never drift apart - the same `AttackResult` list backs both. `make adversarial` regenerates it. 0 of 7 attacks produced a `FALSE_MATCH` in the final, committed state (1 of 7 - attack f - did during development, caught and fixed before being committed at all; see above).
+
 ## Phase 7: submission polish
 
 No new engine code, per the schedule's own rule — never cut the generator's ground truth, the eval harness, or the exception ledger; everything else is presentation.
