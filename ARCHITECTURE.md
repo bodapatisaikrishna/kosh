@@ -250,6 +250,12 @@ This surfaced a second, smaller bug while fixing the first: `infer_as_of_date` c
 
 Purely additive: every committed benchmark's `auto_match_rate`/`false_match_rate`/`precision`/`recall`/exception count is byte-identical before and after (verified by diff, not assumed) - only `aging_days` (and the naturally-varying `wall_clock_seconds`/`generated_at_unix`) changed. `benchmarks/freeze_{500,2000,10000}.json`, `phase3.json`, `phase4.json`, `phase5.json`, and both baselines regenerated and re-verified.
 
+## A fourth: suggested_owner, real but never differentiated
+
+Prompted by finding three "field exists, nothing sets it" bugs above, a deliberate sweep of every field in `engine/contract.py` turned up a fourth, quieter version of the same shape: `ReconException.suggested_owner` was never *unset* (it always had its dataclass default, `"Reconciliation Ops"`), but nothing ever *overrode* it either - every category, at every scale, showed the identical owner. Not wrong, exactly, but a column that carries zero information is the same failure as one that's silently 0: a real ops org doesn't route an FX rate dispute and a chargeback dispute to the same desk, and a judge scrolling the exception queue would see one unchanging value in a column that exists specifically to answer "who handles this."
+
+Fixed with `SUGGESTED_OWNERS`, a category-to-team map in `engine/contract.py` next to `RECOMMENDED_ACTIONS` (same pattern, different question - "who" instead of "what"): `MISSING_SETTLEMENT`/`DUPLICATE_PAYMENT`/`REFUND_MISALLOCATION` to Payments Ops, `FEE_VARIANCE`/`PERIOD_CUTOFF` to Finance Ops, `TAX_VARIANCE` to Tax & Compliance, `ORPHAN_CHARGEBACK` to Disputes & Risk, `FX_VARIANCE` to Treasury, `HIGH_VALUE_MATCH_REVIEW` to Finance Controller (the project's own namesake role), and `UNIDENTIFIED_CREDIT`/`UNRECONCILED`/`AGENT_INCOMPLETE`/`UNEXPLAINED_VARIANCE` staying with Reconciliation Ops as the genuine generalist catch-all for open-ended investigation. Wired through both producers - `engine/exceptions.py`'s `_exc()` and `engine/l3_tools.py`'s `raise_exception` plus its `HIGH_VALUE_MATCH_REVIEW` companion. `freeze_2000` now shows 6 distinct owners across its 139 exceptions, not 1. Baselines (`engine/baselines.py`) deliberately left untouched - they exist to validate the harness, not to model realism, same exemption as their `aging_days`.
+
 ## Phase 7: submission polish
 
 No new engine code, per the schedule's own rule — never cut the generator's ground truth, the eval harness, or the exception ledger; everything else is presentation.

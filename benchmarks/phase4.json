@@ -116,7 +116,7 @@
   "engine": "l0l1l2",
   "exceptions_detail": [],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788234112.6006348,
+  "generated_at_unix": 1788237263.3374138,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9773950484391819,
@@ -229,9 +229,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 417090.7518591572,
+      "records_per_second": 403270.0902120112,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.00445466602104716
+      "wall_clock_seconds": 0.004607334005413577
     }
   }
 }

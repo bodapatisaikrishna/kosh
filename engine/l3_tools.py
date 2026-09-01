@@ -20,6 +20,7 @@ from .contract import (
     LINK_TYPES,
     RECOMMENDED_ACTIONS,
     REVIEW_REQUIRED_THRESHOLD_PAISE,
+    SUGGESTED_OWNERS,
     Match,
     ReconException,
     severity_for_amount,
@@ -296,6 +297,7 @@ def propose_match(ctx: ToolContext, record_ids: list[str], confidence: float, ra
             affected=companion_affected,
             recommended_action=RECOMMENDED_ACTIONS["HIGH_VALUE_MATCH_REVIEW"],
             aging_days=_residual_aging_days(ctx),
+            suggested_owner=SUGGESTED_OWNERS["HIGH_VALUE_MATCH_REVIEW"],
             evidence_chain=(rationale,),
         )
 
@@ -339,6 +341,7 @@ def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_ri
         affected=affected,
         recommended_action=recommended_action or RECOMMENDED_ACTIONS.get(category, "Manual review required."),
         aging_days=_residual_aging_days(ctx),
+        suggested_owner=SUGGESTED_OWNERS.get(category, "Reconciliation Ops"),
         evidence_chain=(rationale,) if rationale else (),
     )
     if not exc.evidence_chain:

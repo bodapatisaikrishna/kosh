@@ -49,6 +49,29 @@ RECOMMENDED_ACTIONS: dict[str, str] = {
     "UNEXPLAINED_VARIANCE": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
 }
 
+# Which team a category actually routes to. Kept separate from RECOMMENDED_ACTIONS
+# because it answers a different question ("who", not "what") - a real ops org
+# doesn't send an FX rate dispute and a chargeback to the same desk, so a ledger
+# where every single row says "Reconciliation Ops" is a field that exists but
+# carries no information (same shape as the aging_days/cost_usd_micros bugs -
+# see ARCHITECTURE.md). "Reconciliation Ops" stays the generalist catch-all for
+# categories that are genuinely open-ended investigation, not a specialist's job.
+SUGGESTED_OWNERS: dict[str, str] = {
+    "MISSING_SETTLEMENT": "Payments Ops",
+    "DUPLICATE_PAYMENT": "Payments Ops",
+    "FEE_VARIANCE": "Finance Ops",
+    "TAX_VARIANCE": "Tax & Compliance",
+    "REFUND_MISALLOCATION": "Payments Ops",
+    "ORPHAN_CHARGEBACK": "Disputes & Risk",
+    "PERIOD_CUTOFF": "Finance Ops",
+    "FX_VARIANCE": "Treasury",
+    "UNIDENTIFIED_CREDIT": "Reconciliation Ops",
+    "UNRECONCILED": "Reconciliation Ops",
+    "HIGH_VALUE_MATCH_REVIEW": "Finance Controller",
+    "AGENT_INCOMPLETE": "Reconciliation Ops",
+    "UNEXPLAINED_VARIANCE": "Reconciliation Ops",
+}
+
 
 @dataclass(frozen=True)
 class Match:

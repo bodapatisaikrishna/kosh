@@ -98,7 +98,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "REVIEW_REQUIRED",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -113,7 +113,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -128,7 +128,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -143,7 +143,7 @@
       ],
       "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -158,7 +158,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -189,7 +189,7 @@
       ],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -205,7 +205,7 @@
       ],
       "recommended_action": "Reassign the refund to the correct order and notify accounts of the correction.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -220,7 +220,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -236,7 +236,7 @@
       ],
       "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -251,7 +251,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -267,7 +267,7 @@
       ],
       "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -282,7 +282,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -312,7 +312,7 @@
       ],
       "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -327,7 +327,7 @@
       ],
       "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -343,7 +343,7 @@
       ],
       "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -373,7 +373,7 @@
       ],
       "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -388,7 +388,7 @@
       ],
       "recommended_action": "Confirm settlement status with the PG; escalate if unsettled beyond SLA.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -403,7 +403,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -479,7 +479,7 @@
       ],
       "recommended_action": "Reconcile against the booked FX rate; verify with the PG's FX statement.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Treasury",
       "trace_file": null
     },
     {
@@ -540,7 +540,7 @@
       ],
       "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -556,7 +556,7 @@
       ],
       "recommended_action": "Void or refund the duplicate payment after confirming with the PG.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Payments Ops",
       "trace_file": null
     },
     {
@@ -571,7 +571,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -586,7 +586,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -601,7 +601,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -616,7 +616,7 @@
       ],
       "recommended_action": "Confirm the settlement period for month-end close; may require an accrual entry.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -631,7 +631,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -646,7 +646,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -661,7 +661,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -676,7 +676,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -691,7 +691,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -706,7 +706,7 @@
       ],
       "recommended_action": "Match the chargeback to its originating payment, or escalate as an unexplained debit.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Disputes & Risk",
       "trace_file": null
     },
     {
@@ -723,7 +723,7 @@
       ],
       "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -740,7 +740,7 @@
       ],
       "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -757,7 +757,7 @@
       ],
       "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Tax & Compliance",
       "trace_file": null
     },
     {
@@ -774,7 +774,7 @@
       ],
       "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -791,7 +791,7 @@
       ],
       "recommended_action": "Recompute the fee at the correct MDR tier; recover the shortfall from the PG if applicable.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Finance Ops",
       "trace_file": null
     },
     {
@@ -808,7 +808,7 @@
       ],
       "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Tax & Compliance",
       "trace_file": null
     },
     {
@@ -825,12 +825,12 @@
       ],
       "recommended_action": "Recompute GST at 18% of the fee; correct the settlement and GSTR filing accordingly.",
       "severity": "STANDARD",
-      "suggested_owner": "Reconciliation Ops",
+      "suggested_owner": "Tax & Compliance",
       "trace_file": null
     }
   ],
   "fixtures": "data/fixtures/run_500",
-  "generated_at_unix": 1788234111.9680588,
+  "generated_at_unix": 1788237262.767385,
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9761388286334056,
@@ -957,9 +957,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 191173.9843996102,
+      "records_per_second": 184111.53408095386,
       "records_processed": 461,
-      "wall_clock_seconds": 0.002411415975075215
+      "wall_clock_seconds": 0.002503916999557987
     }
   }
 }

@@ -17,7 +17,7 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import date, datetime
 
-from .contract import RECOMMENDED_ACTIONS, ReconException, severity_for_amount
+from .contract import RECOMMENDED_ACTIONS, SUGGESTED_OWNERS, ReconException, severity_for_amount
 from .fees import compute_expected_fee
 from .fees import explain_variance as _explain_variance
 from .io import BankRow, Dataset, OrderRow, PaymentRow
@@ -34,6 +34,7 @@ def _exc(category: str, amount_at_risk_paise: int, affected: dict[str, str], evi
         recommended_action=RECOMMENDED_ACTIONS[category],
         evidence_chain=evidence_chain,
         aging_days=aging_days,
+        suggested_owner=SUGGESTED_OWNERS.get(category, "Reconciliation Ops"),
     )
 
 

@@ -206,3 +206,29 @@ def test_build_ledger_sorts_by_amount_at_risk_descending():
         (e.amount_at_risk_paise for e in exceptions), reverse=True
     )
     assert ledger[0].affected["payment_id"] == "pay_big"
+
+
+def test_suggested_owner_is_real_and_differentiated_by_category():
+    # suggested_owner must never be a uniform constant across every category -
+    # same bug shape as aging_days/cost_usd_micros: a field that exists but
+    # carries no information because nothing ever differentiates it.
+    order = _order(order_id="order_1", gross_paise=100_000_00)
+    drifted_gross = 102_500_00
+    fee, gst, net = compute_expected_fee(drifted_gross, "card", True)
+    fx_payment = _payment(method="card", international=True, gross_paise=drifted_gross, fee_paise=fee, gst_paise=gst, net_paise=net)
+    exceptions, _ = _classify(orders=[order], payments=[fx_payment], settlements=[_settlement()])
+    assert exceptions[0].category == "FX_VARIANCE"
+    assert exceptions[0].suggested_owner == "Treasury"
+
+    debit = BankRow("btxn_1", "2026-08-05", "CHARGEBACK DEBIT", 0, 3_000_00, 0)
+    exceptions, _ = _classify(debit_residual=[debit])
+    assert exceptions[0].category == "ORPHAN_CHARGEBACK"
+    assert exceptions[0].suggested_owner == "Disputes & Risk"
+
+    missing = _payment(settlement_id=None)
+    exceptions, _ = _classify(orders=[_order()], payments=[missing])
+    assert exceptions[0].category == "MISSING_SETTLEMENT"
+    assert exceptions[0].suggested_owner == "Payments Ops"
+    # a genuinely different owner than the FX/chargeback cases above -
+    # the whole point is these are not all the same string
+    assert len({"Treasury", "Disputes & Risk", "Payments Ops"}) == 3

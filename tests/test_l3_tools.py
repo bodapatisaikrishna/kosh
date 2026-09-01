@@ -261,6 +261,15 @@ def test_raise_exception_computes_real_aging_days_not_zero():
     assert result["exception"]["aging_days"] == 14
 
 
+def test_raise_exception_uses_a_real_differentiated_owner():
+    ctx = _ctx()
+    result = raise_exception(
+        ctx, category="FX_VARIANCE", severity="STANDARD", amount_at_risk_paise=500,
+        recommended_action="x", rationale="a real reason",
+    )
+    assert result["exception"]["suggested_owner"] == "Treasury"
+
+
 # --- dispatch_tool --------------------------------------------------------------
 
 def test_dispatch_tool_reports_an_unknown_tool_name_as_a_result_not_an_exception():
