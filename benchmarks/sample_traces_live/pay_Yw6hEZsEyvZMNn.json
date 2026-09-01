@@ -1,25 +1,27 @@
 {
   "backend": "nim",
+  "cost_usd_micros": 20634,
   "final_decision": "exception",
   "from_cache": false,
-  "input_tokens": 18550,
-  "llm_calls": 8,
+  "input_tokens": 25458,
+  "llm_calls": 10,
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-  "output_tokens": 2595,
+  "output_tokens": 3593,
   "record_id": "pay_Yw6hEZsEyvZMNn",
   "result": {
     "exception": {
       "affected": {
+        "payment_id": "pay_Yw6hEZsEyvZMNn",
         "record_id": "pay_Yw6hEZsEyvZMNn",
         "source": "payments"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 57457,
-      "category": "AGENT_INCOMPLETE",
+      "amount_at_risk_paise": 142,
+      "category": "FEE_VARIANCE",
       "evidence_chain": [
-        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+        "Payment pay_Yw6hEZsEyvZMNn is correctly matched to order order_b5JpoTCFyNQFBy and settlement setl_ktWJLloa4rSQJd (confirmed by bank transaction btxn_Ddq0dnivVmyr). However, the fee and GST calculations show unexplained variances: fee_paise is 1115 (expected 1174, delta -59) and gst_paise is 128 (expected 211, delta -83). The explain_variance tool returned UNEXPLAINED for both. The net_paise is 57457 vs expected 57315 (+142). This is a fee/GST calculation variance on a single payment within a larger settlement. Amount at risk is only 142 paise (Rs 1.42)."
       ],
-      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "recommended_action": "Investigate fee/GST calculation for payment pay_Yw6hEZsEyvZMNn - observed fee 1115 vs expected 1174 (-59), observed GST 128 vs expected 211 (-83). Total net variance +142 paise. explain_variance returned UNEXPLAINED for both components.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops"
     }
@@ -58,6 +60,32 @@
       "tool_calls": [
         {
           "arguments": {
+            "record_id": "setl_ktWJLloa4rSQJd",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 65687,
+              "gross_paise": 3287300,
+              "gst_paise": 9828,
+              "net_paise": 2558378,
+              "num_payments": 6,
+              "settled_at": "2026-09-01",
+              "settlement_id": "setl_ktWJLloa4rSQJd",
+              "utr": "ICICN97491934664"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
             "gross_paise": 58700,
             "international": false,
             "method": "card"
@@ -84,15 +112,15 @@
               "international": false,
               "method": "card"
             },
-            "expected_paise": 57315,
-            "observed_paise": 57457
+            "expected_paise": 1174,
+            "observed_paise": 1115
           },
           "name": "explain_variance",
           "result": {
             "result": {
               "cause": "UNEXPLAINED",
-              "delta_paise": 142,
-              "detail": "142 paise not explained by fee tier, GST rate, a known refund, or rounding"
+              "delta_paise": -59,
+              "detail": "-59 paise not explained by fee tier, GST rate, a known refund, or rounding"
             },
             "status": "ok"
           }
@@ -104,22 +132,49 @@
       "tool_calls": [
         {
           "arguments": {
-            "record_id": "setl_ktWJLloa4rSQJd",
-            "source": "settlements"
+            "context": {
+              "gross_paise": 58700,
+              "international": false,
+              "method": "card"
+            },
+            "expected_paise": 211,
+            "observed_paise": 128
           },
-          "name": "get_record",
+          "name": "explain_variance",
           "result": {
             "result": {
-              "adjustment_paise": 0,
-              "fee_paise": 65687,
-              "gross_paise": 3287300,
-              "gst_paise": 9828,
-              "net_paise": 2558378,
-              "num_payments": 6,
-              "settled_at": "2026-09-01",
-              "settlement_id": "setl_ktWJLloa4rSQJd",
-              "utr": "ICICN97491934664"
+              "cause": "UNEXPLAINED",
+              "delta_paise": -83,
+              "detail": "-83 paise not explained by fee tier, GST rate, a known refund, or rounding"
             },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 10000,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "setl_ktWJLloa4rSQJd"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 1397446502,
+                "bank_txn_id": "btxn_Ddq0dnivVmyr",
+                "credit_paise": 2558378,
+                "debit_paise": 0,
+                "narration": "ICICN97491934664 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-09-01"
+              }
+            ],
             "status": "ok"
           }
         }
@@ -152,62 +207,35 @@
       "tool_calls": [
         {
           "arguments": {
-            "amount_tolerance_paise": 50000,
+            "gross_paise": 3287300,
+            "international": false,
+            "method": "card"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 65746,
+              "gst_paise": 11834,
+              "net_paise": 3209720
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 10000,
             "date_window_days": 5,
-            "limit": 20,
+            "limit": 10,
             "record_id": "pay_Yw6hEZsEyvZMNn"
           },
           "name": "find_candidates",
           "result": {
             "result": [
-              {
-                "adjustment_paise": 0,
-                "fee_paise": 878,
-                "gross_paise": 43900,
-                "gst_paise": 158,
-                "net_paise": 42864,
-                "num_payments": 3,
-                "settled_at": "2026-08-27",
-                "settlement_id": "setl_CZe3sCaKyoTGgj",
-                "table": "settlements",
-                "utr": "ICICN51228933616"
-              },
-              {
-                "adjustment_paise": 0,
-                "fee_paise": 684,
-                "gross_paise": 34200,
-                "gst_paise": 123,
-                "net_paise": 33396,
-                "num_payments": 1,
-                "settled_at": "2026-09-02",
-                "settlement_id": "setl_CmhK8MBkMaxS7e",
-                "table": "settlements",
-                "utr": "ICICN85633917556"
-              },
-              {
-                "adjustment_paise": 0,
-                "fee_paise": 1036,
-                "gross_paise": 51800,
-                "gst_paise": 187,
-                "net_paise": 40077,
-                "num_payments": 2,
-                "settled_at": "2026-09-03",
-                "settlement_id": "setl_jgklJKKgZbm9gT",
-                "table": "settlements",
-                "utr": "HDFCN89376983989"
-              },
-              {
-                "adjustment_paise": 0,
-                "fee_paise": 0,
-                "gross_paise": 40000,
-                "gst_paise": 0,
-                "net_paise": 40000,
-                "num_payments": 1,
-                "settled_at": "2026-08-25",
-                "settlement_id": "setl_mHRrSGR1P0afOp",
-                "table": "settlements",
-                "utr": "SBINN96995965959"
-              },
               {
                 "adjustment_paise": 0,
                 "fee_paise": 1140,
@@ -231,46 +259,31 @@
       "tool_calls": [
         {
           "arguments": {
-            "amount_tolerance_paise": 50000,
-            "date_window_days": 5,
-            "limit": 20,
-            "record_id": "setl_ktWJLloa4rSQJd"
+            "amount_at_risk_paise": 142,
+            "category": "FEE_VARIANCE",
+            "rationale": "Payment pay_Yw6hEZsEyvZMNn is correctly matched to order order_b5JpoTCFyNQFBy and settlement setl_ktWJLloa4rSQJd (confirmed by bank transaction btxn_Ddq0dnivVmyr). However, the fee and GST calculations show unexplained variances: fee_paise is 1115 (expected 1174, delta -59) and gst_paise is 128 (expected 211, delta -83). The explain_variance tool returned UNEXPLAINED for both. The net_paise is 57457 vs expected 57315 (+142). This is a fee/GST calculation variance on a single payment within a larger settlement. Amount at risk is only 142 paise (Rs 1.42).",
+            "recommended_action": "Investigate fee/GST calculation for payment pay_Yw6hEZsEyvZMNn - observed fee 1115 vs expected 1174 (-59), observed GST 128 vs expected 211 (-83). Total net variance +142 paise. explain_variance returned UNEXPLAINED for both components.",
+            "severity": "LOW"
           },
-          "name": "find_candidates",
+          "name": "raise_exception",
           "result": {
-            "result": [
-              {
-                "balance_paise": 1397446502,
-                "bank_txn_id": "btxn_Ddq0dnivVmyr",
-                "credit_paise": 2558378,
-                "debit_paise": 0,
-                "narration": "ICICN97491934664 RZP SETTLE",
-                "table": "bank",
-                "value_date": "2026-09-01"
-              }
-            ],
+            "exception": {
+              "affected": {
+                "payment_id": "pay_Yw6hEZsEyvZMNn",
+                "record_id": "pay_Yw6hEZsEyvZMNn",
+                "source": "payments"
+              },
+              "aging_days": 0,
+              "amount_at_risk_paise": 142,
+              "category": "FEE_VARIANCE",
+              "evidence_chain": [
+                "Payment pay_Yw6hEZsEyvZMNn is correctly matched to order order_b5JpoTCFyNQFBy and settlement setl_ktWJLloa4rSQJd (confirmed by bank transaction btxn_Ddq0dnivVmyr). However, the fee and GST calculations show unexplained variances: fee_paise is 1115 (expected 1174, delta -59) and gst_paise is 128 (expected 211, delta -83). The explain_variance tool returned UNEXPLAINED for both. The net_paise is 57457 vs expected 57315 (+142). This is a fee/GST calculation variance on a single payment within a larger settlement. Amount at risk is only 142 paise (Rs 1.42)."
+              ],
+              "recommended_action": "Investigate fee/GST calculation for payment pay_Yw6hEZsEyvZMNn - observed fee 1115 vs expected 1174 (-59), observed GST 128 vs expected 211 (-83). Total net variance +142 paise. explain_variance returned UNEXPLAINED for both components.",
+              "severity": "STANDARD",
+              "suggested_owner": "Reconciliation Ops"
+            },
             "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "confidence": 0.95,
-            "rationale": "Payment pay_Yw6hEZsEyvZMNn links correctly across all entities:\n- Order order_b5JpoTCFyNQFBy: gross_paise 58,700 matches payment gross_paise exactly; intended_method=card matches payment method=card.\n- Settlement setl_ktWJLloa4rSQJd: payment's settlement_id matches; settlement contains 6 payments with net_paise 2,558,378.\n- Bank transaction btxn_Ddq0dnivVmyr: credit_paise 2,558,378 matches settlement net_paise exactly; narration includes settlement UTR ICICN97491934664; value_date 2026-09-01 matches settled_at.\n\nThe only anomaly is a 142 paise (Rs 1.42) positive variance on the payment's net_paise (57,457 observed vs 57,315 expected from compute_expected_fee), caused by fee_paise 1,115 vs expected 1,174 and gst_paise 128 vs expected 211. explain_variance returned UNEXPLAINED, but the amount at risk is negligible (far below Rs 50,000 threshold). All structural links are intact and amounts reconcile at settlement/bank level.",
-            "record_ids": [
-              "order_b5JpoTCFyNQFBy",
-              "setl_ktWJLloa4rSQJd",
-              "btxn_Ddq0dnivVmyr"
-            ]
-          },
-          "name": "propose_match",
-          "result": {
-            "error": "cannot infer a valid link type between 'pay_Yw6hEZsEyvZMNn' and 'btxn_Ddq0dnivVmyr' - if you were trying to also assert a link between two OTHER records (e.g. a settlement and its own bank credit), drop it from this call: propose_match only asserts links to the record under investigation",
-            "status": "error"
           }
         }
       ]

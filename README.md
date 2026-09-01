@@ -25,7 +25,7 @@ The judging bar: *"Throughput plus measured accuracy plus an honest exception li
 | L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
 | L3 agent | residual only | 6 records | — | variances no deterministic rule can decompose |
 
-L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens — that *is* the deterministic-first thesis, quantified. Run for real against those 6, L3 correctly matched 2 and honestly deferred the other 4 (details further down).
+L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens — that *is* the deterministic-first thesis, quantified. Run for real against those 6, L3 correctly matched 1 and correctly raised the other 5 as exceptions, with real ₹ amounts (details further down).
 
 **Per-defect-class scoring on `run_2000` — 14/14 types, zero misses, zero misclassifications, zero false exceptions:**
 
@@ -48,11 +48,14 @@ The right-hand column is the half most systems get wrong: four defect types exis
 
 | Record | Outcome |
 |---|---|
-| `pay_3egKQ6BCralBAI` | Correctly matched to its order — independently checked against `ground_truth.json`, not just the pipeline's own score |
-| `pay_dGxUjmPIxeeXo4` | Correctly matched to its order — same independent check |
-| 4 records | `AGENT_INCOMPLETE` — honest turn-budget exhaustion (constraint 6's infrastructure fallback), not a wrong answer |
+| `pay_3egKQ6BCralBAI` | Correctly matched to its settlement — independently checked against `ground_truth.json`, not just the pipeline's own score. Its own 90-paise fee/GST anomaly judged immaterial, not separately flagged. |
+| `pay_dGxUjmPIxeeXo4` | Correctly raised as `UNEXPLAINED_VARIANCE`, ₹0.88 at risk — exact match to the injected defect's own labelled amount |
+| `pay_ymzQx3u8WEhd7G` | Correctly raised as `FEE_VARIANCE`, ₹41.19 at risk — exact match |
+| `pay_OyvjU0Hc7g7Bi2` | Correctly raised as `FEE_VARIANCE`, ₹2,286.93 at risk — exact match, the largest of the six |
+| `pay_Yw6hEZsEyvZMNn` | Correctly raised as `FEE_VARIANCE`, ₹1.42 at risk — exact match |
+| `pay_RMejvzSwrh9QXa` | Raised as `FEE_VARIANCE`, ₹7.44 at risk — the fee leg's own delta, not the ₹1.83 net delta the generator labels (fee and GST deltas partly offset; the model cited the larger single leg) |
 
-Zero false matches, verified by hand against ground truth for every asserted link, not just read off the summary. 48 real LLM calls, 109s wall clock, **$0.0749 total → $0.0403 per 1000 records** (well inside the brief's own <$0.50/1000 target), computed from real token counts against NIM's published per-token rate — not estimated. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/).
+Zero `AGENT_INCOMPLETE`, zero false matches, zero invented categories — verified by hand against ground truth for every asserted link, category, and amount, not just read off the summary. 53 real LLM calls, 490s wall clock, **$0.102 total → $0.055 per 1000 records** (well inside the brief's own <$0.50/1000 target), computed from real token counts against NIM's published per-token rate — not estimated. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/). Getting here took three re-runs and four real bugs found and fixed along the way — see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 The agent's tool-use and hard-constraint enforcement are additionally proven on a small hand-built synthetic exercise set ([`benchmarks/phase5_synthetic.json`](benchmarks/phase5_synthetic.json), [`benchmarks/sample_traces/`](benchmarks/sample_traces/)) covering every constraint at least once — an unexplained variance, an ambiguous refusal, a subset-sum batch, a high-value review flag, and a turn-budget exhaustion — the same live model, same zero false matches. The first live run of that set surfaced a genuine false-match bug, fixed with regression tests, then re-run clean.
 
@@ -111,7 +114,8 @@ Same `--seed` → byte-identical output, every time. A small companion fixture, 
 - `PERIOD_CUTOFF` recall is 14/14 on `run_2000` at the current threshold, but that threshold (a >4-day settlement gap) was calibrated against this fixture's observed distribution. It is a tuned constant, not a law — on a different merchant's cycle it would need re-derivation, and one boundary case at exactly 3 days remains genuinely indistinguishable from a slow weekend.
 - The defect *rates* are tuned so all 14 types appear at N=2000; at N=500 some types fire only once or twice, so per-class recall at that scale is a small-sample number and should be read as such.
 - `propose_match`'s rationale-citation check is a best-effort structural check (does the text contain a known record id), not a semantic verification that the citation actually supports the claim.
-- The 8-turn budget is tight for a genuinely uncertain case: 2 of 5 synthetic exercise records, and 4 of 6 real `run_2000` residual records, ended in `AGENT_INCOMPLETE` rather than a decision. That's constraint 6's infrastructure-level fallback working as designed, not a false positive or a crash — but a majority-incomplete rate on real residual is an honest signal the budget (or the prompting) has room to improve, not a result to undersell.
+- The turn budget was genuinely too tight at 8 (see ARCHITECTURE.md): 4 of 6 real `run_2000` residual records hit `AGENT_INCOMPLETE`, all from correct, thorough investigation that simply ran out of room. Raised to 12 and re-verified live: 0 of 6 incomplete. Constraint 6's fallback is still real infrastructure (it still fires whenever a case is genuinely too hard, e.g. the 2 of 5 synthetic exercise cases below), not a guarantee removed.
+- L3's own category choice for a compound fee+GST error is defensible but imprecise: 4 of 6 live cases were labelled `FEE_VARIANCE` where the generator's own expected label is `UNEXPLAINED_VARIANCE`, since the model cites the single largest anomalous leg rather than "multiple legs are simultaneously unexplained." The money and the record are correctly surfaced either way — see `benchmarks/phase5_live_residual.json`'s `defect_confusion_note`. One exception also cites the largest single unexplained leg's own delta (₹7.44) rather than the smaller net bottom-line delta (₹1.83) when legs partially offset.
 - `auto_match_rate` and `hands_off_rate` are defined identically for now (see `eval/metrics.py`) — holds until a layer can leave a record neither matched nor exceptioned.
 - `false_match_rate` is computed against the engine's own asserted links, not total records — deliberate, so it can't be gamed by asserting fewer links, but it must always be read next to auto-match rate, never alone.
 - The reference fixture's own UTR-truncation defect happens to either leave the UTR fully intact or remove it entirely — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.

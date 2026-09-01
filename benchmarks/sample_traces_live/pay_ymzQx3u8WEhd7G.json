@@ -1,25 +1,27 @@
 {
   "backend": "nim",
+  "cost_usd_micros": 18155,
   "final_decision": "exception",
   "from_cache": false,
-  "input_tokens": 17172,
-  "llm_calls": 8,
+  "input_tokens": 23801,
+  "llm_calls": 9,
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-  "output_tokens": 1331,
+  "output_tokens": 2843,
   "record_id": "pay_ymzQx3u8WEhd7G",
   "result": {
     "exception": {
       "affected": {
+        "payment_id": "pay_ymzQx3u8WEhd7G",
         "record_id": "pay_ymzQx3u8WEhd7G",
         "source": "payments"
       },
       "aging_days": 0,
-      "amount_at_risk_paise": 1498031,
-      "category": "AGENT_INCOMPLETE",
+      "amount_at_risk_paise": 4119,
+      "category": "FEE_VARIANCE",
       "evidence_chain": [
-        "agent loop exhausted 8 turns without calling propose_match or raise_exception"
+        "Payment pay_ymzQx3u8WEhd7G (gross 15,36,600 paise, netbanking, domestic) has fee_paise=30732 and gst_paise=7837, but compute_expected_fee returns fee_paise=29195 and gst_paise=5255 for same parameters. explain_variance on fee (observed 30732 vs expected 29195) returns cause=UNEXPLAINED, delta=1537 paise. explain_variance on net (observed 1498031 vs expected 1502150) returns cause=UNEXPLAINED, delta=-4119 paise. Payment is linked to settlement setl_p7l4JVGHn8xQmP (settled 2026-08-20, 3 payments, net 3217692 paise) which matches bank credit btxn_F7Rrp8SXnXUa (value_date 2026-08-20, credit 3217692 paise, narration references UTR ICICN44644118766). The settlement and bank linkage are correct; the variance is isolated to this payment's fee/GST calculation."
       ],
-      "recommended_action": "The reconciliation agent did not reach a decision within its turn budget; needs manual review.",
+      "recommended_action": "Investigate fee/GST calculation for netbanking payment pay_ymzQx3u8WEhd7G - observed fee 30732 paise + GST 7837 paise vs expected fee 29195 paise + GST 5255 paise. Variance of 1537 paise on fee and 2582 paise on GST (total net variance -4119 paise) is UNEXPLAINED by standard fee tier, GST rate, rounding, or refund rules.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops"
     }
@@ -109,26 +111,6 @@
               "international": false,
               "method": "netbanking"
             },
-            "expected_paise": 5255,
-            "observed_paise": 7837
-          },
-          "name": "explain_variance",
-          "result": {
-            "result": {
-              "cause": "UNEXPLAINED",
-              "delta_paise": 2582,
-              "detail": "2582 paise not explained by fee tier, GST rate, a known refund, or rounding"
-            },
-            "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
             "expected_paise": 1502150,
             "observed_paise": 1498031
           },
@@ -140,28 +122,6 @@
               "detail": "-4119 paise not explained by fee tier, GST rate, a known refund, or rounding"
             },
             "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "record_id": "order_xGrxGJd2AdZowS",
-            "source": "orders"
-          },
-          "name": "get_record",
-          "result": {
-            "currency": "INR",
-            "customer_id": "cust_uq0Wi0tMSYeM",
-            "gross_paise": 1536600,
-            "intended_method": "netbanking",
-            "invoice_no": "INV-2026-001681",
-            "order_date": "2026-08-18",
-            "order_id": "order_xGrxGJd2AdZowS",
-            "status": "paid"
           }
         }
       ]
@@ -197,8 +157,8 @@
       "tool_calls": [
         {
           "arguments": {
-            "amount_tolerance_paise": 5000000,
-            "date_window_days": 10,
+            "amount_tolerance_paise": 10000,
+            "date_window_days": 3,
             "limit": 10,
             "record_id": "setl_p7l4JVGHn8xQmP"
           },
@@ -206,96 +166,201 @@
           "result": {
             "result": [
               {
-                "balance_paise": 1062299110,
-                "bank_txn_id": "btxn_MwUBgmDjxHQr",
-                "credit_paise": 649400,
+                "balance_paise": 1207538008,
+                "bank_txn_id": "btxn_F7Rrp8SXnXUa",
+                "credit_paise": 3217692,
                 "debit_paise": 0,
-                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-UTIBN30560176231",
+                "narration": "NEFT-ICICN44644118766-RAZORPAY SOFTWARE PVT LTD",
                 "table": "bank",
-                "value_date": "2026-08-10"
-              },
-              {
-                "balance_paise": 1094001392,
-                "bank_txn_id": "btxn_tED1oSVznmrs",
-                "credit_paise": 221642,
-                "debit_paise": 0,
-                "narration": "IMPS/UTIBN39819604755/RAZORPAYSOFT/",
-                "table": "bank",
-                "value_date": "2026-08-10"
-              },
-              {
-                "balance_paise": 1110363726,
-                "bank_txn_id": "btxn_UsN8ZQhQrySG",
-                "credit_paise": 400981,
-                "debit_paise": 0,
-                "narration": "SBINN30798074743 RZP SETTLE",
-                "table": "bank",
-                "value_date": "2026-08-11"
-              },
-              {
-                "balance_paise": 1129317625,
-                "bank_txn_id": "btxn_tWtj73uet8SL",
-                "credit_paise": 114900,
-                "debit_paise": 0,
-                "narration": "UPI/CR/HDFCN25986975559/RZPY/SETTLEMENT",
-                "table": "bank",
-                "value_date": "2026-08-11"
-              },
-              {
-                "balance_paise": 1131889073,
-                "bank_txn_id": "btxn_LbUjbbgxB8RL",
-                "credit_paise": 2571448,
-                "debit_paise": 0,
-                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-ICICN25664173739",
-                "table": "bank",
-                "value_date": "2026-08-12"
-              },
-              {
-                "balance_paise": 1131906691,
-                "bank_txn_id": "btxn_W1OnX70xNW7O",
-                "credit_paise": 17618,
-                "debit_paise": 0,
-                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-SBINN62545215044",
-                "table": "bank",
-                "value_date": "2026-08-12"
-              },
-              {
-                "balance_paise": 1132270491,
-                "bank_txn_id": "btxn_ZNcPwbbfawcr",
-                "credit_paise": 363800,
-                "debit_paise": 0,
-                "narration": "KKBKN91947344706 RZP SETTLE",
-                "table": "bank",
-                "value_date": "2026-08-12"
-              },
-              {
-                "balance_paise": 1146206845,
-                "bank_txn_id": "btxn_utAUYtLlkOw6",
-                "credit_paise": 1624517,
-                "debit_paise": 0,
-                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-ICICN65605537138",
-                "table": "bank",
-                "value_date": "2026-08-12"
-              },
-              {
-                "balance_paise": 1149604447,
-                "bank_txn_id": "btxn_57cFS9qSi0SN",
-                "credit_paise": 3397602,
-                "debit_paise": 0,
-                "narration": "UPI/CR/ICICN64006300293/RZPY/SETTLEMENT",
-                "table": "bank",
-                "value_date": "2026-08-13"
-              },
-              {
-                "balance_paise": 1149639550,
-                "bank_txn_id": "btxn_AcCvcOH6I0VO",
-                "credit_paise": 35103,
-                "debit_paise": 0,
-                "narration": "IMPS/KKBKN80214555450/RAZORPAYSOFT/",
-                "table": "bank",
-                "value_date": "2026-08-13"
+                "value_date": "2026-08-20"
               }
             ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 200000,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "pay_ymzQx3u8WEhd7G"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 0,
+                "gross_paise": 1637299,
+                "gst_paise": 0,
+                "net_paise": 1637299,
+                "num_payments": 3,
+                "settled_at": "2026-08-14",
+                "settlement_id": "setl_V7EYo3ZSnBsBgK",
+                "table": "settlements",
+                "utr": "KKBKN65888569173"
+              },
+              {
+                "adjustment_paise": 0,
+                "fee_paise": 31890,
+                "gross_paise": 1594500,
+                "gst_paise": 5741,
+                "net_paise": 1556869,
+                "num_payments": 5,
+                "settled_at": "2026-08-14",
+                "settlement_id": "setl_w2ZdfAxXtv4XeF",
+                "table": "settlements",
+                "utr": "ICICN25759958868"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 2000000,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "setl_p7l4JVGHn8xQmP"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 1182656820,
+                "bank_txn_id": "btxn_jOciQyyw5hAR",
+                "credit_paise": 4993146,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-UTIBN37928951905",
+                "table": "bank",
+                "value_date": "2026-08-17"
+              },
+              {
+                "balance_paise": 1200908451,
+                "bank_txn_id": "btxn_ZzKRvatmLxNx",
+                "credit_paise": 2614773,
+                "debit_paise": 0,
+                "narration": "UPI/CR/KKBKN48746905042/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-08-18"
+              },
+              {
+                "balance_paise": 1203516825,
+                "bank_txn_id": "btxn_P1dAsUzYETA0",
+                "credit_paise": 2643074,
+                "debit_paise": 0,
+                "narration": "NEFT-UTIBN08683268120-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-19"
+              },
+              {
+                "balance_paise": 1207538008,
+                "bank_txn_id": "btxn_F7Rrp8SXnXUa",
+                "credit_paise": 3217692,
+                "debit_paise": 0,
+                "narration": "NEFT-ICICN44644118766-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-20"
+              },
+              {
+                "balance_paise": 1212628426,
+                "bank_txn_id": "btxn_RNXlvl1I34nP",
+                "credit_paise": 5090418,
+                "debit_paise": 0,
+                "narration": "IMPS/SBINN97124518806/RAZORPAYSOFT/",
+                "table": "bank",
+                "value_date": "2026-08-20"
+              },
+              {
+                "balance_paise": 1217861447,
+                "bank_txn_id": "btxn_vGDQoHNVRJK0",
+                "credit_paise": 5168077,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-ICICN54444757571",
+                "table": "bank",
+                "value_date": "2026-08-20"
+              },
+              {
+                "balance_paise": 1222243017,
+                "bank_txn_id": "btxn_S7g1LbfGzD2K",
+                "credit_paise": 4426770,
+                "debit_paise": 0,
+                "narration": "UPI/CR/PYT7682574816/RZPY/CONSOL PAYOUT",
+                "table": "bank",
+                "value_date": "2026-08-21"
+              },
+              {
+                "balance_paise": 1243293276,
+                "bank_txn_id": "btxn_LOdAVGNsmLLz",
+                "credit_paise": 2444818,
+                "debit_paise": 0,
+                "narration": "NEFT-PYT6702370513-RAZORPAY SOFTWARE PVT LTD CONSOLIDATED",
+                "table": "bank",
+                "value_date": "2026-08-24"
+              },
+              {
+                "balance_paise": 1293605846,
+                "bank_txn_id": "btxn_UYARpIoivGtR",
+                "credit_paise": 1555698,
+                "debit_paise": 0,
+                "narration": "SBINN99808384549 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-08-25"
+              },
+              {
+                "balance_paise": 1294851641,
+                "bank_txn_id": "btxn_VUI5q32616pE",
+                "credit_paise": 1245795,
+                "debit_paise": 0,
+                "narration": "ICICN13430866063 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-08-25"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_at_risk_paise": 4119,
+            "category": "FEE_VARIANCE",
+            "rationale": "Payment pay_ymzQx3u8WEhd7G (gross 15,36,600 paise, netbanking, domestic) has fee_paise=30732 and gst_paise=7837, but compute_expected_fee returns fee_paise=29195 and gst_paise=5255 for same parameters. explain_variance on fee (observed 30732 vs expected 29195) returns cause=UNEXPLAINED, delta=1537 paise. explain_variance on net (observed 1498031 vs expected 1502150) returns cause=UNEXPLAINED, delta=-4119 paise. Payment is linked to settlement setl_p7l4JVGHn8xQmP (settled 2026-08-20, 3 payments, net 3217692 paise) which matches bank credit btxn_F7Rrp8SXnXUa (value_date 2026-08-20, credit 3217692 paise, narration references UTR ICICN44644118766). The settlement and bank linkage are correct; the variance is isolated to this payment's fee/GST calculation.",
+            "recommended_action": "Investigate fee/GST calculation for netbanking payment pay_ymzQx3u8WEhd7G - observed fee 30732 paise + GST 7837 paise vs expected fee 29195 paise + GST 5255 paise. Variance of 1537 paise on fee and 2582 paise on GST (total net variance -4119 paise) is UNEXPLAINED by standard fee tier, GST rate, rounding, or refund rules.",
+            "severity": "NORMAL"
+          },
+          "name": "raise_exception",
+          "result": {
+            "exception": {
+              "affected": {
+                "payment_id": "pay_ymzQx3u8WEhd7G",
+                "record_id": "pay_ymzQx3u8WEhd7G",
+                "source": "payments"
+              },
+              "aging_days": 0,
+              "amount_at_risk_paise": 4119,
+              "category": "FEE_VARIANCE",
+              "evidence_chain": [
+                "Payment pay_ymzQx3u8WEhd7G (gross 15,36,600 paise, netbanking, domestic) has fee_paise=30732 and gst_paise=7837, but compute_expected_fee returns fee_paise=29195 and gst_paise=5255 for same parameters. explain_variance on fee (observed 30732 vs expected 29195) returns cause=UNEXPLAINED, delta=1537 paise. explain_variance on net (observed 1498031 vs expected 1502150) returns cause=UNEXPLAINED, delta=-4119 paise. Payment is linked to settlement setl_p7l4JVGHn8xQmP (settled 2026-08-20, 3 payments, net 3217692 paise) which matches bank credit btxn_F7Rrp8SXnXUa (value_date 2026-08-20, credit 3217692 paise, narration references UTR ICICN44644118766). The settlement and bank linkage are correct; the variance is isolated to this payment's fee/GST calculation."
+              ],
+              "recommended_action": "Investigate fee/GST calculation for netbanking payment pay_ymzQx3u8WEhd7G - observed fee 30732 paise + GST 7837 paise vs expected fee 29195 paise + GST 5255 paise. Variance of 1537 paise on fee and 2582 paise on GST (total net variance -4119 paise) is UNEXPLAINED by standard fee tier, GST rate, rounding, or refund rules.",
+              "severity": "STANDARD",
+              "suggested_owner": "Reconciliation Ops"
+            },
             "status": "ok"
           }
         }

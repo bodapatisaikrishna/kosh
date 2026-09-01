@@ -20,12 +20,12 @@ from pathlib import Path
 from .contract import RECOMMENDED_ACTIONS, EngineMeta, EngineOutput, Match, ReconException, severity_for_amount
 from .fees import compute_expected_fee
 from .io import Dataset
-from .l3_tools import TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
+from .l3_tools import _ID_FIELD, TOOL_SPECS, ToolContext, _find_record, dispatch_tool, json_safe
 from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError, TransientBackendError
 from .llm.pricing import cost_usd_micros
 
 PROMPT_VERSION = 1
-DEFAULT_MAX_TURNS = 8
+DEFAULT_MAX_TURNS = 12
 DEFAULT_CONCURRENCY = 8
 MAX_BACKOFF_RETRIES = 5
 BASE_BACKOFF_SECONDS = 1.0
@@ -78,13 +78,24 @@ def _amount_hint(dataset: Dataset, source: str, record_id: str) -> int:
     return 0
 
 
-def _cache_key(record_id: str, dataset: Dataset, source: str, model: str) -> str:
+def _cache_key(record_id: str, dataset: Dataset, source: str, model: str, max_turns: int) -> str:
     """A snapshot of just this record's own fields, not the whole dataset - an
-    unrelated dataset change doesn't invalidate every cached trace."""
+    unrelated dataset change doesn't invalidate every cached trace.
+
+    max_turns is part of the key deliberately: it changes what the agent is
+    allowed to do (a record that hit AGENT_INCOMPLETE at max_turns=8 might
+    close the loop cleanly at max_turns=12), so a budget change must miss
+    cache the same way a prompt or model change does. Before this, only
+    PROMPT_VERSION was in the key - changing max_turns without remembering
+    to bump it would have silently served a stale trace from the old budget.
+    """
     row = _find_record(dataset, source, record_id)
     snapshot = json_safe(row) if row is not None else None
     payload = json.dumps(
-        {"record_id": record_id, "source": source, "model": model, "prompt_version": PROMPT_VERSION, "snapshot": snapshot},
+        {
+            "record_id": record_id, "source": source, "model": model,
+            "prompt_version": PROMPT_VERSION, "max_turns": max_turns, "snapshot": snapshot,
+        },
         sort_keys=True,
     )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
@@ -118,7 +129,7 @@ def run_agent_on_record(
     model_name: str = "unknown",
     backend_name: str = "unknown",
 ) -> AgentTrace:
-    cache_file = cache_dir / f"{_cache_key(record_id, dataset, source, model_name)}.json"
+    cache_file = cache_dir / f"{_cache_key(record_id, dataset, source, model_name, max_turns)}.json"
     if cache_file.exists():
         cached = json.loads(cache_file.read_text(encoding="utf-8"))
         trace = AgentTrace(**{**cached, "llm_calls": 0, "from_cache": True})
@@ -239,6 +250,13 @@ async def run_l3_async(
                 # visibly unresolved with the reason attached, which is the
                 # same contract as constraint 6's AGENT_INCOMPLETE.
                 amount = _amount_hint(dataset, source, record_id)
+                # See l3_tools.raise_exception's identical comment: the
+                # source-specific id field (payment_id/etc) is required for
+                # eval/metrics.py's CATEGORY_IDENTITY_FIELDS lookup, not just
+                # the generic record_id/source pair.
+                failed_affected = {"record_id": record_id, "source": source}
+                if source in _ID_FIELD:
+                    failed_affected[_ID_FIELD[source]] = record_id
                 failed = AgentTrace(
                     record_id=record_id, source=source, model=model_name, backend=backend_name,
                     final_decision="exception",
@@ -246,7 +264,7 @@ async def run_l3_async(
                         category="AGENT_INCOMPLETE",
                         severity=severity_for_amount(amount),
                         amount_at_risk_paise=amount,
-                        affected={"record_id": record_id, "source": source},
+                        affected=failed_affected,
                         recommended_action=RECOMMENDED_ACTIONS["AGENT_INCOMPLETE"],
                         evidence_chain=(f"agent run failed against {backend_name}: {type(exc).__name__}: {exc}",),
                     ))},

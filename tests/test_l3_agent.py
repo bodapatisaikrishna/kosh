@@ -117,6 +117,32 @@ def test_caching_avoids_a_second_llm_call_for_the_same_record(tmp_path):
     assert second.final_decision == "exception"
 
 
+def test_changing_max_turns_misses_cache(tmp_path):
+    # A record that hit AGENT_INCOMPLETE at the old budget must actually be
+    # re-run at a new budget, not silently served the stale incomplete trace -
+    # max_turns has to be part of the cache key, not just PROMPT_VERSION.
+    dirs = _dirs(tmp_path)
+    client = FakeClient([
+        AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+            "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
+            "recommended_action": "x", "rationale": "budget-8 case",
+        }),), stop_reason="tool_use"),
+    ])
+    first = run_agent_on_record("pay_1", "payments", _dataset(), client, model_name="fake", backend_name="fake", max_turns=8, **dirs)
+    assert not first.from_cache
+    assert client.call_count == 1
+
+    client2 = FakeClient([
+        AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+            "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
+            "recommended_action": "x", "rationale": "budget-12 case",
+        }),), stop_reason="tool_use"),
+    ])
+    second = run_agent_on_record("pay_1", "payments", _dataset(), client2, model_name="fake", backend_name="fake", max_turns=12, **dirs)
+    assert not second.from_cache  # different max_turns must miss, not reuse the max_turns=8 cache entry
+    assert client2.call_count == 1
+
+
 def test_trace_file_is_persisted_with_the_record_id_as_filename(tmp_path):
     dirs = _dirs(tmp_path)
     client = FakeClient([

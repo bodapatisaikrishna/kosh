@@ -87,6 +87,13 @@ CATEGORY_IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     # L4's fallback path names the payment directly; L3's raise_exception tool
     # names it as record_id - either is this category's own identity.
     "UNEXPLAINED_VARIANCE": ("payment_id", "record_id"),
+    # An agent that ran out of its turn budget on defect X should score as
+    # "misclassified" (something was raised, just not the right label) -
+    # not "missed" (nothing was raised at all), which is what it looked like
+    # before raise_exception carried a source-specific id field. All four
+    # possible source id fields are listed since AGENT_INCOMPLETE can fire
+    # against any residual source, not just payments.
+    "AGENT_INCOMPLETE": ("payment_id", "bank_txn_id", "settlement_id", "order_id", "record_id"),
 }
 
 

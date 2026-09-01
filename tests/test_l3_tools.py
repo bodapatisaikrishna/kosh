@@ -198,6 +198,50 @@ def test_raise_exception_rejects_an_empty_rationale():
         pass
 
 
+def test_raise_exception_rejects_an_invented_category():
+    # A live run once returned "FEE_CALCULATION_VARIANCE" and
+    # "unexplained_fee_variance" - neither a real category. Both would have
+    # silently broken category-keyed scoring downstream (compute_defect_confusion's
+    # exact-match check, the dashboard's by-category breakdown) with no error
+    # anywhere. This must be rejected structurally, not just discouraged in the
+    # prompt - same principle as every other hard constraint in this file.
+    ctx = _ctx()
+    try:
+        raise_exception(
+            ctx, category="FEE_CALCULATION_VARIANCE", severity="STANDARD",
+            amount_at_risk_paise=100_00, recommended_action="x", rationale="a real reason",
+        )
+        assert False, "expected ToolError"
+    except ToolError as exc:
+        assert "FEE_CALCULATION_VARIANCE" in str(exc)
+        assert "UNEXPLAINED_VARIANCE" in str(exc)  # a real category is listed as guidance
+    assert ctx.result is None  # the rejected call must not have closed the loop
+
+
+def test_raise_exception_affected_carries_the_source_specific_id_field():
+    # Without "payment_id" (not just "record_id"), eval/metrics.py's
+    # CATEGORY_IDENTITY_FIELDS lookup for FEE_VARIANCE/TAX_VARIANCE/etc never
+    # finds a match against this exception - it silently vanishes from
+    # per-defect-class scoring even though it was correctly raised.
+    ctx = _ctx(residual_id="pay_1", residual_source="payments")
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=500,
+        recommended_action="x", rationale="a real reason",
+    )
+    affected = result["exception"]["affected"]
+    assert affected["payment_id"] == "pay_1"
+    assert affected["record_id"] == "pay_1"  # generic key still present too
+
+
+def test_raise_exception_affected_uses_bank_txn_id_for_bank_source():
+    ctx = _ctx(residual_id="btxn_1", residual_source="bank")
+    result = raise_exception(
+        ctx, category="UNIDENTIFIED_CREDIT", severity="STANDARD", amount_at_risk_paise=500,
+        recommended_action="x", rationale="a real reason",
+    )
+    assert result["exception"]["affected"]["bank_txn_id"] == "btxn_1"
+
+
 # --- dispatch_tool --------------------------------------------------------------
 
 def test_dispatch_tool_reports_an_unknown_tool_name_as_a_result_not_an_exception():

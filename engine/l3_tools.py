@@ -287,16 +287,36 @@ def propose_match(ctx: ToolContext, record_ids: list[str], confidence: float, ra
 def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_risk_paise: int, recommended_action: str, rationale: str) -> dict:
     if ctx.result is not None:
         raise ToolError("a final decision was already made this session")
+    # Never let the model invent its own taxonomy - a live run once returned
+    # "FEE_CALCULATION_VARIANCE" and "unexplained_fee_variance", neither a
+    # real category, which silently breaks category-keyed scoring
+    # (compute_defect_confusion's exact-match check, the dashboard's
+    # by-category breakdown) without ever raising an error. Rejecting here
+    # gives the model a chance to retry with a real category within its
+    # remaining turns, instead of polluting the exception ledger.
+    if category not in RECOMMENDED_ACTIONS:
+        raise ToolError(f"unknown category {category!r} - must be one of {sorted(RECOMMENDED_ACTIONS)}")
     if amount_at_risk_paise < 0:
         raise ToolError("amount_at_risk_paise must be non-negative")
 
     # Constraint 4: severity is recomputed from the amount, never trusted from the model.
     real_severity = severity_for_amount(amount_at_risk_paise)
+    # affected carries BOTH the generic record_id/source (every consumer can
+    # rely on these regardless of category) AND the source-specific id field
+    # (payment_id/bank_txn_id/etc, matching engine/exceptions.py's own
+    # convention). Without the latter, eval/metrics.py's CATEGORY_IDENTITY_FIELDS
+    # lookup for e.g. FEE_VARIANCE (which expects "payment_id") never finds a
+    # match against an L3 exception - a live run once made every non-
+    # UNEXPLAINED_VARIANCE category L3 raised invisible to per-defect-class
+    # scoring, silently, with no error.
+    affected = {"record_id": ctx.residual_id, "source": ctx.residual_source}
+    if ctx.residual_source in _ID_FIELD:
+        affected[_ID_FIELD[ctx.residual_source]] = ctx.residual_id
     exc = ReconException(
         category=category,
         severity=real_severity,
         amount_at_risk_paise=amount_at_risk_paise,
-        affected={"record_id": ctx.residual_id, "source": ctx.residual_source},
+        affected=affected,
         recommended_action=recommended_action or RECOMMENDED_ACTIONS.get(category, "Manual review required."),
         evidence_chain=(rationale,) if rationale else (),
     )
@@ -366,9 +386,17 @@ TOOL_SPECS: list[ToolSpec] = [
     ToolSpec("raise_exception", "Close this investigation by raising an exception ledger entry for the record under investigation.", {
         "type": "object",
         "properties": {
-            "category": {"type": "string"},
+            "category": {"type": "string", "enum": sorted(RECOMMENDED_ACTIONS)},
             "severity": {"type": "string"},
-            "amount_at_risk_paise": {"type": "integer"},
+            "amount_at_risk_paise": {
+                "type": "integer",
+                "description": (
+                    "The specific unexplained amount in question (e.g. the variance explain_variance "
+                    "could not decompose) - NOT the payment's or settlement's full gross/net amount. "
+                    "If the fee is off by 90 paise, this is 90, even if the payment itself is for "
+                    "1,000,000 paise."
+                ),
+            },
             "recommended_action": {"type": "string"},
             "rationale": {"type": "string"},
         },
