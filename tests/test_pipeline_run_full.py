@@ -68,3 +68,43 @@ def test_unexplained_payment_gets_a_fallback_exception_without_a_client():
     matching = [e for e in output.exceptions if e.category == "UNEXPLAINED_VARIANCE" and e.affected.get("payment_id") == "pay_1"]
     assert len(matching) == 1
     assert matching[0].recommended_action
+
+
+# --- settlement credit-sum reconciliation (Task 3, attack f) -----------------
+#
+# A settlement's linked bank credits must never sum to more than its own
+# net_paise. Two bank rows can legitimately both belong to one settlement
+# (settlement_split - a genuine payout divided into two real deposits, each
+# a partial amount summing exactly to net_paise); what must never happen is a
+# settlement being claimed against more total credit than it was ever paid -
+# found by deliberately colliding the identical UTR text on two unrelated
+# bank rows.
+
+def test_settlement_double_claim_via_identical_utr_is_refused():
+    order = OrderRow("order_f1", "2026-08-01", "cust_1", 70_000_00, "INR", "upi", "paid", "INV-f1")
+    payment = PaymentRow("pay_f1", "order_f1", "2026-08-01T10:00:00", "upi", False, 70_000_00, 0, 0, 70_000_00, "captured", "setl_f1", None, 0)
+    settlement = SettlementRow("setl_f1", "2026-08-06", "HDFCN00000000501", 1, 70_000_00, 0, 0, 0, 70_000_00)
+    genuine = BankRow("btxn_f1", "2026-08-06", "NEFT-HDFCN00000000501-RAZORPAY SOFTWARE PVT LTD", 70_000_00, 0, 0)
+    collision = BankRow("btxn_f2", "2026-08-06", "NEFT-HDFCN00000000501-RAZORPAY SOFTWARE PVT LTD", 70_000_00, 0, 0)
+    dataset = Dataset(orders=[order], payments=[payment], settlements=[settlement], bank=[genuine, collision])
+
+    output = run_full(dataset, client=None)
+    settlement_bank_matches = [m for m in output.matches if m.link_type == "settlement_bank_txn"]
+    assert settlement_bank_matches == []  # neither row is asserted - refuse, don't guess which is real
+    # both rows must still surface somewhere - never silently vanish
+    unidentified = {e.affected.get("bank_txn_id") for e in output.exceptions if e.category == "UNIDENTIFIED_CREDIT"}
+    assert {"btxn_f1", "btxn_f2"} <= unidentified
+
+
+def test_legitimate_settlement_split_still_resolves_both_parts():
+    order = OrderRow("order_sp1", "2026-08-01", "cust_1", 100_000_00, "INR", "upi", "paid", "INV-sp1")
+    payment = PaymentRow("pay_sp1", "order_sp1", "2026-08-01T10:00:00", "upi", False, 100_000_00, 0, 0, 100_000_00, "captured", "setl_sp1", None, 0)
+    settlement = SettlementRow("setl_sp1", "2026-08-06", "HDFCN00000000601", 2, 100_000_00, 0, 0, 0, 100_000_00)
+    part_a = BankRow("btxn_sp1a", "2026-08-06", "NEFT-HDFCN00000000601-RAZORPAY SOFTWARE PVT LTD", 60_000_00, 0, 0)
+    part_b = BankRow("btxn_sp1b", "2026-08-06", "NEFT-HDFCN00000000601-RAZORPAY SOFTWARE PVT LTD", 40_000_00, 0, 0)
+    dataset = Dataset(orders=[order], payments=[payment], settlements=[settlement], bank=[part_a, part_b])
+
+    output = run_full(dataset, client=None)
+    settlement_bank_matches = {m.right_id for m in output.matches if m.link_type == "settlement_bank_txn"}
+    assert settlement_bank_matches == {"btxn_sp1a", "btxn_sp1b"}  # both parts, still correctly resolved
+    assert not any(e.category == "UNIDENTIFIED_CREDIT" for e in output.exceptions)

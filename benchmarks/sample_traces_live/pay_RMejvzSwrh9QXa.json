@@ -1,12 +1,12 @@
 {
   "backend": "nim",
-  "cost_usd_micros": 17426,
+  "cost_usd_micros": 10957,
   "final_decision": "exception",
   "from_cache": false,
-  "input_tokens": 25234,
-  "llm_calls": 10,
+  "input_tokens": 13382,
+  "llm_calls": 6,
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-  "output_tokens": 2186,
+  "output_tokens": 1939,
   "record_id": "pay_RMejvzSwrh9QXa",
   "result": {
     "exception": {
@@ -15,13 +15,16 @@
         "record_id": "pay_RMejvzSwrh9QXa",
         "source": "payments"
       },
-      "aging_days": 0,
-      "amount_at_risk_paise": 744,
-      "category": "FEE_VARIANCE",
+      "aging_days": 55,
+      "amount_at_risk_paise": 183,
+      "category": "UNEXPLAINED_VARIANCE",
       "evidence_chain": [
-        "Payment pay_RMejvzSwrh9QXa (gross 744,400 paise, card, domestic) has unexplained fee and GST variances. Expected fee: 14,888 paise, observed: 14,144 paise (delta -744 paise, UNEXPLAINED per explain_variance). Expected GST: 2,680 paise, observed: 3,607 paise (delta +927 paise, UNEXPLAINED). Net variance: -183 paise. The settlement setl_P65ExMApYLxX4s (net 1,358,125 paise) matches bank credit btxn_DvckK3sHHqcV (1,358,125 paise), confirming settlement processing is correct. The discrepancy is isolated to this payment's fee/GST calculation. Order order_gjPcrL9beElhAk matches payment gross amount."
+        "All three variance checks returned UNEXPLAINED: fee_paise is 744 paise lower than expected (14144 vs 14888), gst_paise is 927 paise higher than expected (3607 vs 2680), and net_paise is 183 paise lower than expected (726649 vs 726832). The net variance of 183 paise equals the sum of fee (-744) and GST (+927) variances. No known refund, rounding, fee tier, or GST rate explains these discrepancies.",
+        "unexplained leg: observed 14144 vs expected 14888, delta -744 paise",
+        "unexplained leg: observed 3607 vs expected 2680, delta 927 paise",
+        "unexplained leg: observed 726649 vs expected 726832, delta -183 paise (bottom line)"
       ],
-      "recommended_action": "Investigate fee tier application for this payment; verify if a promotional rate or different fee tier was applied that isn't captured in standard fee calculation",
+      "recommended_action": "Manual review of fee and GST calculation for payment pay_RMejvzSwrh9QXa; verify if any promotional rate or special fee tier applied",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops"
     }
@@ -156,130 +159,36 @@
       "tool_calls": [
         {
           "arguments": {
-            "record_id": "setl_P65ExMApYLxX4s",
-            "source": "settlements"
-          },
-          "name": "get_record",
-          "result": {
-            "result": {
-              "adjustment_paise": 0,
-              "fee_paise": 27096,
-              "gross_paise": 1392000,
-              "gst_paise": 6779,
-              "net_paise": 1358125,
-              "num_payments": 3,
-              "settled_at": "2026-07-09",
-              "settlement_id": "setl_P65ExMApYLxX4s",
-              "utr": "ICICN69759676563"
-            },
-            "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "amount_tolerance_paise": 100000,
-            "date_window_days": 5,
-            "limit": 10,
-            "record_id": "setl_P65ExMApYLxX4s"
-          },
-          "name": "find_candidates",
-          "result": {
-            "result": [
-              {
-                "balance_paise": 598118774,
-                "bank_txn_id": "btxn_DvckK3sHHqcV",
-                "credit_paise": 1358125,
-                "debit_paise": 0,
-                "narration": "ICICN69759676563 RZP SETTLE",
-                "table": "bank",
-                "value_date": "2026-07-09"
-              }
-            ],
-            "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "record_id": "btxn_DvckK3sHHqcV",
-            "source": "bank"
-          },
-          "name": "get_record",
-          "result": {
-            "result": {
-              "balance_paise": 598118774,
-              "bank_txn_id": "btxn_DvckK3sHHqcV",
-              "credit_paise": 1358125,
-              "debit_paise": 0,
-              "narration": "ICICN69759676563 RZP SETTLE",
-              "value_date": "2026-07-09"
-            },
-            "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "record_id": "order_gjPcrL9beElhAk",
-            "source": "orders"
-          },
-          "name": "get_record",
-          "result": {
-            "currency": "INR",
-            "customer_id": "cust_TcWFcMwmMOLG",
-            "gross_paise": 744400,
-            "intended_method": "card",
-            "invoice_no": "INV-2026-000767",
-            "order_date": "2026-07-07",
-            "order_id": "order_gjPcrL9beElhAk",
-            "status": "paid"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "amount_at_risk_paise": 744,
-            "category": "FEE_VARIANCE",
-            "rationale": "Payment pay_RMejvzSwrh9QXa (gross 744,400 paise, card, domestic) has unexplained fee and GST variances. Expected fee: 14,888 paise, observed: 14,144 paise (delta -744 paise, UNEXPLAINED per explain_variance). Expected GST: 2,680 paise, observed: 3,607 paise (delta +927 paise, UNEXPLAINED). Net variance: -183 paise. The settlement setl_P65ExMApYLxX4s (net 1,358,125 paise) matches bank credit btxn_DvckK3sHHqcV (1,358,125 paise), confirming settlement processing is correct. The discrepancy is isolated to this payment's fee/GST calculation. Order order_gjPcrL9beElhAk matches payment gross amount.",
-            "recommended_action": "Investigate fee tier application for this payment; verify if a promotional rate or different fee tier was applied that isn't captured in standard fee calculation",
-            "severity": "MEDIUM"
+            "amount_at_risk_paise": 183,
+            "category": "UNEXPLAINED_VARIANCE",
+            "rationale": "All three variance checks returned UNEXPLAINED: fee_paise is 744 paise lower than expected (14144 vs 14888), gst_paise is 927 paise higher than expected (3607 vs 2680), and net_paise is 183 paise lower than expected (726649 vs 726832). The net variance of 183 paise equals the sum of fee (-744) and GST (+927) variances. No known refund, rounding, fee tier, or GST rate explains these discrepancies.",
+            "recommended_action": "Manual review of fee and GST calculation for payment pay_RMejvzSwrh9QXa; verify if any promotional rate or special fee tier applied",
+            "severity": "LOW"
           },
           "name": "raise_exception",
           "result": {
+            "category_coerced_from": null,
             "exception": {
               "affected": {
                 "payment_id": "pay_RMejvzSwrh9QXa",
                 "record_id": "pay_RMejvzSwrh9QXa",
                 "source": "payments"
               },
-              "aging_days": 0,
-              "amount_at_risk_paise": 744,
-              "category": "FEE_VARIANCE",
+              "aging_days": 55,
+              "amount_at_risk_paise": 183,
+              "category": "UNEXPLAINED_VARIANCE",
               "evidence_chain": [
-                "Payment pay_RMejvzSwrh9QXa (gross 744,400 paise, card, domestic) has unexplained fee and GST variances. Expected fee: 14,888 paise, observed: 14,144 paise (delta -744 paise, UNEXPLAINED per explain_variance). Expected GST: 2,680 paise, observed: 3,607 paise (delta +927 paise, UNEXPLAINED). Net variance: -183 paise. The settlement setl_P65ExMApYLxX4s (net 1,358,125 paise) matches bank credit btxn_DvckK3sHHqcV (1,358,125 paise), confirming settlement processing is correct. The discrepancy is isolated to this payment's fee/GST calculation. Order order_gjPcrL9beElhAk matches payment gross amount."
+                "All three variance checks returned UNEXPLAINED: fee_paise is 744 paise lower than expected (14144 vs 14888), gst_paise is 927 paise higher than expected (3607 vs 2680), and net_paise is 183 paise lower than expected (726649 vs 726832). The net variance of 183 paise equals the sum of fee (-744) and GST (+927) variances. No known refund, rounding, fee tier, or GST rate explains these discrepancies.",
+                "unexplained leg: observed 14144 vs expected 14888, delta -744 paise",
+                "unexplained leg: observed 3607 vs expected 2680, delta 927 paise",
+                "unexplained leg: observed 726649 vs expected 726832, delta -183 paise (bottom line)"
               ],
-              "recommended_action": "Investigate fee tier application for this payment; verify if a promotional rate or different fee tier was applied that isn't captured in standard fee calculation",
+              "recommended_action": "Manual review of fee and GST calculation for payment pay_RMejvzSwrh9QXa; verify if any promotional rate or special fee tier applied",
               "severity": "STANDARD",
               "suggested_owner": "Reconciliation Ops"
             },
-            "status": "ok"
+            "status": "ok",
+            "unexplained_leg_count": 3
           }
         }
       ]

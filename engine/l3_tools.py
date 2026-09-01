@@ -36,6 +36,14 @@ from .llm.base import ToolSpec
 
 MIN_MATCH_CONFIDENCE = 0.85
 
+# Two or more simultaneously-undecomposable comparisons means no single-cause
+# hypothesis explains this record - definitionally UNEXPLAINED_VARIANCE, whatever
+# category the model asks for. compound_fee_tax_error is exactly this: the fee
+# tier and tax rate are both wrong, so explain_variance's fee-tier hypothesis
+# (which assumes correct GST) and its GST-rate hypothesis (which assumes the
+# correct fee) each fail by construction.
+UNEXPLAINED_LEG_COERCION_THRESHOLD = 2
+
 _ID_FIELD = {"orders": "order_id", "payments": "payment_id", "settlements": "settlement_id", "bank": "bank_txn_id"}
 _DATE_FIELD = {"orders": "order_date", "payments": "captured_at", "settlements": "settled_at", "bank": "value_date"}
 _PREFIX_TO_TABLE = {"order_": "orders", "pay_": "payments", "setl_": "settlements", "btxn_": "bank"}
@@ -94,6 +102,18 @@ def json_safe(obj):
     return obj
 
 
+@dataclass(frozen=True)
+class VarianceObservation:
+    """One explain_variance call and what it concluded. Recorded so
+    raise_exception can see the shape of the investigation, not just its
+    verdict."""
+
+    observed_paise: int
+    expected_paise: int
+    delta_paise: int
+    cause: str
+
+
 @dataclass
 class ToolContext:
     """Constructed once per agent invocation. `residual_id`/`residual_source`
@@ -104,6 +124,7 @@ class ToolContext:
     residual_id: str
     residual_source: str
     known_ids: set[str] = field(default_factory=set)
+    variance_observations: list[VarianceObservation] = field(default_factory=list)
     result: tuple[str, dict] | None = None  # ("match", {...}) | ("exception", {...})
 
     def __post_init__(self) -> None:
@@ -183,6 +204,15 @@ def explain_variance_tool(ctx: ToolContext, observed_paise: int, expected_paise:
         international=context.get("international", False),
         known_refund_paise=context.get("known_refund_paise"),
     )
+    # Recorded regardless of outcome so raise_exception can later see the full
+    # shape of the investigation (see _unexplained_legs) - this call's own
+    # return value is unchanged.
+    ctx.variance_observations.append(VarianceObservation(
+        observed_paise=observed_paise,
+        expected_paise=expected_paise,
+        delta_paise=explanation.delta_paise,
+        cause=explanation.cause,
+    ))
     return {"cause": explanation.cause, "delta_paise": explanation.delta_paise, "detail": explanation.detail}
 
 
@@ -306,6 +336,40 @@ def propose_match(ctx: ToolContext, record_ids: list[str], confidence: float, ra
     return {"status": "ok", "matches": json_safe(matches), "companion_exception": json_safe(companion_exception)}
 
 
+def _unexplained_legs(ctx: ToolContext) -> list[VarianceObservation]:
+    """Distinct comparisons explain_variance could not decompose.
+
+    Deduped on (observed, expected) so a model retrying the identical call -
+    which happens, and is legitimate - can never inflate the count into a
+    false coercion.
+    """
+    seen: set[tuple[int, int]] = set()
+    out: list[VarianceObservation] = []
+    for obs in ctx.variance_observations:
+        if obs.cause != "UNEXPLAINED" or obs.delta_paise == 0:
+            continue
+        key = (obs.observed_paise, obs.expected_paise)
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(obs)
+    return out
+
+
+def _bottom_line_leg(legs: list[VarianceObservation]) -> VarianceObservation:
+    """The net-level comparison, identified as the one made against the largest
+    expected amount: a net comparison is against the full net, a fee-leg
+    comparison against the fee alone, typically two orders of magnitude smaller.
+    This is the amount that actually moved the merchant's bank balance. When legs
+    partially offset it is NOT the largest leg delta - a live run reporting a
+    744-paise fee delta had a true net delta of 183 paise.
+
+    Heuristic, not a proof: holds for the fee/GST/net shape this system produces,
+    would break if two gross amounts were compared. Documented as an assumption.
+    """
+    return max(legs, key=lambda o: abs(o.expected_paise))
+
+
 def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_risk_paise: int, recommended_action: str, rationale: str) -> dict:
     if ctx.result is not None:
         raise ToolError("a final decision was already made this session")
@@ -321,7 +385,30 @@ def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_ri
     if amount_at_risk_paise < 0:
         raise ToolError("amount_at_risk_paise must be non-negative")
 
-    # Constraint 4: severity is recomputed from the amount, never trusted from the model.
+    # Structural: if the model's own investigation showed two or more distinct
+    # simultaneously-undecomposable comparisons, no single-cause category is
+    # truthful, whichever one it asked for. Recompute category and amount from
+    # the observations rather than trusting the request - same principle as
+    # severity_for_amount below.
+    legs = _unexplained_legs(ctx)
+    multi_leg = len(legs) >= UNEXPLAINED_LEG_COERCION_THRESHOLD
+    coerced_from = None
+    leg_detail: tuple[str, ...] = ()
+    if multi_leg:
+        if category != "UNEXPLAINED_VARIANCE":
+            coerced_from = category
+            category = "UNEXPLAINED_VARIANCE"
+        bottom_line = _bottom_line_leg(legs)
+        amount_at_risk_paise = abs(bottom_line.delta_paise)
+        leg_detail = tuple(
+            f"unexplained leg: observed {o.observed_paise} vs expected "
+            f"{o.expected_paise}, delta {o.delta_paise} paise"
+            f"{' (bottom line)' if o is bottom_line else ''}"
+            for o in legs
+        )
+
+    # Constraint 4: severity is recomputed from the (possibly just-recomputed)
+    # amount, never trusted from the model.
     real_severity = severity_for_amount(amount_at_risk_paise)
     # affected carries BOTH the generic record_id/source (every consumer can
     # rely on these regardless of category) AND the source-specific id field
@@ -334,6 +421,19 @@ def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_ri
     affected = {"record_id": ctx.residual_id, "source": ctx.residual_source}
     if ctx.residual_source in _ID_FIELD:
         affected[_ID_FIELD[ctx.residual_source]] = ctx.residual_id
+
+    evidence: tuple[str, ...] = (rationale,) if rationale else ()
+    if not evidence:
+        raise ToolError("rationale must not be empty - every exception needs a reason on the ledger")
+    if multi_leg:
+        if coerced_from is not None:
+            evidence += (
+                f"category coerced from {coerced_from} to UNEXPLAINED_VARIANCE: "
+                f"{len(legs)} distinct comparisons were simultaneously undecomposable, "
+                f"so no single-cause category applies",
+            )
+        evidence += leg_detail
+
     exc = ReconException(
         category=category,
         severity=real_severity,
@@ -342,13 +442,16 @@ def raise_exception(ctx: ToolContext, category: str, severity: str, amount_at_ri
         recommended_action=recommended_action or RECOMMENDED_ACTIONS.get(category, "Manual review required."),
         aging_days=_residual_aging_days(ctx),
         suggested_owner=SUGGESTED_OWNERS.get(category, "Reconciliation Ops"),
-        evidence_chain=(rationale,) if rationale else (),
+        evidence_chain=evidence,
     )
-    if not exc.evidence_chain:
-        raise ToolError("rationale must not be empty - every exception needs a reason on the ledger")
 
     ctx.result = ("exception", {"exception": exc})
-    return {"status": "ok", "exception": json_safe(exc)}
+    return {
+        "status": "ok",
+        "exception": json_safe(exc),
+        "category_coerced_from": coerced_from,
+        "unexplained_leg_count": len(legs),
+    }
 
 
 # --- tool specs + dispatch ----------------------------------------------------
@@ -410,7 +513,16 @@ TOOL_SPECS: list[ToolSpec] = [
     ToolSpec("raise_exception", "Close this investigation by raising an exception ledger entry for the record under investigation.", {
         "type": "object",
         "properties": {
-            "category": {"type": "string", "enum": sorted(RECOMMENDED_ACTIONS)},
+            "category": {
+                "type": "string",
+                "enum": sorted(RECOMMENDED_ACTIONS),
+                "description": (
+                    "If two or more separate comparisons each came back UNEXPLAINED, this is "
+                    "UNEXPLAINED_VARIANCE - not the category of whichever single leg was "
+                    "largest. Multiple simultaneously-undecomposable legs mean no single-cause "
+                    "category is true, and this will be corrected automatically if you name one anyway."
+                ),
+            },
             "severity": {"type": "string"},
             "amount_at_risk_paise": {
                 "type": "integer",

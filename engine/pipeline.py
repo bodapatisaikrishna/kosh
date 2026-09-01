@@ -12,12 +12,19 @@ reconciled; run_full is the complete pipeline.
 from __future__ import annotations
 
 import time
+from collections import defaultdict
 
 from . import exceptions as exceptions_module
 from . import l0_deterministic, l1_tolerance, l2_subset, l3_agent
-from .contract import EngineMeta, EngineOutput
-from .io import Dataset
+from .contract import EngineMeta, EngineOutput, Match
+from .io import BankRow, Dataset
 from .llm.base import LLMClient
+
+# A settlement can legitimately be linked to more than one bank credit - see
+# _reconcile_settlement_credit_sums - but a real split's parts sum to exactly
+# its net_paise, with no float involved. This only absorbs genuine paisa-level
+# rounding elsewhere in the chain, not a meaningfully wrong sum.
+SETTLEMENT_SUM_TOLERANCE_PAISE = 100
 
 
 def _l0_l1_matches(dataset: Dataset) -> tuple[list, list, list]:
@@ -39,6 +46,56 @@ def _l0_l1_matches(dataset: Dataset) -> tuple[list, list, list]:
     still_residual = [t for t in l0_residual if t.bank_txn_id not in l1_matched_txn_ids]
 
     return matches, still_residual, debit_residual
+
+
+def _reconcile_settlement_credit_sums(dataset: Dataset, matches: list[Match]) -> tuple[list[Match], list[BankRow]]:
+    """Post-pass over every settlement_bank_txn match together, after L0+L1+L2
+    have all run - none of those three layers can see the others' matches while
+    running, so this is the first point anything can check the full picture for
+    one settlement at once.
+
+    Two bank rows can legitimately both belong to one settlement:
+    settlement_split genuinely divides one payout across two real deposits,
+    each carrying a partial amount that sums exactly to the settlement's own
+    net_paise. What must never happen is a settlement's linked credits summing
+    to MORE than its own net (found by the adversarial suite, Task 3 attack f:
+    the identical UTR text landing on two semantically unrelated bank rows,
+    which every layer happily matched independently since none of them checks
+    the total against the settlement's own books).
+
+    When the sum is over, every link for that settlement is refused rather
+    than guessing which one is the real one - same "never guess" principle as
+    every ambiguity guard inside a single layer, just applied across all three
+    matching layers' combined output instead of within one of them. The first
+    attempt at this fix instead refused any second claim outright, which
+    wrongly broke genuine settlement_split resolution (11/11 on run_2000) -
+    caught immediately by the cash-reconciliation identity test regressing,
+    and is exactly why this is a sum check, not a one-claim-only rule.
+    """
+    settlement_by_id = {s.settlement_id: s for s in dataset.settlements}
+    bank_by_id = {b.bank_txn_id: b for b in dataset.bank}
+    by_settlement: dict[str, list[Match]] = defaultdict(list)
+    for m in matches:
+        if m.link_type == "settlement_bank_txn":
+            by_settlement[m.left_id].append(m)
+
+    rejected_txn_ids: set[str] = set()
+    for settlement_id, group in by_settlement.items():
+        if len(group) < 2:
+            continue
+        settlement = settlement_by_id.get(settlement_id)
+        if settlement is None:
+            continue
+        total_credited = sum(bank_by_id[m.right_id].credit_paise for m in group if m.right_id in bank_by_id)
+        if total_credited > settlement.net_paise + SETTLEMENT_SUM_TOLERANCE_PAISE:
+            rejected_txn_ids.update(m.right_id for m in group)
+
+    if not rejected_txn_ids:
+        return matches, []
+
+    kept = [m for m in matches if not (m.link_type == "settlement_bank_txn" and m.right_id in rejected_txn_ids)]
+    rejected_bank_rows = [bank_by_id[tid] for tid in rejected_txn_ids if tid in bank_by_id]
+    return kept, rejected_bank_rows
 
 
 def run_l0_l1(dataset: Dataset) -> EngineOutput:
@@ -79,6 +136,9 @@ def run_full(dataset: Dataset, client: LLMClient | None = None, model_name: str 
     matches += l2_matches
     l2_matched_txn_ids = {m.right_id for m in l2_matches}
     final_credit_residual = [t for t in credit_residual if t.bank_txn_id not in l2_matched_txn_ids]
+
+    matches, over_claimed_bank_rows = _reconcile_settlement_credit_sums(dataset, matches)
+    final_credit_residual = final_credit_residual + over_claimed_bank_rows
 
     det_exceptions, unexplained_payment_ids = exceptions_module.classify_deterministic(dataset, final_credit_residual, debit_residual)
 

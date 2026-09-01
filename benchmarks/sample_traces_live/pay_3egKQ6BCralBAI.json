@@ -1,27 +1,30 @@
 {
   "backend": "nim",
-  "cost_usd_micros": 13285,
-  "final_decision": "match",
+  "cost_usd_micros": 15092,
+  "final_decision": "exception",
   "from_cache": false,
-  "input_tokens": 16437,
-  "llm_calls": 7,
+  "input_tokens": 22338,
+  "llm_calls": 9,
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-  "output_tokens": 2303,
+  "output_tokens": 1783,
   "record_id": "pay_3egKQ6BCralBAI",
   "result": {
-    "companion_exception": null,
-    "matches": [
-      {
-        "confidence": 0.95,
-        "evidence": [
-          "Payment pay_3egKQ6BCralBAI (get_record) explicitly references settlement_id setl_z8uznCnwbVI7RN. Settlement setl_z8uznCnwbVI7RN (get_record) confirms this linkage with num_payments=8 and UTR KKBKN11057136889. Fee validation: compute_expected_fee for gross 68800, method wallet, domestic returns fee_paise 1376 (matches observed), gst_paise 248 (observed 158), net_paise 67176 (observed 67266). explain_variance on the GST delta (-90 paise) returns UNEXPLAINED. The payment-to-settlement link is fully reconciled; the 90 paise GST shortfall is a separate tax variance but does not break the match."
-        ],
-        "layer": "L3",
-        "left_id": "pay_3egKQ6BCralBAI",
-        "link_type": "payment_settlement",
-        "right_id": "setl_z8uznCnwbVI7RN"
-      }
-    ]
+    "exception": {
+      "affected": {
+        "payment_id": "pay_3egKQ6BCralBAI",
+        "record_id": "pay_3egKQ6BCralBAI",
+        "source": "payments"
+      },
+      "aging_days": 80,
+      "amount_at_risk_paise": 90,
+      "category": "TAX_VARIANCE",
+      "evidence_chain": [
+        "Payment pay_3egKQ6BCralBAI (gross 68,800 paise, wallet, domestic) has GST variance of -90 paise. compute_expected_fee returned expected GST 248 paise, but payment records 158 paise. explain_variance returned UNEXPLAINED for the -90 paise delta. Order order_kcRZTN0BgBJ3EL and settlement setl_z8uznCnwbVI7RN match correctly. Bank transaction btxn_zODulBverLCH matches settlement net 962,136 paise. The variance is isolated to this payment's GST calculation."
+      ],
+      "recommended_action": "Review GST calculation for wallet payments; expected GST 248 paise but recorded 158 paise (-90 paise variance)",
+      "severity": "STANDARD",
+      "suggested_owner": "Tax & Compliance"
+    }
   },
   "source": "payments",
   "turns": [
@@ -48,60 +51,6 @@
             "refund_paise": 0,
             "settlement_id": "setl_z8uznCnwbVI7RN",
             "status": "captured"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "record_id": "setl_z8uznCnwbVI7RN",
-            "source": "settlements"
-          },
-          "name": "get_record",
-          "result": {
-            "result": {
-              "adjustment_paise": 0,
-              "fee_paise": 19706,
-              "gross_paise": 985300,
-              "gst_paise": 3458,
-              "net_paise": 962136,
-              "num_payments": 8,
-              "settled_at": "2026-06-16",
-              "settlement_id": "setl_z8uznCnwbVI7RN",
-              "utr": "KKBKN11057136889"
-            },
-            "status": "ok"
-          }
-        }
-      ]
-    },
-    {
-      "assistant_text": null,
-      "tool_calls": [
-        {
-          "arguments": {
-            "amount_tolerance_paise": 1000,
-            "date_window_days": 5,
-            "limit": 10,
-            "record_id": "setl_z8uznCnwbVI7RN"
-          },
-          "name": "find_candidates",
-          "result": {
-            "result": [
-              {
-                "balance_paise": 291517176,
-                "bank_txn_id": "btxn_zODulBverLCH",
-                "credit_paise": 962136,
-                "debit_paise": 0,
-                "narration": "NEFT-KKBKN11057136889-RAZORPAY SOFTWARE PVT LTD",
-                "table": "bank",
-                "value_date": "2026-06-16"
-              }
-            ],
-            "status": "ok"
           }
         }
       ]
@@ -157,17 +106,38 @@
       "tool_calls": [
         {
           "arguments": {
-            "confidence": 0.95,
-            "rationale": "Payment pay_3egKQ6BCralBAI (get_record) explicitly references settlement_id setl_z8uznCnwbVI7RN. Settlement setl_z8uznCnwbVI7RN (get_record) has UTR KKBKN11057136889 and net_paise 962136. Bank transaction btxn_zODulBverLCH (find_candidates) matches that UTR in its narration and credits exactly 962136 paise on the same value_date 2026-06-16. Fee validation: compute_expected_fee for gross 68800, method wallet, domestic returns fee_paise 1376 (matches observed), gst_paise 248 (observed 158), net_paise 67176 (observed 67266). explain_variance on the GST delta (-90 paise) returns UNEXPLAINED. The payment-to-settlement-to-bank chain is fully reconciled; the 90 paise GST shortfall is a separate tax variance but does not break the match.",
-            "record_ids": [
-              "pay_3egKQ6BCralBAI",
-              "setl_z8uznCnwbVI7RN",
-              "btxn_zODulBverLCH"
-            ]
+            "record_id": "setl_z8uznCnwbVI7RN",
+            "source": "settlements"
           },
-          "name": "propose_match",
+          "name": "get_record",
           "result": {
-            "error": "cannot infer a valid link type between 'pay_3egKQ6BCralBAI' and 'btxn_zODulBverLCH' - if you were trying to also assert a link between two OTHER records (e.g. a settlement and its own bank credit), drop it from this call: propose_match only asserts links to the record under investigation",
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 19706,
+              "gross_paise": 985300,
+              "gst_paise": 3458,
+              "net_paise": 962136,
+              "num_payments": 8,
+              "settled_at": "2026-06-16",
+              "settlement_id": "setl_z8uznCnwbVI7RN",
+              "utr": "KKBKN11057136889"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "KKBKN11057136889",
+            "source": "bank"
+          },
+          "name": "get_record",
+          "result": {
+            "error": "no bank record with id 'KKBKN11057136889' - IDs must never be constructed, only looked up",
             "status": "error"
           }
         }
@@ -178,29 +148,106 @@
       "tool_calls": [
         {
           "arguments": {
-            "confidence": 0.95,
-            "rationale": "Payment pay_3egKQ6BCralBAI (get_record) explicitly references settlement_id setl_z8uznCnwbVI7RN. Settlement setl_z8uznCnwbVI7RN (get_record) confirms this linkage with num_payments=8 and UTR KKBKN11057136889. Fee validation: compute_expected_fee for gross 68800, method wallet, domestic returns fee_paise 1376 (matches observed), gst_paise 248 (observed 158), net_paise 67176 (observed 67266). explain_variance on the GST delta (-90 paise) returns UNEXPLAINED. The payment-to-settlement link is fully reconciled; the 90 paise GST shortfall is a separate tax variance but does not break the match.",
-            "record_ids": [
-              "pay_3egKQ6BCralBAI",
-              "setl_z8uznCnwbVI7RN"
-            ]
+            "amount_tolerance_paise": 1000,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "setl_z8uznCnwbVI7RN"
           },
-          "name": "propose_match",
+          "name": "find_candidates",
           "result": {
-            "companion_exception": null,
-            "matches": [
+            "result": [
               {
-                "confidence": 0.95,
-                "evidence": [
-                  "Payment pay_3egKQ6BCralBAI (get_record) explicitly references settlement_id setl_z8uznCnwbVI7RN. Settlement setl_z8uznCnwbVI7RN (get_record) confirms this linkage with num_payments=8 and UTR KKBKN11057136889. Fee validation: compute_expected_fee for gross 68800, method wallet, domestic returns fee_paise 1376 (matches observed), gst_paise 248 (observed 158), net_paise 67176 (observed 67266). explain_variance on the GST delta (-90 paise) returns UNEXPLAINED. The payment-to-settlement link is fully reconciled; the 90 paise GST shortfall is a separate tax variance but does not break the match."
-                ],
-                "layer": "L3",
-                "left_id": "pay_3egKQ6BCralBAI",
-                "link_type": "payment_settlement",
-                "right_id": "setl_z8uznCnwbVI7RN"
+                "balance_paise": 291517176,
+                "bank_txn_id": "btxn_zODulBverLCH",
+                "credit_paise": 962136,
+                "debit_paise": 0,
+                "narration": "NEFT-KKBKN11057136889-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-06-16"
               }
             ],
             "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "btxn_zODulBverLCH",
+            "source": "bank"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "balance_paise": 291517176,
+              "bank_txn_id": "btxn_zODulBverLCH",
+              "credit_paise": 962136,
+              "debit_paise": 0,
+              "narration": "NEFT-KKBKN11057136889-RAZORPAY SOFTWARE PVT LTD",
+              "value_date": "2026-06-16"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_kcRZTN0BgBJ3EL",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_M9pdSW4qW5uI",
+            "gross_paise": 68800,
+            "intended_method": "wallet",
+            "invoice_no": "INV-2026-000210",
+            "order_date": "2026-06-12",
+            "order_id": "order_kcRZTN0BgBJ3EL",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_at_risk_paise": 90,
+            "category": "TAX_VARIANCE",
+            "rationale": "Payment pay_3egKQ6BCralBAI (gross 68,800 paise, wallet, domestic) has GST variance of -90 paise. compute_expected_fee returned expected GST 248 paise, but payment records 158 paise. explain_variance returned UNEXPLAINED for the -90 paise delta. Order order_kcRZTN0BgBJ3EL and settlement setl_z8uznCnwbVI7RN match correctly. Bank transaction btxn_zODulBverLCH matches settlement net 962,136 paise. The variance is isolated to this payment's GST calculation.",
+            "recommended_action": "Review GST calculation for wallet payments; expected GST 248 paise but recorded 158 paise (-90 paise variance)",
+            "severity": "LOW"
+          },
+          "name": "raise_exception",
+          "result": {
+            "category_coerced_from": null,
+            "exception": {
+              "affected": {
+                "payment_id": "pay_3egKQ6BCralBAI",
+                "record_id": "pay_3egKQ6BCralBAI",
+                "source": "payments"
+              },
+              "aging_days": 80,
+              "amount_at_risk_paise": 90,
+              "category": "TAX_VARIANCE",
+              "evidence_chain": [
+                "Payment pay_3egKQ6BCralBAI (gross 68,800 paise, wallet, domestic) has GST variance of -90 paise. compute_expected_fee returned expected GST 248 paise, but payment records 158 paise. explain_variance returned UNEXPLAINED for the -90 paise delta. Order order_kcRZTN0BgBJ3EL and settlement setl_z8uznCnwbVI7RN match correctly. Bank transaction btxn_zODulBverLCH matches settlement net 962,136 paise. The variance is isolated to this payment's GST calculation."
+              ],
+              "recommended_action": "Review GST calculation for wallet payments; expected GST 248 paise but recorded 158 paise (-90 paise variance)",
+              "severity": "STANDARD",
+              "suggested_owner": "Tax & Compliance"
+            },
+            "status": "ok",
+            "unexplained_leg_count": 1
           }
         }
       ]

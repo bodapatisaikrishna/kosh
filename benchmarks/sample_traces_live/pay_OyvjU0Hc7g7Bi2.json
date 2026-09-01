@@ -1,12 +1,12 @@
 {
   "backend": "nim",
-  "cost_usd_micros": 17658,
+  "cost_usd_micros": 23474,
   "final_decision": "exception",
   "from_cache": false,
-  "input_tokens": 22416,
-  "llm_calls": 9,
+  "input_tokens": 29168,
+  "llm_calls": 10,
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-  "output_tokens": 2932,
+  "output_tokens": 4041,
   "record_id": "pay_OyvjU0Hc7g7Bi2",
   "result": {
     "exception": {
@@ -15,13 +15,16 @@
         "record_id": "pay_OyvjU0Hc7g7Bi2",
         "source": "payments"
       },
-      "aging_days": 0,
+      "aging_days": 56,
       "amount_at_risk_paise": 228693,
-      "category": "FEE_VARIANCE",
+      "category": "UNEXPLAINED_VARIANCE",
       "evidence_chain": [
-        "Payment pay_OyvjU0Hc7g7Bi2 (gross 16,088,200 paise, international card) has unexplained fee/GST variance. compute_expected_fee returns fee=482,646, GST=86,876, net=15,518,678. Actual: fee=305,676 (delta -176,970), GST=35,153 (delta -51,723), net=15,747,371 (delta +228,693). explain_variance returns UNEXPLAINED for all three. Settlement setl_ay2LvNyOtg9dGE and bank credit btxn_4RhBsx5rYikt match correctly. Order order_hwH6n7tcYXXLVk matches. The fee variance of 228,693 paise (\u20b92,287) is unexplained by known tiers, GST rates, refunds, or rounding."
+        "Payment pay_OyvjU0Hc7g7Bi2 (international card, gross 16,088,200 paise) shows UNEXPLAINED variance on all three fee components vs standard fee schedule: fee_paise observed 305,676 vs expected 482,646 (delta -176,970, UNEXPLAINED); gst_paise observed 35,153 vs expected 86,876 (delta -51,723, UNEXPLAINED); net_paise observed 15,747,371 vs expected 15,518,678 (delta +228,693, UNEXPLAINED). The settlement setl_ay2LvNyOtg9dGE and bank credit btxn_4RhBsx5rYikt match correctly. The order is USD-denominated. Multiple simultaneous UNEXPLAINED legs require UNEXPLAINED_VARIANCE category per policy.",
+        "unexplained leg: observed 305676 vs expected 482646, delta -176970 paise",
+        "unexplained leg: observed 15747371 vs expected 15518678, delta 228693 paise (bottom line)",
+        "unexplained leg: observed 35153 vs expected 86876, delta -51723 paise"
       ],
-      "recommended_action": "Investigate fee tier applied to pay_OyvjU0Hc7g7Bi2 - expected 3% fee + 18% GST for international card, but actual fee ~1.9% and GST ~11.5% of fee. Contact Razorpay for fee structure clarification.",
+      "recommended_action": "Investigate fee tier applied to this international card transaction (order_hwH6n7tcYXXLVk, USD 160,882). Expected fee 482,646 + GST 86,876 = 569,522; observed fee 305,676 + GST 35,153 = 340,829. Total variance 228,693 paise (Rs 2,286.93). Check for special merchant rate, volume discount, or promotional fee tier.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops"
     }
@@ -111,15 +114,15 @@
               "international": true,
               "method": "card"
             },
-            "expected_paise": 86876,
-            "observed_paise": 35153
+            "expected_paise": 15518678,
+            "observed_paise": 15747371
           },
           "name": "explain_variance",
           "result": {
             "result": {
               "cause": "UNEXPLAINED",
-              "delta_paise": -51723,
-              "detail": "-51723 paise not explained by fee tier, GST rate, a known refund, or rounding"
+              "delta_paise": 228693,
+              "detail": "228693 paise not explained by fee tier, GST rate, a known refund, or rounding"
             },
             "status": "ok"
           }
@@ -136,15 +139,15 @@
               "international": true,
               "method": "card"
             },
-            "expected_paise": 15518678,
-            "observed_paise": 15747371
+            "expected_paise": 86876,
+            "observed_paise": 35153
           },
           "name": "explain_variance",
           "result": {
             "result": {
               "cause": "UNEXPLAINED",
-              "delta_paise": 228693,
-              "detail": "228693 paise not explained by fee tier, GST rate, a known refund, or rounding"
+              "delta_paise": -51723,
+              "detail": "-51723 paise not explained by fee tier, GST rate, a known refund, or rounding"
             },
             "status": "ok"
           }
@@ -183,13 +186,22 @@
         {
           "arguments": {
             "amount_tolerance_paise": 1000000,
-            "date_window_days": 10,
+            "date_window_days": 30,
             "limit": 10,
             "record_id": "setl_ay2LvNyOtg9dGE"
           },
           "name": "find_candidates",
           "result": {
             "result": [
+              {
+                "balance_paise": 757752976,
+                "bank_txn_id": "btxn_W2EX89lJZfo9",
+                "credit_paise": 18217496,
+                "debit_paise": 0,
+                "narration": "UPI/CR/HDFCN89990061843/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-07-21"
+              },
               {
                 "balance_paise": 828720366,
                 "bank_txn_id": "btxn_6frLSZDJ4nZ0",
@@ -207,6 +219,33 @@
                 "narration": "NEFT-SBINN00901929385-RAZORPAY SOFTWARE PVT LTD",
                 "table": "bank",
                 "value_date": "2026-08-03"
+              },
+              {
+                "balance_paise": 1240848458,
+                "bank_txn_id": "btxn_amIZdAuQ9OeY",
+                "credit_paise": 18407329,
+                "debit_paise": 0,
+                "narration": "SBINN95799477500 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-08-21"
+              },
+              {
+                "balance_paise": 1261769183,
+                "bank_txn_id": "btxn_dtm569GXjtRW",
+                "credit_paise": 17865007,
+                "debit_paise": 0,
+                "narration": "NEFT-KKBKN16209956384-RAZORPAY SOFT",
+                "table": "bank",
+                "value_date": "2026-08-24"
+              },
+              {
+                "balance_paise": 1361424738,
+                "bank_txn_id": "btxn_Xe5zyaFrlqa1",
+                "credit_paise": 16764464,
+                "debit_paise": 0,
+                "narration": "NEFT-SBINN64225953623-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-08-28"
               }
             ],
             "status": "ok"
@@ -241,31 +280,145 @@
       "tool_calls": [
         {
           "arguments": {
+            "amount_tolerance_paise": 5000000,
+            "date_window_days": 60,
+            "limit": 10,
+            "record_id": "setl_ay2LvNyOtg9dGE"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 171253187,
+                "bank_txn_id": "btxn_2PBCdvwLOxTX",
+                "credit_paise": 19828444,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-HDFCN36460554144",
+                "table": "bank",
+                "value_date": "2026-06-09"
+              },
+              {
+                "balance_paise": 288770435,
+                "bank_txn_id": "btxn_hNnqEHFY1TDs",
+                "credit_paise": 21080078,
+                "debit_paise": 0,
+                "narration": "NEFT-KKBKN01299453092-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-06-16"
+              },
+              {
+                "balance_paise": 375924924,
+                "bank_txn_id": "btxn_bWvBKq0GNGUs",
+                "credit_paise": 14134586,
+                "debit_paise": 0,
+                "narration": "NEFT-SBINN76950400860-RAZORPAY SOFT",
+                "table": "bank",
+                "value_date": "2026-06-23"
+              },
+              {
+                "balance_paise": 417258255,
+                "bank_txn_id": "btxn_aWZJwFj2x9l1",
+                "credit_paise": 14695210,
+                "debit_paise": 0,
+                "narration": "NEFT CR-HDFC0000060-RAZORPAY SOFTWARE-CONSOL PAYOUT PYT6121892863",
+                "table": "bank",
+                "value_date": "2026-06-26"
+              },
+              {
+                "balance_paise": 482376551,
+                "bank_txn_id": "btxn_RHecLsKS7dYT",
+                "credit_paise": 15216620,
+                "debit_paise": 0,
+                "narration": "NEFT-ICICN14745166441-RAZORPAY SOFTWARE PVT LTD",
+                "table": "bank",
+                "value_date": "2026-07-01"
+              },
+              {
+                "balance_paise": 501414323,
+                "bank_txn_id": "btxn_TY4IrRsQu4KP",
+                "credit_paise": 15732999,
+                "debit_paise": 0,
+                "narration": "SBINN59999712163 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-07-01"
+              },
+              {
+                "balance_paise": 526498915,
+                "bank_txn_id": "btxn_FSLBRsMwJNqD",
+                "credit_paise": 16858366,
+                "debit_paise": 0,
+                "narration": "KKBKN79303294629 RZP SETTLE",
+                "table": "bank",
+                "value_date": "2026-07-03"
+              },
+              {
+                "balance_paise": 547132463,
+                "bank_txn_id": "btxn_ysHL6JZEAraz",
+                "credit_paise": 16504620,
+                "debit_paise": 0,
+                "narration": "IMPS/UTIBN59885263166/RAZORPAYSOFT/",
+                "table": "bank",
+                "value_date": "2026-07-03"
+              },
+              {
+                "balance_paise": 739553580,
+                "bank_txn_id": "btxn_nPbXuCl4WX7H",
+                "credit_paise": 15985327,
+                "debit_paise": 0,
+                "narration": "IMPS/UTIBN44195446706/RAZORPAYSOFT/",
+                "table": "bank",
+                "value_date": "2026-07-20"
+              },
+              {
+                "balance_paise": 757752976,
+                "bank_txn_id": "btxn_W2EX89lJZfo9",
+                "credit_paise": 18217496,
+                "debit_paise": 0,
+                "narration": "UPI/CR/HDFCN89990061843/RZPY/SETTLEMENT",
+                "table": "bank",
+                "value_date": "2026-07-21"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
             "amount_at_risk_paise": 228693,
-            "category": "FEE_VARIANCE",
-            "rationale": "Payment pay_OyvjU0Hc7g7Bi2 (gross 16,088,200 paise, international card) has unexplained fee/GST variance. compute_expected_fee returns fee=482,646, GST=86,876, net=15,518,678. Actual: fee=305,676 (delta -176,970), GST=35,153 (delta -51,723), net=15,747,371 (delta +228,693). explain_variance returns UNEXPLAINED for all three. Settlement setl_ay2LvNyOtg9dGE and bank credit btxn_4RhBsx5rYikt match correctly. Order order_hwH6n7tcYXXLVk matches. The fee variance of 228,693 paise (\u20b92,287) is unexplained by known tiers, GST rates, refunds, or rounding.",
-            "recommended_action": "Investigate fee tier applied to pay_OyvjU0Hc7g7Bi2 - expected 3% fee + 18% GST for international card, but actual fee ~1.9% and GST ~11.5% of fee. Contact Razorpay for fee structure clarification.",
+            "category": "UNEXPLAINED_VARIANCE",
+            "rationale": "Payment pay_OyvjU0Hc7g7Bi2 (international card, gross 16,088,200 paise) shows UNEXPLAINED variance on all three fee components vs standard fee schedule: fee_paise observed 305,676 vs expected 482,646 (delta -176,970, UNEXPLAINED); gst_paise observed 35,153 vs expected 86,876 (delta -51,723, UNEXPLAINED); net_paise observed 15,747,371 vs expected 15,518,678 (delta +228,693, UNEXPLAINED). The settlement setl_ay2LvNyOtg9dGE and bank credit btxn_4RhBsx5rYikt match correctly. The order is USD-denominated. Multiple simultaneous UNEXPLAINED legs require UNEXPLAINED_VARIANCE category per policy.",
+            "recommended_action": "Investigate fee tier applied to this international card transaction (order_hwH6n7tcYXXLVk, USD 160,882). Expected fee 482,646 + GST 86,876 = 569,522; observed fee 305,676 + GST 35,153 = 340,829. Total variance 228,693 paise (Rs 2,286.93). Check for special merchant rate, volume discount, or promotional fee tier.",
             "severity": "MEDIUM"
           },
           "name": "raise_exception",
           "result": {
+            "category_coerced_from": null,
             "exception": {
               "affected": {
                 "payment_id": "pay_OyvjU0Hc7g7Bi2",
                 "record_id": "pay_OyvjU0Hc7g7Bi2",
                 "source": "payments"
               },
-              "aging_days": 0,
+              "aging_days": 56,
               "amount_at_risk_paise": 228693,
-              "category": "FEE_VARIANCE",
+              "category": "UNEXPLAINED_VARIANCE",
               "evidence_chain": [
-                "Payment pay_OyvjU0Hc7g7Bi2 (gross 16,088,200 paise, international card) has unexplained fee/GST variance. compute_expected_fee returns fee=482,646, GST=86,876, net=15,518,678. Actual: fee=305,676 (delta -176,970), GST=35,153 (delta -51,723), net=15,747,371 (delta +228,693). explain_variance returns UNEXPLAINED for all three. Settlement setl_ay2LvNyOtg9dGE and bank credit btxn_4RhBsx5rYikt match correctly. Order order_hwH6n7tcYXXLVk matches. The fee variance of 228,693 paise (\u20b92,287) is unexplained by known tiers, GST rates, refunds, or rounding."
+                "Payment pay_OyvjU0Hc7g7Bi2 (international card, gross 16,088,200 paise) shows UNEXPLAINED variance on all three fee components vs standard fee schedule: fee_paise observed 305,676 vs expected 482,646 (delta -176,970, UNEXPLAINED); gst_paise observed 35,153 vs expected 86,876 (delta -51,723, UNEXPLAINED); net_paise observed 15,747,371 vs expected 15,518,678 (delta +228,693, UNEXPLAINED). The settlement setl_ay2LvNyOtg9dGE and bank credit btxn_4RhBsx5rYikt match correctly. The order is USD-denominated. Multiple simultaneous UNEXPLAINED legs require UNEXPLAINED_VARIANCE category per policy.",
+                "unexplained leg: observed 305676 vs expected 482646, delta -176970 paise",
+                "unexplained leg: observed 15747371 vs expected 15518678, delta 228693 paise (bottom line)",
+                "unexplained leg: observed 35153 vs expected 86876, delta -51723 paise"
               ],
-              "recommended_action": "Investigate fee tier applied to pay_OyvjU0Hc7g7Bi2 - expected 3% fee + 18% GST for international card, but actual fee ~1.9% and GST ~11.5% of fee. Contact Razorpay for fee structure clarification.",
+              "recommended_action": "Investigate fee tier applied to this international card transaction (order_hwH6n7tcYXXLVk, USD 160,882). Expected fee 482,646 + GST 86,876 = 569,522; observed fee 305,676 + GST 35,153 = 340,829. Total variance 228,693 paise (Rs 2,286.93). Check for special merchant rate, volume discount, or promotional fee tier.",
               "severity": "STANDARD",
               "suggested_owner": "Reconciliation Ops"
             },
-            "status": "ok"
+            "status": "ok",
+            "unexplained_leg_count": 3
           }
         }
       ]

@@ -17,14 +17,14 @@ MONEY_MODULE_DIRS = [REPO_ROOT / "data" / "generator", REPO_ROOT / "engine"]
 
 # Files exempt from the float-literal check (none currently need floats for money -
 # this list exists so a legitimate non-money float, e.g. a probability, has a home).
-FLOAT_LITERAL_ALLOWLIST = {"narration.py", "defects.py"}
+FLOAT_LITERAL_ALLOWLIST = {"narration.py", "defects.py", "l3_tools.py"}  # l3_tools.py's float is MIN_MATCH_CONFIDENCE, a probability
 
 # Files that actually perform money arithmetic - this is where a stray `/` or a
 # builtin round()/hash() would silently corrupt paise math. I/O and CLI modules
 # (emit.py, generate.py, trace.py, ids.py, calendar.py, narration.py, profiles.py)
 # are excluded: they pass already-computed ints around and use `/` only for
 # pathlib joins, which is not a money-arithmetic risk.
-MONEY_ARITHMETIC_FILES = {"fees.py", "world.py", "defects.py"}
+MONEY_ARITHMETIC_FILES = {"fees.py", "world.py", "defects.py", "l3_tools.py"}
 
 
 def _iter_money_py_files():

@@ -26,7 +26,8 @@ from .l3_tools import _DATE_FIELD, _ID_FIELD, TOOL_SPECS, ToolContext, _find_rec
 from .llm.base import AssistantTurn, LLMClient, Message, RateLimitedError, TransientBackendError
 from .llm.pricing import cost_usd_micros
 
-PROMPT_VERSION = 1
+PROMPT_VERSION = 2  # bumped for Task 2's compound-leg category/amount coercion in l3_tools.raise_exception -
+# a cache hit from PROMPT_VERSION=1 would silently replay a trace from before that fix existed.
 DEFAULT_MAX_TURNS = 12
 DEFAULT_CONCURRENCY = 8
 MAX_BACKOFF_RETRIES = 5

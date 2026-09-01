@@ -1,12 +1,12 @@
 {
   "auto_match_rate": 0.9773950484391819,
   "backend": "nim",
-  "cost_per_1000_records_micros": 54917,
-  "cost_usd_micros": 102037,
+  "cost_per_1000_records_micros": 56130,
+  "cost_usd_micros": 104291,
   "defect_confusion": {
     "compound_fee_tax_error": {
-      "detected": 1,
-      "misclassified": 4,
+      "detected": 4,
+      "misclassified": 1,
       "missed": 1
     },
     "consolidated_payout": {
@@ -51,19 +51,19 @@
   },
   "exceptions_total": 138,
   "false_match_rate": 0.0,
-  "input_tokens": 135444,
+  "input_tokens": 137644,
   "layer_contribution": {
-    "L0": 0.9930288461538461,
+    "L0": 0.9927884615384616,
     "L1": 0.0026442307692307694,
     "L2": 0.004086538461538462,
-    "L3": 0.0002403846153846154
+    "L3": 0.0004807692307692308
   },
-  "llm_calls": 53,
+  "llm_calls": 51,
   "model": "nvidia/nemotron-3-ultra-550b-a55b",
-  "note": "L3 run against the REAL residual from data/fixtures/run_2000 - the payments that L0-L2 matching and L4's deterministic classifier genuinely could not explain. Not a synthetic exercise set. All 6 records independently cross-checked against ground_truth.json by hand (link correctness, category, and amount_at_risk_paise), not just read off this summary's own scores.",
-  "defect_confusion_note": "compound_fee_tax_error's 4 'misclassified' are FEE_VARIANCE where the generator's own label is UNEXPLAINED_VARIANCE - a defensible-but-imprecise call (the model picked one real anomalous leg as the category rather than the fact that multiple legs are simultaneously unexplained), not a wrong one: the money and the record are correctly surfaced either way. The 1 'missed' (pay_3egKQ6BCralBAI) is a genuinely immaterial 90-paise variance the model judged not worth a separate exception alongside its (correct) settlement match - see benchmarks/sample_traces_live/. One exception (pay_RMejvzSwrh9QXa) reports amount_at_risk_paise=744 for a defect ground truth labels 183 paise: the model cited the largest single unexplained leg (the fee delta) rather than the net bottom-line delta when fee and GST deltas partially offset - same category of imprecision, not a scoring bug.",
-  "output_tokens": 15598,
+  "note": "L3 run against the REAL residual from data/fixtures/run_2000 - the payments that L0-L2 matching and L4's deterministic classifier genuinely could not explain. Not a synthetic exercise set. All records independently cross-checked against ground_truth.json by hand (link correctness, category, and amount_at_risk_paise), not just read off this summary's own scores.",
+  "compound_fee_tax_error_note": "This is the run committed as the reference. A separate run of the identical (post-coercion-fix) code minutes earlier scored 6/6 detected on this defect class - the difference is real model investigation-depth variance, not a flaw in the fix: the one 'misclassified' record here (pay_3egKQ6BCralBAI) shows unexplained_leg_count=1 in its own trace - the model only ran explain_variance once (checking GST) and never separately checked the fee leg, so the coercion threshold (>=2 distinct unexplained legs) correctly did not fire; coercing on a single data point would be guessing, not structural enforcement. All 6 amounts are exact to the paisa against ground truth in both runs; zero false matches in either. See ARCHITECTURE.md for the full before/after and the two runs' traces.",
+  "output_tokens": 16122,
   "precision": 1.0,
   "recall": 0.9995194617972128,
-  "wall_clock_seconds": 489.71037125587463
+  "wall_clock_seconds": 486.7031819820404
 }

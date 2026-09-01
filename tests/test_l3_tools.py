@@ -10,6 +10,7 @@ from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow
 from engine.l3_tools import (
     ToolContext,
     ToolError,
+    VarianceObservation,
     dispatch_tool,
     find_candidates,
     get_record,
@@ -324,3 +325,139 @@ def test_propose_match_still_allows_a_genuine_chargeback_debit_link():
     )
     assert result["status"] == "ok"
     assert result["matches"][0]["link_type"] == "chargeback_payment"
+
+
+# --- raise_exception: compound-leg coercion (Task 2) --------------------------
+#
+# The structural fix: if the model's own tool-call history shows 2+ distinct
+# simultaneously-undecomposable comparisons, raise_exception recomputes the
+# category (to UNEXPLAINED_VARIANCE) and the amount (to the bottom-line net
+# delta, not whichever leg had the biggest delta) - the same enforcement
+# pattern as severity_for_amount, triggered by tool-call history, not prompting.
+
+def test_single_explained_leg_no_coercion():
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=1174, expected_paise=1000, delta_paise=174, cause="FEE_TIER")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=174,
+        recommended_action="x", rationale="wrong fee tier applied",
+    )
+    assert result["category_coerced_from"] is None
+    assert result["unexplained_leg_count"] == 0
+    assert result["exception"]["category"] == "FEE_VARIANCE"
+    assert result["exception"]["amount_at_risk_paise"] == 174
+
+
+def test_single_unexplained_leg_below_threshold_no_coercion():
+    # The false-positive guard: over-firing here would turn every genuine
+    # single-cause FEE_VARIANCE exception into a vague UNEXPLAINED_VARIANCE
+    # one and lose per-class accuracy on a type that currently scores
+    # perfectly. One unexplained leg alone must never coerce.
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=57457, expected_paise=57315, delta_paise=142, cause="UNEXPLAINED")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=142,
+        recommended_action="x", rationale="fee looks off, cause unclear",
+    )
+    assert result["category_coerced_from"] is None
+    assert result["unexplained_leg_count"] == 1
+    assert result["exception"]["category"] == "FEE_VARIANCE"
+
+
+def test_compound_fee_and_tax_coerces():
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=1115, expected_paise=1174, delta_paise=-59, cause="UNEXPLAINED")
+    )
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=128, expected_paise=211, delta_paise=-83, cause="UNEXPLAINED")
+    )
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=57457, expected_paise=57315, delta_paise=142, cause="UNEXPLAINED")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=59,
+        recommended_action="x", rationale="fee looks wrong",
+    )
+    assert result["category_coerced_from"] == "FEE_VARIANCE"
+    assert result["unexplained_leg_count"] == 3
+    assert result["exception"]["category"] == "UNEXPLAINED_VARIANCE"
+
+
+def test_retried_identical_comparison_does_not_inflate():
+    # A model that re-checks itself with the exact same explain_variance call
+    # twice (legitimate - it's double-checking) must not have that count as
+    # two distinct legs.
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=57457, expected_paise=57315, delta_paise=142, cause="UNEXPLAINED")
+    )
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=57457, expected_paise=57315, delta_paise=142, cause="UNEXPLAINED")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=142,
+        recommended_action="x", rationale="fee looks off, double-checked",
+    )
+    assert result["unexplained_leg_count"] == 1  # deduped, not 2
+    assert result["category_coerced_from"] is None
+
+
+def test_zero_delta_never_counts():
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=1000, expected_paise=1000, delta_paise=0, cause="UNEXPLAINED")
+    )
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=57457, expected_paise=57315, delta_paise=142, cause="UNEXPLAINED")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=142,
+        recommended_action="x", rationale="fee looks off",
+    )
+    assert result["unexplained_leg_count"] == 1  # the zero-delta leg is ignored
+    assert result["category_coerced_from"] is None
+
+
+def test_bottom_line_picks_net_not_largest_delta():
+    # The real bug this fix closes: a live run reported amount_at_risk_paise
+    # 744 (the fee leg's own delta) for a defect ground truth labels 183
+    # paise (the true net delta), because the two legs partially offset.
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        # fee leg: small expected amount, large delta
+        VarianceObservation(observed_paise=430, expected_paise=1174, delta_paise=744, cause="UNEXPLAINED")
+    )
+    ctx.variance_observations.append(
+        # net leg: large expected amount (the bottom line), smaller delta
+        VarianceObservation(observed_paise=57498, expected_paise=57315, delta_paise=183, cause="UNEXPLAINED")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=744,
+        recommended_action="x", rationale="fee looks very wrong",
+    )
+    assert result["exception"]["amount_at_risk_paise"] == 183  # net delta, not the 744 leg delta
+    assert result["exception"]["category"] == "UNEXPLAINED_VARIANCE"
+
+
+def test_coercion_appears_in_evidence_chain():
+    ctx = _ctx()
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=430, expected_paise=1174, delta_paise=744, cause="UNEXPLAINED")
+    )
+    ctx.variance_observations.append(
+        VarianceObservation(observed_paise=57498, expected_paise=57315, delta_paise=183, cause="UNEXPLAINED")
+    )
+    result = raise_exception(
+        ctx, category="FEE_VARIANCE", severity="STANDARD", amount_at_risk_paise=744,
+        recommended_action="x", rationale="fee looks very wrong",
+    )
+    evidence = result["exception"]["evidence_chain"]
+    assert evidence[0] == "fee looks very wrong"  # original rationale kept, not dropped
+    assert any("coerced from FEE_VARIANCE to UNEXPLAINED_VARIANCE" in e for e in evidence)
+    assert any("744" in e and "unexplained leg" in e for e in evidence)
+    assert any("183" in e and "bottom line" in e for e in evidence)
