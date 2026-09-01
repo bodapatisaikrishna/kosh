@@ -1,0 +1,82 @@
+{
+  "any_false_match": false,
+  "mean_auto_match_rate": 0.9771137931920396,
+  "records_per_seed": 2000,
+  "results": [
+    {
+      "auto_match_rate": 0.9786438868126001,
+      "distinct_defect_types": 14,
+      "exceptions_count": 142,
+      "false_match_rate": 0.0,
+      "l3_residual_size": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": 1,
+      "wall_clock_seconds": 0.007661208015633747
+    },
+    {
+      "auto_match_rate": 0.9786666666666667,
+      "distinct_defect_types": 14,
+      "exceptions_count": 141,
+      "false_match_rate": 0.0,
+      "l3_residual_size": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": 7,
+      "wall_clock_seconds": 0.007745834009256214
+    },
+    {
+      "auto_match_rate": 0.9773950484391819,
+      "distinct_defect_types": 14,
+      "exceptions_count": 139,
+      "false_match_rate": 0.0,
+      "l3_residual_size": 6,
+      "precision": 1.0,
+      "recall": 0.9995194617972128,
+      "seed": 42,
+      "wall_clock_seconds": 0.007999833003850654
+    },
+    {
+      "auto_match_rate": 0.9699248120300752,
+      "distinct_defect_types": 14,
+      "exceptions_count": 142,
+      "false_match_rate": 0.0,
+      "l3_residual_size": 5,
+      "precision": 1.0,
+      "recall": 0.9990393852065321,
+      "seed": 100,
+      "wall_clock_seconds": 0.007519541017245501
+    },
+    {
+      "auto_match_rate": 0.9784714747039828,
+      "distinct_defect_types": 14,
+      "exceptions_count": 140,
+      "false_match_rate": 0.0,
+      "l3_residual_size": 5,
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": 2026,
+      "wall_clock_seconds": 0.007494165998650715
+    },
+    {
+      "auto_match_rate": 0.9795808704997313,
+      "distinct_defect_types": 14,
+      "exceptions_count": 138,
+      "false_match_rate": 0.0,
+      "l3_residual_size": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "seed": 31337,
+      "wall_clock_seconds": 0.007418082997901365
+    }
+  ],
+  "seeds": [
+    1,
+    7,
+    42,
+    100,
+    2026,
+    31337
+  ],
+  "stdev_auto_match_rate": 0.0035900675956590036
+}

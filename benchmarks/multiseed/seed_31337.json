@@ -1,0 +1,11 @@
+{
+  "auto_match_rate": 0.9795808704997313,
+  "distinct_defect_types": 14,
+  "exceptions_count": 138,
+  "false_match_rate": 0.0,
+  "l3_residual_size": 6,
+  "precision": 1.0,
+  "recall": 1.0,
+  "seed": 31337,
+  "wall_clock_seconds": 0.007418082997901365
+}
