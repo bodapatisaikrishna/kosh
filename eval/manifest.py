@@ -18,8 +18,12 @@ from engine.io import Dataset
 
 # Only the packages this project's own code actually imports - not the full
 # dependency list, and not the ones that are declared but unused (see the
-# pydantic/fastapi/uvicorn finding in Task 6.4).
-_TRACKED_PACKAGES = ("pandas", "openai", "anthropic")
+# pydantic/fastapi/uvicorn finding in Task 6.4, and pandas, which was found
+# later and removed for the same reason - this list itself was tracking the
+# version of a package nothing imported). Both remaining entries are optional:
+# a deterministic-only run has neither installed, which is why a missing
+# package is skipped rather than recorded as an error.
+_TRACKED_PACKAGES = ("openai", "anthropic")
 
 _INPUT_FILES = ("orders.csv", "pg_payments.csv", "pg_settlements.csv", "bank_statement.csv")
 

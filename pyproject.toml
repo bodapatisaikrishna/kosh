@@ -7,14 +7,19 @@ name = "kosh"
 version = "0.1.0"
 description = "Kosh - AI Finance Controller: three-way payment settlement reconciliation with verifiable ground truth"
 requires-python = ">=3.11"
-dependencies = [
-    "pandas==2.3.3",
-]
+# Kosh's engine, generator, eval harness and cash forecast run on the standard
+# library alone - stdlib csv/json/dataclasses throughout, deliberately (see
+# data/generator/emit.py, which uses csv rather than pandas specifically to
+# avoid float formatting anywhere near money). The LLM SDKs below are an
+# optional extra, needed only to run L3 against a live model.
+dependencies = []
 
 # pydantic/fastapi/uvicorn were dropped here (hardening sprint Task 6.4): zero
 # imports of any of the three exist anywhere in this codebase - dead weight
 # left over from the original brief's suggested stack, never actually wired
-# up to anything.
+# up to anything. pandas was a FOURTH dead dependency, removed later: that
+# sweep only checked the three named in its own plan, and missed the one
+# sitting in `dependencies` rather than in an extra.
 [project.optional-dependencies]
 dev = ["pytest==9.1.1"]
 llm = ["anthropic==0.82.0", "openai==2.53.0"]

@@ -143,7 +143,7 @@
       "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
       "severity": "REVIEW_REQUIRED",
       "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
+      "trace_file": "sample_traces_live/pay_OyvjU0Hc7g7Bi2.json"
     },
     {
       "affected": {
@@ -433,7 +433,7 @@
       "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
+      "trace_file": "sample_traces_live/pay_ymzQx3u8WEhd7G.json"
     },
     {
       "affected": {
@@ -601,7 +601,7 @@
       "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
+      "trace_file": "sample_traces_live/pay_RMejvzSwrh9QXa.json"
     },
     {
       "affected": {
@@ -1126,7 +1126,7 @@
       "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
+      "trace_file": "sample_traces_live/pay_dGxUjmPIxeeXo4.json"
     },
     {
       "affected": {
@@ -1219,7 +1219,7 @@
       "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
+      "trace_file": "sample_traces_live/pay_3egKQ6BCralBAI.json"
     },
     {
       "affected": {
@@ -1265,7 +1265,7 @@
       "recommended_action": "No known fee/GST/refund/rounding hypothesis explains the observed delta; manual investigation required.",
       "severity": "STANDARD",
       "suggested_owner": "Reconciliation Ops",
-      "trace_file": null
+      "trace_file": "sample_traces_live/pay_Yw6hEZsEyvZMNn.json"
     },
     {
       "affected": {
@@ -2307,12 +2307,12 @@
     }
   ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788326996.3664541,
+  "generated_at_unix": 1788330130.586714,
   "manifest": {
     "engine": "full",
     "fixtures_dir": "data/fixtures/run_2000",
-    "generated_at_utc": "2026-09-02T05:29:56.401982+00:00",
-    "git_commit_sha": "86b71c13101bc2a7615b0fe883a3261fee8a7876",
+    "generated_at_utc": "2026-09-02T06:22:10.628169+00:00",
+    "git_commit_sha": "7801a7958dbf2bde25cef29a33e2f4347630f43e",
     "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "05b5c2370c26ad40ca4f3eecb643eef3aa3a848ba6e3e9a70f938b7f0964c87d",
@@ -2323,8 +2323,7 @@
     "model": null,
     "package_versions": {
       "anthropic": "0.82.0",
-      "openai": "2.53.0",
-      "pandas": "2.3.3"
+      "openai": "2.53.0"
     },
     "record_counts": {
       "bank": 341,
@@ -2460,9 +2459,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 232384.34733103437,
+      "records_per_second": 226813.56224515717,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.007995374995516613
+      "wall_clock_seconds": 0.008191750006517395
     }
   }
 }

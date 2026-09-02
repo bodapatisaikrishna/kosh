@@ -45,17 +45,41 @@ ENGINES = {
     "llm-only": lambda dataset, ground_truth: run_llm_only(dataset, client=None),
 }
 
-# Where committed L3 traces live - an exception whose `affected` dict names a
-# record with a trace here gets a drill-down link in the exception queue.
-SAMPLE_TRACES_DIR = Path("benchmarks/sample_traces")
+# Where committed L3 traces live, and which fixture each set is valid for - an
+# exception whose `affected` dict names a record with a trace here gets a
+# drill-down link in the exception queue.
+#
+# The fixture scoping is load-bearing, not decoration. Record ids are derived
+# from the generator's seed, so run_2000 and run_10000 (both seed=42) share
+# 2001 payment ids while holding genuinely DIFFERENT records. Matching a trace
+# on filename alone would link run_2000's real agent trace for
+# pay_OyvjU0Hc7g7Bi2 from run_10000's dashboard, where that id is an unrelated
+# FEE_VARIANCE payment - showing a judge an LLM reasoning in detail about the
+# wrong record, which is strictly worse than showing no trace at all. A `None`
+# fixture means the set is fixture-independent: sample_traces/ is the
+# hand-built synthetic exercise set whose ids (pay_unexplained, btxn_batch)
+# are written by hand and can never collide with a generated one.
+SAMPLE_TRACE_SOURCES: tuple[tuple[Path, str | None], ...] = (
+    (Path("benchmarks/sample_traces_live"), "run_2000"),
+    (Path("benchmarks/sample_traces"), None),
+)
 
 
-def _exception_dicts(engine_output) -> list[dict]:
+def _exception_dicts(engine_output, fixtures_dir: Path) -> list[dict]:
+    fixture_name = Path(fixtures_dir).name
+    applicable = [(d, d.name) for d, fixture in SAMPLE_TRACE_SOURCES if fixture is None or fixture == fixture_name]
+
     out = []
     for e in engine_output.exceptions:
         d = asdict(e)
-        trace_id = next((v for v in e.affected.values() if (SAMPLE_TRACES_DIR / f"{v}.json").exists()), None)
-        d["trace_file"] = f"sample_traces/{trace_id}.json" if trace_id else None
+        d["trace_file"] = None
+        for traces_dir, dir_name in applicable:
+            # href is derived from the directory's own name rather than a
+            # hardcoded string, so the two sets can't drift apart silently.
+            trace_id = next((v for v in e.affected.values() if (traces_dir / f"{v}.json").exists()), None)
+            if trace_id:
+                d["trace_file"] = f"{dir_name}/{trace_id}.json"
+                break
         out.append(d)
     return out
 
@@ -78,7 +102,7 @@ def run_eval(fixtures_dir: Path, engine_name: str, seed: int | None = None, mode
         "fixtures": str(fixtures_dir),
         "generated_at_unix": generated_at,
         "metrics": metrics,
-        "exceptions_detail": _exception_dicts(engine_output),
+        "exceptions_detail": _exception_dicts(engine_output, fixtures_dir),
         "cash": asdict(forecast),
         "manifest": manifest,
     }

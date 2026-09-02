@@ -9064,12 +9064,12 @@
     }
   ],
   "fixtures": "data/fixtures/run_10000",
-  "generated_at_unix": 1788326996.9090402,
+  "generated_at_unix": 1788330131.1558459,
   "manifest": {
     "engine": "full",
     "fixtures_dir": "data/fixtures/run_10000",
-    "generated_at_utc": "2026-09-02T05:29:57.081980+00:00",
-    "git_commit_sha": "86b71c13101bc2a7615b0fe883a3261fee8a7876",
+    "generated_at_utc": "2026-09-02T06:22:11.330957+00:00",
+    "git_commit_sha": "7801a7958dbf2bde25cef29a33e2f4347630f43e",
     "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "8876dc1ab844e0c3e31ca32a547e930a3826eebc2a6bd97f1da0e18c192dd849",
@@ -9080,8 +9080,7 @@
     "model": null,
     "package_versions": {
       "anthropic": "0.82.0",
-      "openai": "2.53.0",
-      "pandas": "2.3.3"
+      "openai": "2.53.0"
     },
     "record_counts": {
       "bank": 410,
@@ -9220,9 +9219,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 264308.61501295114,
+      "records_per_second": 257515.00476228754,
       "records_processed": 9317,
-      "wall_clock_seconds": 0.035250459011876956
+      "wall_clock_seconds": 0.036180416005663574
     }
   }
 }

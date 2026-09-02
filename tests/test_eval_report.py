@@ -31,32 +31,69 @@ def test_run_eval_reconciliation_ties_exactly():
     assert delta - sum(cash["reconciliation"].values()) == 0
 
 
+def _output_with(payment_id: str, category: str = "UNEXPLAINED_VARIANCE"):
+    from engine.contract import ReconException
+
+    exc = ReconException(
+        category=category, severity="STANDARD", amount_at_risk_paise=100,
+        affected={"payment_id": payment_id}, recommended_action="x",
+    )
+
+    class Output:
+        exceptions = [exc]
+
+    return Output()
+
+
 def test_exception_gets_a_trace_link_when_a_matching_trace_file_exists(tmp_path, monkeypatch):
     traces_dir = tmp_path / "sample_traces"
     traces_dir.mkdir()
     (traces_dir / "pay_demo.json").write_text("{}", encoding="utf-8")
-    monkeypatch.setattr(report_module, "SAMPLE_TRACES_DIR", traces_dir)
+    monkeypatch.setattr(report_module, "SAMPLE_TRACE_SOURCES", ((traces_dir, None),))
 
-    from engine.contract import ReconException
-    real_exc = ReconException(category="UNEXPLAINED_VARIANCE", severity="STANDARD", amount_at_risk_paise=100, affected={"payment_id": "pay_demo"}, recommended_action="x")
-
-    class Output:
-        exceptions = [real_exc]
-
-    result = report_module._exception_dicts(Output())
+    result = report_module._exception_dicts(_output_with("pay_demo"), Path("data/fixtures/run_2000"))
     assert result[0]["trace_file"] == "sample_traces/pay_demo.json"
 
 
 def test_exception_has_no_trace_link_when_no_file_matches(tmp_path, monkeypatch):
-    monkeypatch.setattr(report_module, "SAMPLE_TRACES_DIR", tmp_path / "nonexistent")
-    from engine.contract import ReconException
-    real_exc = ReconException(category="MISSING_SETTLEMENT", severity="STANDARD", amount_at_risk_paise=100, affected={"payment_id": "pay_none"}, recommended_action="x")
+    monkeypatch.setattr(report_module, "SAMPLE_TRACE_SOURCES", ((tmp_path / "nonexistent", None),))
 
-    class Output:
-        exceptions = [real_exc]
-
-    result = report_module._exception_dicts(Output())
+    result = report_module._exception_dicts(_output_with("pay_none", "MISSING_SETTLEMENT"), Path("data/fixtures/run_2000"))
     assert result[0]["trace_file"] is None
+
+
+def test_a_live_trace_links_on_the_fixture_it_was_actually_produced_from():
+    """The 6 real run_2000 residual records have committed live agent traces in
+    benchmarks/sample_traces_live/ - and the demo script's own climax beat
+    ("click one exception -> full agent reasoning trace") depends on them
+    actually rendering a link. Before this, SAMPLE_TRACES_DIR pointed only at
+    the hand-built synthetic set, so all 6 rendered "no agent trace"."""
+    report = run_eval(Path("data/fixtures/run_2000"), "full")
+    unexplained = [e for e in report["exceptions_detail"] if e["category"] == "UNEXPLAINED_VARIANCE"]
+    assert unexplained, "run_2000's L3 residual should still produce UNEXPLAINED_VARIANCE exceptions"
+    linked = [e for e in unexplained if e["trace_file"]]
+    assert len(linked) == len(unexplained), "every residual record with a committed live trace must link to it"
+    for e in linked:
+        assert e["trace_file"].startswith("sample_traces_live/")
+        assert (Path("benchmarks") / e["trace_file"]).exists(), "a trace link must resolve to a real file, not a 404"
+
+
+def test_a_live_trace_does_not_link_from_a_different_fixture(tmp_path, monkeypatch):
+    """The regression guard for a real trap: record ids are seed-derived, so
+    run_2000 and run_10000 share 2001 payment ids while holding genuinely
+    different records. A filename-only lookup would show run_2000's real agent
+    trace next to run_10000's unrelated payment of the same id - an LLM
+    reasoning in detail about the wrong record, worse than no trace at all."""
+    live_dir = tmp_path / "sample_traces_live"
+    live_dir.mkdir()
+    (live_dir / "pay_OyvjU0Hc7g7Bi2.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(report_module, "SAMPLE_TRACE_SOURCES", ((live_dir, "run_2000"),))
+
+    same_fixture = report_module._exception_dicts(_output_with("pay_OyvjU0Hc7g7Bi2"), Path("data/fixtures/run_2000"))
+    assert same_fixture[0]["trace_file"] == "sample_traces_live/pay_OyvjU0Hc7g7Bi2.json"
+
+    other_fixture = report_module._exception_dicts(_output_with("pay_OyvjU0Hc7g7Bi2"), Path("data/fixtures/run_10000"))
+    assert other_fixture[0]["trace_file"] is None, "a run_2000 trace must never link from run_10000's report"
 
 
 def test_render_html_includes_all_four_panels():

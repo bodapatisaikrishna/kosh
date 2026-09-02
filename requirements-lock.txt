@@ -7,6 +7,14 @@
 #   python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -e ".[dev,llm]"
 #   /tmp/venv/bin/pip freeze | grep -v "^-e " > requirements-lock.txt
 #
+# Note: Kosh itself has ZERO runtime dependencies - every package below comes
+# from the optional [dev] (pytest) and [llm] (anthropic, openai) extras, which
+# are only needed to run the test suite or hit a live model. `pip install -e .`
+# alone installs nothing but Kosh.
+#
+# pydantic appears here as a transitive dependency of anthropic/openai. That is
+# NOT the dead direct dependency Task 6.4 removed from pyproject.toml - nothing
+# in this codebase imports it, and it needs no further action.
 annotated-types==0.8.0
 anthropic==0.82.0
 anyio==4.14.2
@@ -19,20 +27,14 @@ httpx==0.28.1
 idna==3.19
 iniconfig==2.3.0
 jiter==0.16.0
-numpy==2.5.2
 openai==2.53.0
 packaging==26.3
-pandas==2.3.3
 pluggy==1.6.0
 pydantic==2.13.5
 pydantic_core==2.46.5
 Pygments==2.21.0
 pytest==9.1.1
-python-dateutil==2.9.0.post0
-pytz==2026.3.post1
-six==1.17.0
 sniffio==1.3.1
 tqdm==4.70.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0
-tzdata==2026.3

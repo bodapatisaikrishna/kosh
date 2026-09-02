@@ -369,6 +369,8 @@ Sample error, verbatim: `orders.csv: missing required column(s): ['invoice_no']`
 
 **6.4 Dependency pinning** — dropped `pydantic`, `fastapi`, `uvicorn` from `pyproject.toml` (confirmed zero imports anywhere in the codebase — dead weight from the original brief's suggested stack). Exact-pinned `pandas==2.3.3`, `pytest==9.1.1`, `anthropic==0.82.0`, `openai==2.53.0`. `requirements-lock.txt` via plain `pip freeze` from a clean venv (no new lock tooling). Verified end-to-end: a fresh venv installed from the lockfile alone passes the full suite (222 passed) and `make demo` runs clean (97.74% auto-match, 0.00% false-match, unchanged).
 
+> **Correction (§11.9)**: this sweep was incomplete. It checked only the three packages named in its own plan and missed `pandas` — which was not an extra but the sole entry in `[project.dependencies]`, and is likewise imported nowhere. Removed later; see §11.9.
+
 Commit `92aee7d`.
 
 ### 11.7 — Sprint test suite status
@@ -398,3 +400,21 @@ One honest note on the manifest's own `git_dirty` flag: it reads `true` on this 
 223/223 tests passing, `pyflakes` clean, at the moment of freeze.
 
 **Code freeze declared as of this commit.** No further engine commits follow. Any non-critical bug found after this point is recorded in §8 (Known Limitations), not patched against an already-reported and re-verified number.
+
+---
+
+### 11.9 — Three gaps found in a judge-perspective audit (post-freeze)
+
+A full read of the *code* rather than the docs, done from a judge's point of view, found three defects invisible in the write-up but visible to anyone who clicks or runs anything. All three are docs/tests/presentation-wiring — **no `engine/*.py` logic was touched**, so the freeze holds.
+
+**1. The demo's climax silently did nothing.** `DEMO_SCRIPT.md`'s 3:30–4:30 beat is "click one exception → full agent reasoning trace." In the default `make demo` dashboard, **0 of 139 exceptions carried a trace link**. The 6 `UNEXPLAINED_VARIANCE` rows are exactly the 6 records with real committed live traces, but `eval/report.py`'s `SAMPLE_TRACES_DIR` looked only in `benchmarks/sample_traces/` (the hand-built synthetic set — `pay_unexplained`, `btxn_batch`), while the real traces live in `benchmarks/sample_traces_live/`. All 6 rendered *"no agent trace (deterministically classified)."*
+
+**The obvious one-line fix would have introduced a worse bug**, caught before writing it: record ids are seed-derived, so `run_2000` and `run_10000` (both seed=42) **share 2001 payment ids while holding genuinely different records** — verified directly against both fixtures. Adding the directory to the lookup would have made `freeze_10000`'s dashboard attach `pay_OyvjU0Hc7g7Bi2`'s real `run_2000` agent trace to an unrelated `FEE_VARIANCE` payment of the same id — an LLM reasoning in detail about the wrong record, strictly worse than showing nothing. The trap never fired before only because the synthetic set's hand-written ids can't collide with generated ones. Fixed as a fixture-scoped lookup (`SAMPLE_TRACE_SOURCES`, mapping each trace directory to the fixture it's valid for), with the collision itself as a regression test.
+
+**2. The most load-bearing credibility claim cited a test that did not exist.** README and §1 above both state the harness is mutation-tested — "inject 10 deliberately wrong links and it reports 0.24%; drop half the true matches and recall halves" — and §1 cited `tests/test_eval_baselines.py` by name. That file had 4 tests, none of them a mutation test. The claim is what turns 0.00% false-match from *suspicious* into *verified*, and a dead citation is disproportionately damaging precisely because every other citation in these docs resolves.
+
+The claim itself was **true, just never committed**: injecting 10 wrong links yields 10/4172 = 0.2397% → 0.24%, and halving the matches yields recall exactly 0.5. Both are now real tests in the file that was already being cited, asserting the exact rate, the documented "0.24%" string, and that dropping matches does *not* register as a false match.
+
+**3. `pandas` was a fourth dead dependency.** Task 6.4 (§11.6) removed `pydantic`/`fastapi`/`uvicorn` but checked only the three named in its own plan — missing `pandas==2.3.3`, the sole entry in `[project.dependencies]`, imported nowhere. `data/generator/emit.py`'s own docstring says it uses stdlib `csv` *instead of* pandas; `eval/manifest.py` was tracking the version of a package nothing imports. Removed, along with its 5 transitive deps (`numpy`, `python-dateutil`, `pytz`, `six`, `tzdata`) — lockfile down from 29 packages to 23. **Kosh has zero runtime dependencies**, which is a better story than the one previously told and is now stated as such in the README.
+
+**Verification**: 227/227 tests passing (223 + 2 mutation + 2 trace-scoping), `pyflakes` clean, all 6 frozen benchmarks re-diffed with only the intended `trace_file` field moving and every accuracy number byte-identical, and both a `.[dev,llm]` and a lockfile-only clean-venv install re-verified end to end.

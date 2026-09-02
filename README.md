@@ -114,7 +114,7 @@ Each layer refuses rather than guesses when evidence is ambiguous — that's wha
 
 The generator is deliberately adversarial to its own engine: it injects **consolidated payouts** (one credit, several settlements, no per-settlement reference — solvable only by subset-sum) and **compound fee+tax errors** (two overlapping causes, so no single-cause hypothesis can decompose them — genuinely UNEXPLAINED, real work for L3). That's what makes the layer shares above real measurements rather than a diagram. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the full build history, including every bug found and how it was caught — among them two genuine false-match bugs, one surfaced by a live model mid-run.
 
-**Stack**: Python 3.11+, pydantic-free dataclasses, integer paise everywhere (enforced by an AST lint, `tests/test_no_floats.py`), stdlib `csv`/`json` for the generator (no float-formatting risk), `anthropic`/`openai` SDKs behind a provider-agnostic `LLMClient` interface for L3.
+**Stack**: Python 3.11+ and **zero runtime dependencies** — plain dataclasses, stdlib `csv`/`json` throughout (deliberately, so no float formatting ever gets near money), integer paise everywhere (enforced by an AST lint, `tests/test_no_floats.py`). `pytest` is a dev extra; the `anthropic`/`openai` SDKs are an optional extra behind a provider-agnostic `LLMClient` interface, needed only to run L3 against a live model. `pip install -e .` pulls in nothing at all.
 
 **Repo layout**:
 
