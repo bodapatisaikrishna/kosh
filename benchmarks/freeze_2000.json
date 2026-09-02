@@ -2307,12 +2307,12 @@
     }
   ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788330130.586714,
+  "generated_at_unix": 1788336460.8520188,
   "manifest": {
     "engine": "full",
     "fixtures_dir": "data/fixtures/run_2000",
-    "generated_at_utc": "2026-09-02T06:22:10.628169+00:00",
-    "git_commit_sha": "7801a7958dbf2bde25cef29a33e2f4347630f43e",
+    "generated_at_utc": "2026-09-02T08:07:40.891298+00:00",
+    "git_commit_sha": "8604fd6a1812be02f617cdf59271183cc18faec4",
     "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "05b5c2370c26ad40ca4f3eecb643eef3aa3a848ba6e3e9a70f938b7f0964c87d",
@@ -2459,9 +2459,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 226813.56224515717,
+      "records_per_second": 215107.51721953522,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.008191750006517395
+      "wall_clock_seconds": 0.008637541002826765
     }
   }
 }
