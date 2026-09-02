@@ -2,7 +2,7 @@
 
 **Snapshot date: 2026-09-02, commit `2ae30aa`.** This is a single consolidated record of every number, every success, and every failure produced while building Kosh — the AI Finance Controller for Razorpay Buildathon 2026, Track 04. It is deliberately exhaustive: `README.md` gives the curated headline story and `ARCHITECTURE.md` gives the narrative build history; this file is the detailed ledger underneath both, kept as one file so numbers don't drift across three places. If you regenerate any benchmark, re-check the numbers here rather than trusting this file blindly — every figure below names its source file.
 
-**§§1–10 below are the original build (through commit `b36e02f`, 2026-09-01) — left as originally written.** §11 covers the hardening sprint that followed (Tasks 1–6 of 7, this same date range) — a separate, later pass of multi-seed validation, adversarial red-teaming, an all-LLM ablation, malformed-input handling, and production hardening, run against the completed build below. Task 7 (re-freeze + code freeze) has not run yet.
+**§§1–10 below are the original build (through commit `b36e02f`, 2026-09-01) — left as originally written.** §11 covers the hardening sprint that followed (all 7 tasks, this same date range) — multi-seed validation, adversarial red-teaming, an all-LLM ablation, malformed-input handling, production hardening, and a final re-freeze, run against the completed build below. **Code is frozen as of §11.8** — no further engine commits after this point; anything found later goes into Known Limitations, not a rushed fix against an already-reported number.
 
 ---
 
@@ -374,4 +374,25 @@ Commit `92aee7d`.
 - **223/223 tests passing** as of commit `2ae30aa` (up from 174 at the start of the sprint — 49 new tests across Tasks 1–6, zero deletions).
 - **`pyflakes` clean** across `engine/`, `eval/`, `cash/`, `data/`, `tests/`, `scripts/` after every task.
 - **Zero unexpected benchmark drift** across all 6 committed tasks — every diff was byte-for-byte confirmed after every task that touched matching logic (Tasks 2, 3), and the tasks that didn't (1, 4, 5, 6) never invoke the affected code paths from any frozen benchmark's CLI mode.
-- **Task 7 (re-freeze + doc reconciliation + code freeze) has not run.** This section will be updated when it does.
+
+### 11.8 — Task 7: final re-freeze and code freeze
+
+`make freeze` regenerated all 6 headline benchmarks (`freeze_500`, `freeze_2000`, `freeze_10000`, `phase3`, `phase4`, `phase5`) from scratch — fresh fixture generation at each scale, not a re-score of the existing CSVs — against the final code from Tasks 1–6. Every regenerated file diffed programmatically against its previously-committed version, stripping only the fields that are expected to move on any regeneration (`generated_at_unix`, `wall_clock_seconds`, `records_per_second`, and the new `manifest` block Task 6.3 added):
+
+**Result: all 6 files identical.** `auto_match_rate`, `false_match_rate`, `precision`, `recall`, `exceptions_detail`, `defect_confusion`, and the cash-reconciliation numbers are byte-for-byte unchanged at every scale — exactly as expected, since nothing in Tasks 1, 4, 5, or 6 touches any code path these deterministic-CLI benchmarks exercise, and Tasks 2/3's matching-logic changes were already regenerated and diffed at the time they landed (§11.2, §11.3). The only genuine content change in all 6 files is the new, additive `manifest` block (git SHA, dirty-tree flag, record counts, package versions, per-input-file SHA256) — by design, not drift.
+
+One honest note on the manifest's own `git_dirty` flag: it reads `true` on this regeneration, because the regeneration itself (this Makefile target, these very benchmark files) is what's being committed — there's no way to freeze the *committed* state of a change before making it. Read `git_dirty: true` on these 6 files as "generated as part of landing this exact commit," not as evidence of an unrelated uncommitted change.
+
+**Docs reconciled**: README gained the Task 1 multi-seed table (directly beneath the 3-scale results table) and its Makefile command-reference line now lists `multiseed`/`adversarial`/`verify-deterministic`/`freeze`. The `compound_fee_tax_error` table cell and Limitations bullet were already reconciled to the real 4–6/6 number during Task 2 (§11.2) — re-checked here, no further change needed. ARCHITECTURE.md's Task 2–5 narrative sections were likewise already accurate as of their own tasks — re-checked, no further change needed. `Makefile` gains the `freeze` target itself (previously three manual one-off commands, now one reusable command producing the correctly-named `freeze_*`/`phase*` files, not the raw `run_<label>` names `eval.report`'s CLI writes by default).
+
+**Final numbers, all 3 scales, vs. previously committed:**
+
+| Records | Auto-match | False-match | Precision / Recall | Exceptions | Change |
+|---|---|---|---|---|---|
+| 500 | 97.61% | 0.00% | 100.00% / 99.91% | 48 | none |
+| 2,000 | 97.74% | 0.00% | 100.00% / 99.95% | 139 | none |
+| 10,000 | 97.83% | 0.00% | 100.00% / 100.00% | 550 | none |
+
+223/223 tests passing, `pyflakes` clean, at the moment of freeze.
+
+**Code freeze declared as of this commit.** No further engine commits follow. Any non-critical bug found after this point is recorded in §8 (Known Limitations), not patched against an already-reported and re-verified number.

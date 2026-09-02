@@ -116,7 +116,33 @@
   "engine": "l0l1l2",
   "exceptions_detail": [],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788243251.861393,
+  "generated_at_unix": 1788326997.3209841,
+  "manifest": {
+    "engine": "l0l1l2",
+    "fixtures_dir": "data/fixtures/run_2000",
+    "generated_at_utc": "2026-09-02T05:29:57.347771+00:00",
+    "git_commit_sha": "86b71c13101bc2a7615b0fe883a3261fee8a7876",
+    "git_dirty": true,
+    "input_file_sha256": {
+      "bank_statement.csv": "05b5c2370c26ad40ca4f3eecb643eef3aa3a848ba6e3e9a70f938b7f0964c87d",
+      "orders.csv": "30ba8ef2a96482e36a178f2e32b89bcff38f335664c23e565f31566cb72ffea3",
+      "pg_payments.csv": "10ae7083e77e781bfa1fe97b4b2b1362e46d3a5643805b69d33f0580ff410c1b",
+      "pg_settlements.csv": "2f4db5ee2a5caf7ab3e71ed1de95254e841d8f7911653fa7a321b73b1229ed20"
+    },
+    "model": null,
+    "package_versions": {
+      "anthropic": "0.82.0",
+      "openai": "2.53.0",
+      "pandas": "2.3.3"
+    },
+    "record_counts": {
+      "bank": 341,
+      "orders": 2000,
+      "payments": 2020,
+      "settlements": 305
+    },
+    "seed": null
+  },
   "metrics": {
     "accuracy": {
       "auto_match_rate": 0.9773950484391819,
@@ -229,9 +255,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 362825.64302914625,
+      "records_per_second": 385693.9521648927,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.005120916990563273
+      "wall_clock_seconds": 0.0048172909882850945
     }
   }
 }

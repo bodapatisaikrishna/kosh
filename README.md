@@ -16,6 +16,15 @@ The judging bar: *"Throughput plus measured accuracy plus an honest exception li
 
 **False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads **0.00%** at every scale tested, including a real, non-scripted LLM run (below) — that's checked directly, not asserted. It's also not a vacuous zero: the harness is mutation-tested (inject 10 wrong links and it reports 0.24%, drop half the matches and recall halves), so it demonstrably fails when the engine is wrong.
 
+**Not a `seed=42` artifact** — 6 independent seeds, fresh 2,000-record fixture each, deterministic pipeline only (hardening sprint Task 1):
+
+| Seed | 1 | 7 | 42 | 100 | 2026 | 31337 | Mean | Stddev |
+|---|---|---|---|---|---|---|---|---|
+| Auto-match | 97.86% | 97.87% | 97.74% | 96.99% | 97.85% | 97.96% | **97.71%** | 0.36pp |
+| False-match | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | 0.00% | **0.00%** | — |
+
+Source: [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), regenerable with `make multiseed`.
+
 **Every layer earns its place** — this is measured, not asserted:
 
 | Layer | 500 | 2,000 | 10,000 | What only it can do |
@@ -156,4 +165,4 @@ python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultr
 pytest
 ```
 
-`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, `make l3-profile`, and `make demo` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, `make l3-profile`, `make demo`, `make multiseed`, `make adversarial`, `make verify-deterministic`, and `make freeze` wrap the same commands.
