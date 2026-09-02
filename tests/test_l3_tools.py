@@ -88,6 +88,36 @@ def test_find_candidates_registers_returned_ids_for_later_use():
     assert "setl_1" in ctx.known_ids
 
 
+def test_find_candidates_on_a_never_captured_payment_raises_not_crashes():
+    # A "failed" payment has no captured_at at all - found by the all-LLM
+    # ablation (Task 4), the first pipeline mode that ever routes a failed
+    # payment to L3 (run_full never does - only captured payments with a
+    # genuine reconciliation question reach L3 there). Must be a structural
+    # ToolError, not a raw ValueError crashing the whole batch.
+    dataset = _dataset()
+    failed_payment = PaymentRow("pay_failed", "order_1", "", "upi", False, 100_000_00, 0, 0, 0, "failed", None, None, 0)
+    dataset.payments.append(failed_payment)
+    ctx = ToolContext(dataset=dataset, residual_id="pay_failed", residual_source="payments")
+    try:
+        find_candidates(ctx, "pay_failed", amount_tolerance_paise=100, date_window_days=5)
+        assert False, "expected ToolError"
+    except ToolError as exc:
+        assert "captured_at" in str(exc)
+
+
+def test_find_candidates_on_a_bank_debit_skips_never_captured_payments():
+    # A never-captured payment must never be considered a chargeback
+    # candidate for a bank debit - and must not crash the search either.
+    dataset = _dataset()
+    failed_payment = PaymentRow("pay_failed", "order_1", "", "upi", False, 500_00, 0, 0, 500_00, "failed", None, None, 0)
+    dataset.payments.append(failed_payment)
+    debit = BankRow("btxn_debit", "2026-08-04", "CHARGEBACK DEBIT", 0, 500_00, 0)
+    dataset.bank.append(debit)
+    ctx = ToolContext(dataset=dataset, residual_id="btxn_debit", residual_source="bank")
+    candidates = find_candidates(ctx, "btxn_debit", amount_tolerance_paise=100, date_window_days=5)
+    assert all(c.get("payment_id") != "pay_failed" for c in candidates)
+
+
 # --- solve_subset --------------------------------------------------------------
 
 def test_solve_subset_rejects_unknown_candidate_ids():
@@ -260,6 +290,22 @@ def test_raise_exception_computes_real_aging_days_not_zero():
     # "now" is inferred as the latest capture in the dataset (Aug 15, from
     # pay_new); pay_old was captured Aug 1 - 14 days old.
     assert result["exception"]["aging_days"] == 14
+
+
+def test_raise_exception_on_a_never_captured_payment_gets_zero_aging_not_a_crash():
+    # A "failed" payment has no captured_at at all - aging_days must degrade
+    # to 0 (unknown), same as when the record itself can't be found, never
+    # crash. Found by the all-LLM ablation (Task 4).
+    order = OrderRow("order_1", "2026-08-01", "cust_1", 100_000_00, "INR", "upi", "paid", "INV-1")
+    failed_payment = PaymentRow("pay_failed", "order_1", "", "upi", False, 100_000_00, 0, 0, 0, "failed", None, None, 0)
+    dataset = Dataset(orders=[order], payments=[failed_payment], settlements=[], bank=[])
+    ctx = ToolContext(dataset=dataset, residual_id="pay_failed", residual_source="payments")
+
+    result = raise_exception(
+        ctx, category="UNEXPLAINED_VARIANCE", severity="STANDARD", amount_at_risk_paise=500,
+        recommended_action="x", rationale="a real reason",
+    )
+    assert result["exception"]["aging_days"] == 0
 
 
 def test_raise_exception_uses_a_real_differentiated_owner():

@@ -1,0 +1,23 @@
+{
+  "auto_match_rate": 0.8152173913043478,
+  "backend": "nim",
+  "cost_per_1000_records_micros": 35755994,
+  "cost_usd_micros": 6579103,
+  "exceptions_total": 87,
+  "false_match_rate": 0.0,
+  "fixtures": "data/fixtures/sample_200",
+  "input_tokens": 8466636,
+  "llm_calls": 1207,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "note": "All-LLM ablation (Task 4): L0, L1, L2, and L4 all bypassed - every payment/settlement/bank row routed straight to L3 with zero deterministic pre-classification. Orders are not independently investigated (only reachable as get_record context, same as the real pipeline). Compare against the L0/L0+L1/L0+L1+L2/full row in README.md's ablation table - this row is on data/fixtures/sample_200 (348 non-order records), not the 2000-record run_2000 used everywhere else in that table, because routing every record through a live LLM at 2000-record scale would be materially more expensive and slower for the same architectural point.",
+  "output_tokens": 1066262,
+  "precision": 1.0,
+  "recall": 0.7736263736263737,
+  "scope": "payments + settlements + bank (orders excluded, L4 bypassed)",
+  "scope_counts": {
+    "bank": 75,
+    "payments": 202,
+    "settlements": 71
+  },
+  "wall_clock_seconds": 3192.959658384323
+}

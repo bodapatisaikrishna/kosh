@@ -118,6 +118,52 @@ def run_l0_l1_l2(dataset: Dataset) -> EngineOutput:
     return EngineOutput(matches=matches, exceptions=[], meta=EngineMeta(wall_clock_seconds=elapsed))
 
 
+def run_llm_only(dataset: Dataset, client: LLMClient | None, model_name: str = "none", backend_name: str = "none", **l3_kwargs) -> EngineOutput:
+    """All-LLM ablation (hardening sprint, Task 4): bypasses L0, L1, L2, AND L4
+    entirely - every payment, settlement, and bank row is routed straight to
+    L3, with zero deterministic pre-classification of any kind. This is the
+    only reading where "all-LLM" really means all-LLM: running L4's
+    deterministic rules against an unfiltered bank statement would produce
+    meaningless numbers (those rules assume most of the statement is already
+    explained), so L4 is skipped too, not just L0-L2.
+
+    Orders are deliberately NOT investigated as their own residual items -
+    they're only ever reachable as context via a payment's own get_record
+    calls, same as in the real pipeline. Settlements and bank rows ARE
+    included (not just payments) for defect-class parity with run_full:
+    l3_agent.run_l3/ToolContext are already source-agnostic and needed no
+    code change to accept a mixed (id, source) list - only this residual
+    construction is new.
+
+    This exists purely to measure the deterministic-first architecture
+    against its alternative, not as a real reconciliation mode - eval/report.py
+    deliberately keeps this at client=None in its own ENGINES dict, same
+    invariant "full" already has, so a routine CLI run can never accidentally
+    spend real money. The actual costed run lives in
+    scripts/run_ablation_llm_only.py."""
+    start = time.perf_counter()
+    residual_items = (
+        [(p.payment_id, "payments") for p in dataset.payments]
+        + [(s.settlement_id, "settlements") for s in dataset.settlements]
+        + [(b.bank_txn_id, "bank") for b in dataset.bank]
+    )
+    if client is None:
+        elapsed = time.perf_counter() - start
+        return EngineOutput(matches=[], exceptions=[], meta=EngineMeta(wall_clock_seconds=elapsed))
+
+    l3_output = l3_agent.run_l3(dataset, residual_items, client, model_name=model_name, backend_name=backend_name, **l3_kwargs)
+    ledger = exceptions_module.build_ledger(l3_output.exceptions)
+    elapsed = time.perf_counter() - start
+    meta = EngineMeta(
+        wall_clock_seconds=elapsed,
+        llm_calls=l3_output.meta.llm_calls,
+        input_tokens=l3_output.meta.input_tokens,
+        output_tokens=l3_output.meta.output_tokens,
+        cost_usd_micros=l3_output.meta.cost_usd_micros,
+    )
+    return EngineOutput(matches=l3_output.matches, exceptions=ledger, meta=meta)
+
+
 def run_full(dataset: Dataset, client: LLMClient | None = None, model_name: str = "none", backend_name: str = "none", **l3_kwargs) -> EngineOutput:
     """The complete pipeline: L0 (incl. chargeback matching) -> L1 -> L2 ->
     L4's deterministic classification -> L3 (only for whatever's still

@@ -33,6 +33,30 @@ DEFAULT_CONCURRENCY = 8
 MAX_BACKOFF_RETRIES = 5
 BASE_BACKOFF_SECONDS = 1.0
 
+# Hardening sprint, Task 4 finding: a live ablation run hung for 10+ hours
+# with zero progress and no error, surviving a laptop sleep/wake cycle. Root
+# cause: all DEFAULT_CONCURRENCY worker threads had a client.complete() call
+# blocked on a TCP connection that went half-open across the sleep (8/8
+# ESTABLISHED sockets, 0% CPU, no new traces) - the openai SDK's own 600s
+# read timeout never fired, because nothing ever arrived to time out
+# against; the socket just never signaled anything, forever. Per-record
+# isolation (run_one's except Exception below) only protects the batch from
+# an upstream call that eventually raises - it does nothing for one that
+# never returns. This is the outer ceiling that makes it actually raise.
+#
+# Known residual gap, disclosed rather than hidden: asyncio.to_thread runs on
+# the loop's default ThreadPoolExecutor, and a thread that is still
+# physically blocked in a syscall when its wait_for times out keeps running
+# in the background - Python cannot forcibly kill a thread. asyncio.run()'s
+# own cleanup (shutdown_default_executor) joins every such thread before
+# returning, so if one is blocked forever (not just past this ceiling), the
+# call to run_l3()/run_llm_only() can still be slow to return even though
+# every record's own result was already computed and persisted to
+# traces_dir on time. This is a materially better failure mode than before
+# the fix (zero results for 10+ hours vs. all-but-one record done and on
+# disk promptly), not a complete guarantee against every hang.
+PER_RECORD_TIMEOUT_SECONDS = 900.0
+
 DEFAULT_TRACES_DIR = Path("traces")
 DEFAULT_CACHE_DIR = Path("traces/.cache")
 
@@ -88,7 +112,13 @@ def _aging_days_hint(dataset: Dataset, source: str, record_id: str) -> int:
     date_field = _DATE_FIELD.get(source)
     if row is None or date_field is None:
         return 0
-    return _aging_days(infer_as_of_date(dataset), getattr(row, date_field))
+    event_date = getattr(row, date_field)
+    if not event_date:
+        # See l3_tools._residual_aging_days's identical comment: a "failed"
+        # payment has no captured_at at all, and this is the fallback path
+        # for exactly the kind of upstream failure that can be caused by one.
+        return 0
+    return _aging_days(infer_as_of_date(dataset), event_date)
 
 
 def _cache_key(record_id: str, dataset: Dataset, source: str, model: str, max_turns: int) -> str:
@@ -244,6 +274,7 @@ async def run_l3_async(
     traces_dir: Path = DEFAULT_TRACES_DIR,
     model_name: str = "unknown",
     backend_name: str = "unknown",
+    per_record_timeout_seconds: float = PER_RECORD_TIMEOUT_SECONDS,
 ) -> EngineOutput:
     start = time.perf_counter()
     semaphore = asyncio.Semaphore(concurrency)
@@ -251,8 +282,11 @@ async def run_l3_async(
     async def run_one(record_id: str, source: str) -> AgentTrace:
         async with semaphore:
             try:
-                return await asyncio.to_thread(
-                    run_agent_on_record, record_id, source, dataset, client, max_turns, cache_dir, traces_dir, model_name, backend_name,
+                return await asyncio.wait_for(
+                    asyncio.to_thread(
+                        run_agent_on_record, record_id, source, dataset, client, max_turns, cache_dir, traces_dir, model_name, backend_name,
+                    ),
+                    timeout=per_record_timeout_seconds,
                 )
             except Exception as exc:  # noqa: BLE001 - deliberately broad, see below
                 # One record's upstream failure must never destroy the whole
@@ -262,6 +296,19 @@ async def run_l3_async(
                 # failure becomes its own honest ledger entry - the record is
                 # visibly unresolved with the reason attached, which is the
                 # same contract as constraint 6's AGENT_INCOMPLETE.
+                #
+                # asyncio.TimeoutError (raised by wait_for above, per the
+                # PER_RECORD_TIMEOUT_SECONDS comment) is deliberately caught
+                # here too, not just genuine backend errors: a to_thread call
+                # that never returns is not "still working", it is a stuck
+                # worker permanently holding this record's semaphore slot -
+                # timing it out is what makes the other DEFAULT_CONCURRENCY-1
+                # slots (and, once the semaphore releases, this one too) keep
+                # making progress instead of the whole batch silently halting.
+                if isinstance(exc, TimeoutError):
+                    reason = f"no response from {backend_name} after {per_record_timeout_seconds:.0f}s (timed out)"
+                else:
+                    reason = f"agent run failed against {backend_name}: {type(exc).__name__}: {exc}"
                 amount = _amount_hint(dataset, source, record_id)
                 # See l3_tools.raise_exception's identical comment: the
                 # source-specific id field (payment_id/etc) is required for
@@ -280,7 +327,7 @@ async def run_l3_async(
                         affected=failed_affected,
                         recommended_action=RECOMMENDED_ACTIONS["AGENT_INCOMPLETE"],
                         aging_days=_aging_days_hint(dataset, source, record_id),
-                        evidence_chain=(f"agent run failed against {backend_name}: {type(exc).__name__}: {exc}",),
+                        evidence_chain=(reason,),
                     ))},
                 )
                 _persist_trace(traces_dir, failed)

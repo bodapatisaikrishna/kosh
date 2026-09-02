@@ -19,7 +19,7 @@ from engine.fees import compute_expected_fee
 from engine.io import BankRow, Dataset, OrderRow, PaymentRow, SettlementRow, load_dataset
 from engine.llm.base import AssistantTurn, ToolCall
 from engine.llm.fake_client import FakeClient
-from engine.pipeline import run_full
+from engine.pipeline import run_full, run_llm_only
 from eval.io import load_ground_truth
 from eval.metrics import compute_metrics
 
@@ -108,3 +108,37 @@ def test_legitimate_settlement_split_still_resolves_both_parts():
     settlement_bank_matches = {m.right_id for m in output.matches if m.link_type == "settlement_bank_txn"}
     assert settlement_bank_matches == {"btxn_sp1a", "btxn_sp1b"}  # both parts, still correctly resolved
     assert not any(e.category == "UNIDENTIFIED_CREDIT" for e in output.exceptions)
+
+
+# --- run_llm_only (Task 4: all-LLM ablation) ---------------------------------
+
+def test_llm_only_routes_payments_settlements_and_bank_but_not_orders(tmp_path):
+    dataset = _dataset_with_unexplained_payment()  # 1 payment, 1 settlement, 1 bank row
+    turns_by_record = {
+        "pay_1": [AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+            "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 100,
+            "recommended_action": "x", "rationale": "pay_1 investigated",
+        }),), stop_reason="tool_use")],
+        "setl_1": [AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_2", name="raise_exception", arguments={
+            "category": "UNIDENTIFIED_CREDIT", "severity": "STANDARD", "amount_at_risk_paise": 100,
+            "recommended_action": "x", "rationale": "setl_1 investigated",
+        }),), stop_reason="tool_use")],
+        "btxn_1": [AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_3", name="raise_exception", arguments={
+            "category": "UNIDENTIFIED_CREDIT", "severity": "STANDARD", "amount_at_risk_paise": 100,
+            "recommended_action": "x", "rationale": "btxn_1 investigated",
+        }),), stop_reason="tool_use")],
+    }
+    client = FakeClient(turns_by_record=turns_by_record)
+    output = run_llm_only(dataset, client=client, model_name="fake", backend_name="fake",
+                           cache_dir=tmp_path / "cache", traces_dir=tmp_path / "traces")
+    # All 3 non-order records were independently investigated - 3 LLM calls, not 1 or 4.
+    assert output.meta.llm_calls == 3
+    investigated_ids = {e.affected.get("record_id") for e in output.exceptions}
+    assert investigated_ids == {"pay_1", "setl_1", "btxn_1"}  # orders never appear as their own residual item
+
+
+def test_llm_only_with_no_client_returns_an_empty_result_never_crashes():
+    output = run_llm_only(_dataset_with_unexplained_payment(), client=None)
+    assert output.matches == []
+    assert output.exceptions == []
+    assert output.meta.llm_calls == 0

@@ -28,7 +28,7 @@ from pathlib import Path
 from cash.forecast import compute_forecast
 from engine.baselines import null_baseline, oracle_baseline
 from engine.io import load_dataset
-from engine.pipeline import run_full, run_l0_l1, run_l0_l1_l2
+from engine.pipeline import run_full, run_l0_l1, run_l0_l1_l2, run_llm_only
 from eval.io import load_ground_truth
 from eval.manifest import build_run_manifest
 from eval.metrics import compute_metrics
@@ -39,6 +39,10 @@ ENGINES = {
     "l0l1": lambda dataset, ground_truth: run_l0_l1(dataset),
     "l0l1l2": lambda dataset, ground_truth: run_l0_l1_l2(dataset),
     "full": lambda dataset, ground_truth: run_full(dataset, client=None),
+    # Deliberately client=None here too, same invariant as "full": the CLI must
+    # never be able to accidentally spend real money. The real, costed ablation
+    # run lives in scripts/run_ablation_llm_only.py.
+    "llm-only": lambda dataset, ground_truth: run_llm_only(dataset, client=None),
 }
 
 # Where committed L3 traces live - an exception whose `affected` dict names a

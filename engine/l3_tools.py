@@ -86,7 +86,16 @@ def _residual_aging_days(ctx: "ToolContext") -> int:
     date_field = _DATE_FIELD.get(ctx.residual_source)
     if row is None or date_field is None:
         return 0
-    return _aging_days(infer_as_of_date(ctx.dataset), getattr(row, date_field))
+    event_date = getattr(row, date_field)
+    if not event_date:
+        # A "failed" payment (never captured) has an empty captured_at - it has
+        # no real event to measure aging from. Found by the all-LLM ablation
+        # (Task 4), which is the first pipeline mode to ever send a failed
+        # payment to L3 at all: run_full only ever routes captured payments
+        # with a genuine reconciliation question, so this path was previously
+        # unreachable and untested.
+        return 0
+    return _aging_days(infer_as_of_date(ctx.dataset), event_date)
 
 
 def json_safe(obj):
@@ -155,6 +164,13 @@ def find_candidates(ctx: ToolContext, record_id: str, amount_tolerance_paise: in
 
     found: list[tuple[str, object]] = []
     if table == "payments":
+        if not row.captured_at:
+            # A "failed" payment was never captured - it has no anchor date to
+            # search around at all. Structurally rejected (a ToolError the
+            # model can react to) rather than a raw crash - found by the
+            # all-LLM ablation (Task 4), the first pipeline mode that ever
+            # routes a failed payment to L3 in the first place.
+            raise ToolError(f"{record_id!r} has no captured_at (status={row.status!r}) - nothing to anchor a date search on")
         anchor_date = datetime.fromisoformat(row.captured_at).date()
         for s in ctx.dataset.settlements:
             if abs(s.net_paise - row.net_paise) <= amount_tolerance_paise and abs((date.fromisoformat(s.settled_at) - anchor_date).days) <= date_window_days:
@@ -167,7 +183,10 @@ def find_candidates(ctx: ToolContext, record_id: str, amount_tolerance_paise: in
                     found.append(("settlements", s))
         else:
             for p in ctx.dataset.payments:
-                if p.status == "captured" and abs(p.net_paise - row.debit_paise) <= amount_tolerance_paise and abs((datetime.fromisoformat(p.captured_at).date() - anchor_date).days) <= date_window_days:
+                # p.captured_at is checked truthy first - a never-captured
+                # payment can never be a valid candidate for anything
+                # date-proximity-based, and parsing an empty string crashes.
+                if p.status == "captured" and p.captured_at and abs(p.net_paise - row.debit_paise) <= amount_tolerance_paise and abs((datetime.fromisoformat(p.captured_at).date() - anchor_date).days) <= date_window_days:
                     found.append(("payments", p))
     elif table == "settlements":
         anchor_date = date.fromisoformat(row.settled_at)

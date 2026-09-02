@@ -243,3 +243,63 @@ def test_one_records_failure_does_not_destroy_the_whole_batch(tmp_path, monkeypa
     assert "AGENT_INCOMPLETE" in categories, "the failed record vanished instead of being reported"
     failed = next(e for e in output.exceptions if e.category == "AGENT_INCOMPLETE")
     assert "504" in " ".join(failed.evidence_chain)
+
+
+def test_upstream_failure_on_a_never_captured_payment_does_not_compound(tmp_path, monkeypatch):
+    """The isolation fallback itself must be safe against the exact kind of
+    degenerate record it exists to handle. A "failed" payment has no
+    captured_at at all - found by the all-LLM ablation (Task 4), which is the
+    first pipeline mode that ever routes a failed payment to L3 in the first
+    place. Before the fix, computing aging_days for the AGENT_INCOMPLETE
+    fallback itself crashed with an uncaught ValueError, taking out the whole
+    batch - exactly the failure this isolation mechanism was built to prevent."""
+    import engine.l3_agent as l3_agent
+    monkeypatch.setattr(l3_agent.time, "sleep", lambda s: None)
+
+    order = OrderRow("order_1", "2026-08-01", "cust_1", 100_000_00, "INR", "upi", "paid", "INV-1")
+    failed_payment = PaymentRow("pay_failed", "order_1", "", "upi", False, 100_000_00, 0, 0, 0, "failed", None, None, 0)
+    dataset = Dataset(orders=[order], payments=[failed_payment], settlements=[], bank=[])
+
+    class AlwaysFails:
+        def complete(self, messages, tools):
+            raise TransientBackendError("Error code: 504")  # never recovers
+
+    output = run_l3(dataset, [("pay_failed", "payments")], AlwaysFails(), model_name="fake", backend_name="fake", **_dirs(tmp_path))
+    assert len(output.exceptions) == 1
+    assert output.exceptions[0].category == "AGENT_INCOMPLETE"
+    assert output.exceptions[0].aging_days == 0  # degrades gracefully, doesn't crash
+
+
+def test_a_hung_client_call_times_out_instead_of_stalling_the_whole_batch(tmp_path):
+    """Real finding from Task 4's live ablation run: it hung for 10+ hours with
+    zero progress, surviving a laptop sleep/wake cycle. Root cause: every
+    DEFAULT_CONCURRENCY worker had a client.complete() call blocked on a TCP
+    connection that went half-open across the sleep - it never raised and
+    never returned, so run_one's `except Exception` (which only helps once
+    something actually raises) never fired, and the semaphore never released.
+    per_record_timeout_seconds is the outer ceiling that forces a hang to
+    surface as a failure. This proves it fires, and that the hung record
+    does not prevent its sibling from completing (real isolation, not just
+    isolation-shaped)."""
+    import time
+
+    class HangsForBtxn:
+        def complete(self, messages, tools):
+            text = " ".join(m.content or "" for m in messages if m.role == "user")
+            if "btxn_1" in text:
+                time.sleep(0.3)  # simulates a connection that never returns in time
+                return AssistantTurn(text="arrived too late to matter", tool_calls=(), stop_reason="end_turn")
+            return AssistantTurn(text=None, tool_calls=(ToolCall(id="tc_1", name="raise_exception", arguments={
+                "category": "UNEXPLAINED_VARIANCE", "severity": "STANDARD", "amount_at_risk_paise": 1_00,
+                "recommended_action": "x", "rationale": "this record succeeded",
+            }),), stop_reason="tool_use")
+
+    output = run_l3(
+        _dataset(), [("pay_1", "payments"), ("btxn_1", "bank")], HangsForBtxn(),
+        model_name="fake", backend_name="fake", per_record_timeout_seconds=0.05, **_dirs(tmp_path),
+    )
+    categories = [e.category for e in output.exceptions]
+    assert "UNEXPLAINED_VARIANCE" in categories, "the sibling record was blocked by the hung one"
+    assert "AGENT_INCOMPLETE" in categories, "the hung record vanished instead of being reported"
+    failed = next(e for e in output.exceptions if e.category == "AGENT_INCOMPLETE")
+    assert "timed out" in " ".join(failed.evidence_chain)
