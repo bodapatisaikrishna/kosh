@@ -1,6 +1,8 @@
 # Kosh — Full Results Log
 
-**Snapshot date: 2026-09-01, commit `b36e02f`.** This is a single consolidated record of every number, every success, and every failure produced while building Kosh — the AI Finance Controller for Razorpay Buildathon 2026, Track 04. It is deliberately exhaustive: `README.md` gives the curated headline story and `ARCHITECTURE.md` gives the narrative build history; this file is the detailed ledger underneath both, kept as one file so numbers don't drift across three places. If you regenerate any benchmark, re-check the numbers here rather than trusting this file blindly — every figure below names its source file.
+**Snapshot date: 2026-09-02, commit `2ae30aa`.** This is a single consolidated record of every number, every success, and every failure produced while building Kosh — the AI Finance Controller for Razorpay Buildathon 2026, Track 04. It is deliberately exhaustive: `README.md` gives the curated headline story and `ARCHITECTURE.md` gives the narrative build history; this file is the detailed ledger underneath both, kept as one file so numbers don't drift across three places. If you regenerate any benchmark, re-check the numbers here rather than trusting this file blindly — every figure below names its source file.
+
+**§§1–10 below are the original build (through commit `b36e02f`, 2026-09-01) — left as originally written.** §11 covers the hardening sprint that followed (Tasks 1–6 of 7, this same date range) — a separate, later pass of multi-seed validation, adversarial red-teaming, an all-LLM ablation, malformed-input handling, and production hardening, run against the completed build below. Task 7 (re-freeze + code freeze) has not run yet.
 
 ---
 
@@ -267,3 +269,109 @@ python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultr
 ```
 
 Full command reference in `README.md`'s "Everything else" section and the `Makefile`.
+
+---
+
+## 11. Hardening sprint (2026-09-01/02) — proof the results aren't an artifact, plus production hardening
+
+A 7-task, gated sprint against the completed build above (§§1–10): prove the 0.00% false-match claim under multi-seed validation and adversarial red-teaming, measure an all-LLM alternative, harden malformed-input handling, and add the production properties (determinism, CI, a run manifest, pinned dependencies). Non-negotiable rules throughout: no benchmark regresses without being reported first, no new features, integer paise everywhere, every fix gets a regression test, enforce structurally not by prompting, never silently redefine a metric, report real numbers. Tasks 1–6 are done and committed; Task 7 (re-freeze + code freeze) has not run.
+
+### 11.1 — Task 1: multi-seed validation
+
+**Goal**: prove 0.00% false-match isn't a `seed=42` artifact. `scripts/multiseed.py` generates a fresh 2,000-record fixture at each of 6 seeds to a temp directory, scores it with the full deterministic pipeline (`run_full(client=None)`), and deletes the fixture — only the summary is committed.
+
+| Seed | Auto-match | False-match | Exceptions | L3 residual |
+|---|---|---|---|---|
+| 1 | 97.86% | **0.00%** | 142 | 6 |
+| 7 | 97.87% | **0.00%** | 141 | 6 |
+| 42 | 97.74% | **0.00%** | 139 | 6 |
+| 100 | 96.99% | **0.00%** | 142 | 5 |
+| 2026 | 97.85% | **0.00%** | 140 | 5 |
+| 31337 | 97.96% | **0.00%** | 138 | 6 |
+
+**Mean auto-match: 97.71%, stddev: 0.36 percentage points. False-match: 0.00% at every single seed, no exceptions.** All 6 fixtures independently show 14/14 defect types present. Source: [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), `tests/test_multiseed.py` (regenerates live against the script's own function, not a frozen snapshot). Commit `7bbf12d`.
+
+### 11.2 — Task 2: `compound_fee_tax_error` mislabeling, fixed structurally
+
+**Found** (pre-existing, not new): L3 labelled a compound fee+GST error as whatever single category the model happened to check first (`FEE_VARIANCE`), citing one leg's delta even when two legs partially offset — 744 paise reported vs. the true net 183 paise.
+
+**Fixed structurally, in the tool layer, not the prompt** (`engine/l3_tools.py`): `explain_variance_tool` now records a `VarianceObservation` per call; `raise_exception` coerces `category` to `UNEXPLAINED_VARIANCE` and recomputes `amount_at_risk_paise` from the bottom-line (largest `abs(expected_paise)`, not largest `abs(delta_paise)` — that was the original bug) whenever 2+ genuinely unexplained legs are on record, deduped so a retried identical comparison can't inflate the count. A single unexplained leg below the threshold deliberately does **not** coerce — the false-positive guard that keeps single-cause `FEE_VARIANCE` exceptions correctly labelled. 7 new tests.
+
+**Deterministic layers confirmed byte-identical** before touching anything live (L0/L1/L2 untouched by this fix). `PROMPT_VERSION` bumped 1→2 to bust the trace cache, then the real 6-record `run_2000` residual re-run live against `nvidia/nemotron-3-ultra-550b-a55b`:
+
+| Run | `compound_fee_tax_error` | Note |
+|---|---|---|
+| Before the fix | 1 detected / 4 misclassified / 1 missed | Original bug |
+| After (run A) | 6/6 correctly `UNEXPLAINED_VARIANCE` | Model checked both legs |
+| After (run B, minutes later) | 4/6 `UNEXPLAINED_VARIANCE`, 1 correctly `TAX_VARIANCE` (single-cause, correctly not coerced), amounts exact in all 6 either way | Model checked only one leg that run — genuine LLM run-to-run variance, not a bug (see the trace: `unexplained_leg_count: 1`) |
+
+Both runs: zero `AGENT_INCOMPLETE`, zero false matches, zero wrong amounts, all 6 amounts exact to the paisa. Reported as both real numbers, not the better one cherry-picked. Source: [`benchmarks/phase5_live_residual.json`](benchmarks/phase5_live_residual.json), `benchmarks/sample_traces_live/`. Commit `c7e3b03`.
+
+### 11.3 — Task 3: adversarial red-team suite
+
+Seven inputs hand-engineered to induce a false match at a specific layer, run through `run_full(client=None)` — no LLM, no cost. Every outcome must be `REFUSED` (no wrong link) or `CORRECT` (the one true link); `FALSE_MATCH` is a bug to report, not a test to adjust.
+
+| # | Attack | Layer targeted | Outcome |
+|---|---|---|---|
+| a | Two settlements, UTRs differing by a transposed digit, truncated narration | L0/L1 | `REFUSED` |
+| b | Bank credit's amount coincidentally sums two unrelated settlements 60 days out | L2's date window | `REFUSED` |
+| c | Duplicate payment, one order, only one genuinely settled | L0/L4 | `CORRECT` (flagged `DUPLICATE_PAYMENT`) |
+| d | Refund reduces one settlement's net to match a second, unrelated settlement | L1 | `REFUSED` |
+| e | Fee-adjusted net coincidentally equals a different zero-fee settlement's gross | L1 | `REFUSED` |
+| f | Identical UTR text on two separate bank rows, same settlement | L0 double-claim | `REFUSED` (after a real bug was found and fixed — see below) |
+| g | Two different subsets of three settlements both sum to one bank credit | L2's ambiguity guard | `REFUSED` |
+
+**Attack f found a real bug**: `l0_deterministic.py` matched the *same* settlement to two different bank rows sharing one UTR — a genuine double-claim, silently double-counting cash. The first fix attempt ("a settlement claimed once can't be claimed again") broke a real feature — `settlement_split` legitimately reuses one UTR across two genuine partial payouts — inflating `unidentified_credit_paise` on `run_2000` by ~3.65x, caught by the existing reconciliation-identity test and reverted before being committed. The correct fix, `engine/pipeline.py::_reconcile_settlement_credit_sums`, checks the *sum* of a settlement's linked credits against its own `net_paise` (±₹1 tolerance) across L0+L1+L2's combined output, not a claim count — refuses on a genuine over-claim, still allows a legitimate split. Verified against both scenarios directly, then all 8 committed benchmarks regenerated and diffed byte-for-byte (only volatile timing fields moved). 2 new tests.
+
+**0 of 7 attacks produced a `FALSE_MATCH` in the committed state** (1 of 7 did during development — caught and fixed before ever being committed). Source: [`benchmarks/adversarial.json`](benchmarks/adversarial.json). Commit `4847ef1`.
+
+### 11.4 — Task 4: all-LLM ablation, and a real 10-hour hang it surfaced
+
+**Goal**: measure, not assert, that deterministic-first is the right architecture. `run_llm_only` routes every payment/settlement/bank record (348 on `sample_200` — 202+71+75) straight to L3, bypassing L0–L2 *and* L4 entirely.
+
+| Engine mode | Fixture | Auto-match | False-match | Precision / Recall | Cost |
+|---|---|---|---|---|---|
+| Null | run_2000 | 0.00% | 0.00% | 0.00% / 0.00% | $0 |
+| L0+L1 | run_2000 | 92.84% | **0.00%** | 100.00% / 99.54% | $0 |
+| L0+L1+L2 | run_2000 | 97.74% | **0.00%** | 100.00% / 99.95% | $0 |
+| Full (client=None) | run_2000 | 97.74% | **0.00%** | 100.00% / 99.95% | $0 |
+| **All-LLM** | sample_200 (348 records) | 81.52% | **0.00%** | 100.00% / 77.36% | $6.58 total, $35.76/1000 records |
+
+348/348 records, zero crashes, 1,207 LLM calls (`nvidia/nemotron-3-ultra-550b-a55b`). False-match holds at 0.00% even with every deterministic layer disabled — the same "refuse rather than guess" discipline (confidence < 0.85 → `raise_exception`) still holds under load. Recall drops because more genuinely ambiguous records get correctly refused rather than confidently matched, at 30–50x the cost of the deterministic layers resolving the same 99.68% of records for free. Source: [`benchmarks/ablation_llm_only.json`](benchmarks/ablation_llm_only.json).
+
+**Two crash fixes**, both found because this is the first mode that ever routes a never-captured ("failed") payment to L3 at all: `_residual_aging_days`/`_aging_days_hint`/`find_candidates` all raised `ValueError` on an empty `captured_at` — including inside the per-record failure-isolation's *own* fallback path, meaning the crash-recovery mechanism itself wasn't crash-safe. Fixed to degrade to `aging_days=0` gracefully; 4 new regression tests.
+
+**A third, more serious gap, found live**: the first full-batch attempt hung **10+ hours with zero progress and no error**, surviving an overnight laptop sleep. `lsof` showed all 8 `DEFAULT_CONCURRENCY` connections `ESTABLISHED`, 0% CPU — every worker thread's `client.complete()` call was blocked on a TCP connection gone half-open across the sleep; the openai SDK's own 600s read timeout never fired because nothing ever arrived to time out against, and the existing per-record isolation only helps once something actually raises. Fixed with an outer `PER_RECORD_TIMEOUT_SECONDS=900` ceiling via `asyncio.wait_for`, proven with a test that a hung record times out without blocking its sibling. Disclosed, not hidden: this bounds the batch's logical progress, but `asyncio.run()`'s own cleanup can still be slow to return if the underlying OS thread never returns at all (Python can't force-kill a thread) — a materially better failure mode than before, not an absolute guarantee.
+
+**A mistake made investigating it, disclosed rather than glossed over**: the stuck process was killed on a several-minutes-stale snapshot (139 records, unchanged since the sleep) without re-verifying freshness immediately before acting. By the time the kill happened, the run had already recovered on its own and reached 159 records at its fastest pace of the entire run (~2.5/min). No data was lost — every trace and cache entry persists as it completes, so the relaunch resumed instantly from 159/348 — and the timeout fix stands on its own merits regardless, but the kill itself was premature. Full account in `ARCHITECTURE.md`. Commit `2ae30aa`.
+
+### 11.5 — Task 5: malformed input handling
+
+**Found** (pre-existing): `engine/io.py::load_dataset` did zero validation — a missing column raised a bare `KeyError`, a non-integer amount a bare `ValueError`, both with no file/row/field context; `csv.DictReader` silently clobbers a duplicate header column and silently drops row-overflow fields under a `None` key.
+
+**Fixed, wrapped not replaced** — `load_dataset`'s signature is unchanged, but each of the 4 CSVs now goes through header validation, a data-rows check, and per-row checks (field overflow, integer parsing, non-negativity where the domain requires it, date format, duplicate primary keys), raising `DatasetValidationError(filename, reason, row, field)` — never a silent skip or coercion. Fails at the file boundary: a whole broken file is scanned fully before stopping, rather than aborting on the very first bad row anywhere.
+
+Sample error, verbatim: `orders.csv: missing required column(s): ['invoice_no']`
+
+**Two real domain findings, checked empirically before hard-coding a rule**: a `payment.captured_at` of `""` is the *correct* value for a `status="failed"` payment (never captured, genuinely no timestamp) — not validated as malformed. `bank.credit_paise`/`debit_paise` are deliberately **not** validated non-negative — `data/generator/defects.py`'s settlement-adjustment injector can legitimately drive one below zero (confirmed: seed 100 in Task 1's sweep produced a real `credit_paise: -34800`); non-negativity is enforced on `gross_paise` instead, checked clean across all 4 fixtures.
+
+**12 tests** (`tests/test_malformed_input.py`) cover all 10 required cases — missing column, duplicate header, non-integer amount, negative-where-only-positive-valid, unexpected date format, empty file, headers-only file, non-UTF8 bytes, duplicate primary key, row with more fields than header — plus a clean-fixture sanity check and the failed-payment-empty-date non-false-positive check. All 8 committed benchmarks regenerated and diffed byte-for-byte afterward — zero drift. Commit `559fd2d`.
+
+### 11.6 — Task 6: production properties
+
+**6.1 Determinism** — `tests/test_determinism.py`: two `run_full` runs of `run_2000` are byte-identical (timing stripped) and never produce a duplicate match or exception, within or across runs.
+
+**6.2 CI** — `.github/workflows/ci.yml`, matrix Python 3.11 + 3.12, `pip install -e ".[dev,llm]"`, `pytest`. **A real gap found while building it**: `openai` was a genuine runtime dependency (used by `NimClient`) never declared in `pyproject.toml`'s `llm` extra — `test_nim_client.py` was silently skipping via `pytest.importorskip`. Fixed; verified in a clean Python 3.12 venv: 215 passed, **0 skipped** (previously 2 would have skipped).
+
+**6.3 Run manifest** — `eval/manifest.py::build_run_manifest`: git commit SHA + dirty-tree flag, record counts, engine/seed/model, tracked package versions, per-input-file SHA256 hash. Wired into `eval.report.run_eval`'s output (additive `"manifest"` key) and the HTML report's footer (flags a dirty-tree run visibly). 7 new tests.
+
+**6.4 Dependency pinning** — dropped `pydantic`, `fastapi`, `uvicorn` from `pyproject.toml` (confirmed zero imports anywhere in the codebase — dead weight from the original brief's suggested stack). Exact-pinned `pandas==2.3.3`, `pytest==9.1.1`, `anthropic==0.82.0`, `openai==2.53.0`. `requirements-lock.txt` via plain `pip freeze` from a clean venv (no new lock tooling). Verified end-to-end: a fresh venv installed from the lockfile alone passes the full suite (222 passed) and `make demo` runs clean (97.74% auto-match, 0.00% false-match, unchanged).
+
+Commit `92aee7d`.
+
+### 11.7 — Sprint test suite status
+
+- **223/223 tests passing** as of commit `2ae30aa` (up from 174 at the start of the sprint — 49 new tests across Tasks 1–6, zero deletions).
+- **`pyflakes` clean** across `engine/`, `eval/`, `cash/`, `data/`, `tests/`, `scripts/` after every task.
+- **Zero unexpected benchmark drift** across all 6 committed tasks — every diff was byte-for-byte confirmed after every task that touched matching logic (Tasks 2, 3), and the tasks that didn't (1, 4, 5, 6) never invoke the affected code paths from any frozen benchmark's CLI mode.
+- **Task 7 (re-freeze + doc reconciliation + code freeze) has not run.** This section will be updated when it does.
