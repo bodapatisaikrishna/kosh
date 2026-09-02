@@ -1,26 +1,32 @@
 # Lockfile for hardening sprint Task 6.4: exact transitive closure of
-# `pip install -e ".[dev,llm]"` in a clean Python 3.12 venv, via plain
+# `pip install -e ".[dev,llm,api]"` in a clean Python 3.12 venv, via plain
 # `pip freeze` (per user decision - no pip-tools/uv/poetry added). Kosh
 # itself is not listed here (it's the editable install being locked, not a
 # pinned dependency of itself). Regenerate with:
 #
-#   python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -e ".[dev,llm]"
+#   python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -e ".[dev,llm,api]"
 #   /tmp/venv/bin/pip freeze | grep -v "^-e " > requirements-lock.txt
 #
-# Note: Kosh itself has ZERO runtime dependencies - every package below comes
-# from the optional [dev] (pytest) and [llm] (anthropic, openai) extras, which
-# are only needed to run the test suite or hit a live model. `pip install -e .`
-# alone installs nothing but Kosh.
+# Note: Kosh's engine/generator/eval/cash core has ZERO runtime dependencies.
+# Every package below comes from an optional extra: [dev] (pytest), [llm]
+# (anthropic, openai - needed only to run L3 against a live model), or [api]
+# (fastapi, uvicorn, starlette - the post-freeze stretch-goal API; see
+# RESULTS.md's "Post-submission stretch goals"). `pip install -e .` alone
+# installs nothing but Kosh.
 #
-# pydantic appears here as a transitive dependency of anthropic/openai. That is
-# NOT the dead direct dependency Task 6.4 removed from pyproject.toml - nothing
-# in this codebase imports it, and it needs no further action.
+# pydantic appears here as a transitive dependency of anthropic/openai/
+# fastapi. That is NOT the dead direct dependency Task 6.4 removed from
+# pyproject.toml - nothing in this codebase imports it directly, and it
+# needs no further action.
+annotated-doc==0.0.5
 annotated-types==0.8.0
 anthropic==0.82.0
 anyio==4.14.2
 certifi==2026.7.22
+click==8.5.0
 distro==1.9.0
 docstring_parser==0.18.0
+fastapi==0.141.1
 h11==0.16.0
 httpcore==1.0.9
 httpx==0.28.1
@@ -35,6 +41,8 @@ pydantic_core==2.46.5
 Pygments==2.21.0
 pytest==9.1.1
 sniffio==1.3.1
+starlette==1.6.0
 tqdm==4.70.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0
+uvicorn==0.52.4

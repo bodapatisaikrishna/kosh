@@ -1,6 +1,6 @@
 PY ?= python3
 
-.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed adversarial verify-deterministic freeze clean
+.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed adversarial verify-deterministic freeze api dashboard clean
 
 gen:
 	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -80,6 +80,17 @@ freeze:
 	$(PY) -m eval.report --fixtures data/fixtures/run_2000 --engine full --label phase5
 	mv benchmarks/run_phase5.json benchmarks/phase5.json
 	mv benchmarks/run_phase5.html benchmarks/phase5.html
+
+# Post-freeze stretch goals (see RESULTS.md's "Post-submission stretch
+# goals"): a live API + interactive dashboard, both local-only. Run each in
+# its own terminal - `make api` first, then `make dashboard` (it expects the
+# API at http://localhost:8000, api/main.py's CORS only allows the
+# dashboard's own dev-server origin).
+api:
+	$(PY) -m uvicorn api.main:app --reload --port 8000
+
+dashboard:
+	cd dashboard && npm install && npm run dev
 
 clean:
 	rm -rf data/fixtures/run_* .pytest_cache

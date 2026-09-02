@@ -98,6 +98,23 @@ make demo
 
 Opens `benchmarks/run_demo.html` — the full 4-panel dashboard (headline, layer waterfall, exception queue, cash position) generated from a fresh 2,000-record synthetic run. Verified in an isolated clone on a clean venv, not assumed.
 
+## Live API + interactive dashboard (post-freeze stretch goal)
+
+The brief's own optional "if time allows" stretch goals — a FastAPI layer and an interactive Next.js dashboard — built after the code freeze, as a deliberate, dated addition (see `RESULTS.md`'s "Post-submission stretch goals"). **Additive, not a replacement**: `make demo`'s static HTML report above stays the primary deliverable and needs nothing but Python; this is what "if time allows" looks like when it does.
+
+```bash
+pip install -e ".[api]"
+make api          # FastAPI on :8000
+make dashboard    # Next.js dev server on :3000, in a second terminal
+```
+
+The dashboard does one genuinely new thing the static report can't: a **live-triggered run** — pick an engine, record count, seed, and months, click "Run live," and watch a real `generate → reconcile → score` pass complete in real time, then render the same four panels. It's a thin wrapper around the exact same `eval.report.run_eval` the CLI already calls — no second implementation to drift from the first. Two properties worth knowing:
+
+- At the default `seed=42, records=2000, engine=full`, the live run reproduces `run_2000` byte-for-byte, so its exception drill-down links resolve to the **actual real live-model agent traces** already committed in `benchmarks/sample_traces_live/` — not placeholders.
+- The costed live-LLM path (`llm-only`) is **never reachable** from the API — `api/runs.py::ENGINE_ALLOWLIST` restricts every request to the deterministic engines, the same `client=None` invariant the CLI has always enforced, tested directly in `tests/test_api.py`.
+
+A second mode lets you browse the already-frozen `freeze_500/2000/10000` and `phase3/4/5` results without regenerating anything. Local-only by design: CORS is restricted to the dashboard's own dev-server origin, nothing is deployed or exposed publicly.
+
 ## Architecture
 
 Deterministic first, LLM last — five layers, each seeing only what the one above it couldn't resolve (shares from `run_2000`):
@@ -125,6 +142,8 @@ eval/             scoring against ground truth, the 4-panel HTML dashboard
 cash/             forward cash position: SLA forecast, stuck cash, book-vs-reconciled
 tests/            pytest suite, incl. frozen regression baselines
 benchmarks/       committed reports at every phase + the 3-scale freeze + sample traces
+api/              post-freeze stretch goal: FastAPI layer over eval.report.run_eval
+dashboard/        post-freeze stretch goal: Next.js + Recharts interactive dashboard
 ```
 
 ## Why we generate our own data
@@ -167,4 +186,4 @@ python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultr
 pytest
 ```
 
-`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, `make l3-profile`, `make demo`, `make multiseed`, `make adversarial`, `make verify-deterministic`, and `make freeze` wrap the same commands.
+`make gen`, `make sample`, `make test`, `make trace`, `make eval-null`, `make eval-oracle`, `make eval-l0l1`, `make eval-l0l1l2`, `make eval-full`, `make l2-profile`, `make l3-profile`, `make demo`, `make multiseed`, `make adversarial`, `make verify-deterministic`, `make freeze`, `make api`, and `make dashboard` wrap the same commands.

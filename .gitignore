@@ -16,3 +16,8 @@ traces_live_run4/
 # Generated fixtures are reproducible from the seed - only the small sample is committed.
 data/fixtures/*
 !data/fixtures/sample_200/
+
+# Post-freeze dashboard (dashboard/) - Node build artifacts and deps.
+dashboard/node_modules/
+dashboard/.next/
+dashboard/next-env.d.ts

@@ -20,9 +20,15 @@ dependencies = []
 # up to anything. pandas was a FOURTH dead dependency, removed later: that
 # sweep only checked the three named in its own plan, and missed the one
 # sitting in `dependencies` rather than in an extra.
+#
+# fastapi/uvicorn are back in the `api` extra below, post-freeze: the brief's
+# optional stretch goal (a live API + dashboard) was built afterward, so they
+# are now genuinely imported by api/main.py - this is not a reversal of the
+# Task 6.4 removal, whose reasoning was "zero usage", not "never use these".
 [project.optional-dependencies]
 dev = ["pytest==9.1.1"]
 llm = ["anthropic==0.82.0", "openai==2.53.0"]
+api = ["fastapi==0.141.1", "uvicorn==0.52.4"]
 
 [tool.setuptools]
 packages = ["data", "data.generator", "engine", "eval", "cash", "api"]
