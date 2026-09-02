@@ -43,6 +43,7 @@
     <div class="card"><div class="label">Auto-match rate</div><div class="value">97.74%</div></div>
     <div class="card risk"><div class="label">False-match rate</div><div class="value">0.00%</div></div>
     <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">₹13,281,428.77</div></div>
+    <div class="card"><div class="label">Rs fee leakage</div><div class="value" style="font-size:1.4rem">₹0.00</div><div class="muted" style="font-size:0.7rem">0 records &middot; lower bound</div></div>
     <div class="card"><div class="label">Wall clock</div><div class="value">0.005s</div></div>
     
   </div>
@@ -56,15 +57,35 @@
   <section>
     <h2>Exception queue</h2>
     <p>0 exceptions &middot; ₹0.00 at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
-    <table>
-      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
+    <table id="exception-table">
+      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th class="sortable" onclick="sortExceptions('aging')">Aging</th></tr>
       <tr><td colspan="5">no exceptions</td></tr>
     </table>
+
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Detected fee leakage (lower bound)</h3>
+    <p class="muted">Money the merchant was overcharged in gateway fees, tax on those fees, and FX - only what was actually detected and attributable to a fee leg, not a total.</p>
+    <table><tr><th>Category</th><th class="num">Count</th><th class="num">Rs</th></tr><tr><td>FEE_VARIANCE</td><td class='num'>0</td><td class='num'>₹0.00</td></tr><tr><td>FX_VARIANCE</td><td class='num'>0</td><td class='num'>₹0.00</td></tr><tr><td>TAX_VARIANCE</td><td class='num'>0</td><td class='num'>₹0.00</td></tr></table>
+
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Exception aging</h3>
+    <p class="muted">Median 0d &middot; max 0d &middot; 0 of 0 past the industry 48-hour SLA for open reconciliation breaks. <strong>This is a historical 3-month fixture scored against its own end date, not a live queue</strong> - aging this large is expected here, not alarming; a live deployment would see a very different distribution.</p>
+    <div class="inflow-chart"><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">0-2d (0)</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">3-7d (0)</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">8-30d (0)</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:2%"></div>
+              <div class="bar-label">30d+ (0)</div>
+            </div></div>
   </section>
 
   <section>
     <h2>Cash position</h2>
-    <p class="muted">As of 2026-08-31 &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹0.00</strong></p>
+    <p class="muted">As of 2026-08-31 (inferred from latest capture) &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹0.00</strong></p>
     <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">14-day expected inflow</h3>
     <div class="inflow-chart"><div class="bar-col">
               <div class="bar" style="height:100%"></div>
@@ -119,26 +140,29 @@
     <table><tr><th>Defect type</th><th>Outcome counts</th></tr><tr><td>compound_fee_tax_error</td><td>{&quot;missed&quot;: 6}</td></tr><tr><td>consolidated_payout</td><td>{&quot;correctly_resolved&quot;: 8}</td></tr><tr><td>duplicate_payment</td><td>{&quot;missed&quot;: 20}</td></tr><tr><td>fee_mismatch_wrong_tier</td><td>{&quot;missed&quot;: 19}</td></tr><tr><td>fx_variance</td><td>{&quot;missed&quot;: 8}</td></tr><tr><td>gst_variance</td><td>{&quot;missed&quot;: 15}</td></tr><tr><td>missing_settlement</td><td>{&quot;missed&quot;: 20}</td></tr><tr><td>orphan_chargeback</td><td>{&quot;missed&quot;: 14}</td></tr><tr><td>period_cutoff</td><td>{&quot;missed&quot;: 14}</td></tr><tr><td>refund_misallocation</td><td>{&quot;missed&quot;: 9}</td></tr><tr><td>rounding_drift</td><td>{&quot;correctly_resolved&quot;: 25}</td></tr><tr><td>settlement_split</td><td>{&quot;correctly_resolved&quot;: 11}</td></tr><tr><td>unidentified_credit</td><td>{&quot;missed&quot;: 14}</td></tr><tr><td>utr_mangled</td><td>{&quot;correctly_resolved&quot;: 20}</td></tr></table>
   </section>
 
-  <footer><p class="muted">commit <code>8604fd6a1812</code> <strong style="color:#b00020">(dirty tree)</strong> &middot; generated 2026-09-02T08:07:41.835216+00:00</p></footer>
+  <footer><p class="muted">commit <code>f83fca8df133</code> <strong style="color:#b00020">(dirty tree)</strong> &middot; generated 2026-09-02T15:09:19.741048+00:00</p></footer>
 
 <script>
   // Per-column ascending state, so sorting by category then by amount doesn't
   // share one toggle (each column remembers its own direction independently).
-  const sortAscByColumn = {amount: true, category: true};
+  const sortAscByColumn = {amount: true, category: true, aging: true};
   function sortExceptions(column) {
     // column is "amount" (the brief's own explicit ask: "sortable by Rs at
-    // risk") or "category" (the header's own label - previously wired to
+    // risk"), "category" (the header's own label - previously wired to
     // amount regardless of which header you clicked, a real bug: the
     // "Category" header silently re-sorted by rupee amount, which looked
     // plausible only because the table's default order is already
-    // amount-descending).
-    const table = document.querySelectorAll("table")[1];
+    // amount-descending), or "aging" (days open, for triaging the oldest
+    // breaks first).
+    const table = document.getElementById("exception-table");
     const rows = Array.from(table.querySelectorAll("tr.exc-row"));
     const asc = sortAscByColumn[column];
     rows.sort((a, b) => {
-      const diff = column === "amount"
-        ? Number(a.dataset.amount) - Number(b.dataset.amount)
-        : a.dataset.category.localeCompare(b.dataset.category);
+      if (column === "category") return asc
+        ? a.dataset.category.localeCompare(b.dataset.category)
+        : b.dataset.category.localeCompare(a.dataset.category);
+      const field = column === "aging" ? "aging" : "amount";
+      const diff = Number(a.dataset[field]) - Number(b.dataset[field]);
       return asc ? diff : -diff;
     });
     sortAscByColumn[column] = !asc;

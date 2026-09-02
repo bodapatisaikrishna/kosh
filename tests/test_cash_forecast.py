@@ -6,7 +6,7 @@ cases.
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from cash.forecast import (
@@ -175,3 +175,63 @@ def test_compute_forecast_end_to_end_shape():
     assert len(forecast.inflow_curve) == 14
     assert forecast.at_risk_paise == sum(e.amount_at_risk_paise for e in output.exceptions)
     assert (forecast.book_cash_paise - forecast.reconciled_cash_paise) - sum(forecast.reconciliation.values()) == 0
+
+
+# --- as_of viewpoint (an earlier date shows more of what's still in flight) --
+
+def _nonzero_inflow_days(forecast) -> int:
+    return sum(1 for row in forecast.inflow_curve if row["expected_inflow_paise"] > 0)
+
+
+def test_an_earlier_explicit_as_of_shows_strictly_more_in_flight_than_the_inferred_default():
+    """The inferred default is the dataset's own last day - almost nothing is
+    still in flight by construction, so the 14-day curve is nearly flat. An
+    earlier, operator-chosen viewpoint on the SAME data shows more of what
+    hadn't settled yet as of that date - this is a presentation fix, not a
+    correctness fix, so both viewpoints must come from the same call shape."""
+    dataset = load_dataset(FIXTURES_2000)
+    output = run_full(dataset, client=None)
+
+    default_forecast = compute_forecast(dataset, output.matches, output.exceptions)
+    earlier_forecast = compute_forecast(dataset, output.matches, output.exceptions, as_of_date=date(2026, 8, 1))
+
+    assert _nonzero_inflow_days(earlier_forecast) > _nonzero_inflow_days(default_forecast)
+    assert earlier_forecast.as_of_date == "2026-08-01"
+
+
+def test_omitting_as_of_is_byte_identical_to_before_this_change():
+    """Regression guard: adding the as_of_date parameter must never move the
+    default path's own output - every existing benchmark and test that never
+    passes as_of has to keep reproducing exactly what it always did."""
+    dataset = load_dataset(FIXTURES_2000)
+    output = run_full(dataset, client=None)
+    forecast = compute_forecast(dataset, output.matches, output.exceptions)
+    assert forecast.as_of_date == infer_as_of_date(dataset).isoformat()
+    assert forecast.as_of_source == "inferred"
+    assert len(forecast.inflow_curve) == 14
+
+
+def test_as_of_outside_the_dataset_range_raises_with_the_valid_range_named():
+    from eval.report import _dataset_date_range, run_eval
+
+    dataset = load_dataset(FIXTURES_2000)
+    earliest, latest = _dataset_date_range(dataset)
+
+    try:
+        run_eval(FIXTURES_2000, "full", as_of=earliest - timedelta(days=1))
+        assert False, "expected a ValueError for an out-of-range --as-of"
+    except ValueError as exc:
+        message = str(exc)
+        assert earliest.isoformat() in message
+        assert latest.isoformat() in message
+
+
+def test_as_of_source_is_supplied_vs_inferred_correctly():
+    dataset = load_dataset(FIXTURES_2000)
+    output = run_full(dataset, client=None)
+
+    supplied = compute_forecast(dataset, output.matches, output.exceptions, as_of_date=date(2026, 8, 1))
+    inferred = compute_forecast(dataset, output.matches, output.exceptions)
+
+    assert supplied.as_of_source == "supplied"
+    assert inferred.as_of_source == "inferred"

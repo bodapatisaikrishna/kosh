@@ -31,6 +31,11 @@ class ForecastResult:
     book_cash_paise: int = 0
     reconciled_cash_paise: int = 0
     reconciliation: dict = field(default_factory=dict)  # named components, must sum exactly to the delta
+    # "supplied" when the caller passed an explicit as_of_date, "inferred" when
+    # it defaulted to infer_as_of_date(dataset). A viewpoint the operator chose
+    # must be visibly distinguishable from one the system inferred - otherwise
+    # the panel silently invites a wrong reading of what it shows.
+    as_of_source: str = "inferred"
 
 
 def _as_date(value: str) -> date:
@@ -128,6 +133,7 @@ def compute_cash_reconciliation(dataset: Dataset, matches: list[Match], exceptio
 def compute_forecast(
     dataset: Dataset, matches: list[Match], exceptions: list[ReconException], as_of_date: date | None = None
 ) -> ForecastResult:
+    as_of_source = "supplied" if as_of_date is not None else "inferred"
     as_of = as_of_date or infer_as_of_date(dataset)
     inflow_curve = compute_inflow_curve(dataset, as_of)
     stuck_paise, stuck_ids = compute_stuck(dataset, as_of)
@@ -136,6 +142,7 @@ def compute_forecast(
 
     return ForecastResult(
         as_of_date=as_of.isoformat(),
+        as_of_source=as_of_source,
         inflow_curve=inflow_curve,
         stuck_paise=stuck_paise,
         stuck_payment_ids=stuck_ids,

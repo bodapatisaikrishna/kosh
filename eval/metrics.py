@@ -96,6 +96,19 @@ CATEGORY_IDENTITY_FIELDS: dict[str, tuple[str, ...]] = {
     "AGENT_INCOMPLETE": ("payment_id", "bank_txn_id", "settlement_id", "order_id", "record_id"),
 }
 
+# Categories where the amount at risk is money the merchant was overcharged by the
+# gateway, as opposed to money that is merely unmatched or mistimed. Aggregated as
+# "fee leakage" - the industry-standard reconciliation metric for the delta between
+# expected and actual PSP fees. Deliberately excludes MISSING_SETTLEMENT,
+# PERIOD_CUTOFF, DUPLICATE_PAYMENT, UNIDENTIFIED_CREDIT, REFUND_MISALLOCATION and
+# ORPHAN_CHARGEBACK: those are timing, duplication or attribution problems, not
+# overcharges, and folding them in would inflate the number into meaninglessness.
+FEE_LEAKAGE_CATEGORIES: frozenset[str] = frozenset({
+    "FEE_VARIANCE",
+    "TAX_VARIANCE",
+    "FX_VARIANCE",
+})
+
 
 def _true_link_sets(ground_truth: dict) -> dict[str, set[tuple[str, str]]]:
     links = ground_truth["links"]
@@ -247,15 +260,63 @@ def compute_defect_confusion(engine_output: EngineOutput, ground_truth: dict) ->
     return {dtype: dict(counter) for dtype, counter in sorted(result.items())}
 
 
+def compute_fee_leakage(engine_output: EngineOutput) -> dict:
+    """Total money the merchant was overcharged in gateway fees, tax on those
+    fees, and FX, aggregated from the exception ledger.
+
+    Note this is a LOWER BOUND, and must be described as one: it counts only
+    variances Kosh actually detected and could attribute to a fee leg. A
+    compound error coerced to UNEXPLAINED_VARIANCE contains real fee leakage
+    that is not counted here, because its cause could not be isolated.
+    """
+    relevant = [e for e in engine_output.exceptions if e.category in FEE_LEAKAGE_CATEGORIES]
+    by_category = {
+        cat: {
+            "count": sum(1 for e in relevant if e.category == cat),
+            "amount_paise": sum(e.amount_at_risk_paise for e in relevant if e.category == cat),
+        }
+        for cat in sorted(FEE_LEAKAGE_CATEGORIES)
+    }
+    return {
+        "total_paise": sum(e.amount_at_risk_paise for e in relevant),
+        "affected_records": len(relevant),
+        "by_category": by_category,
+        "is_lower_bound": True,
+    }
+
+
 def compute_exception_summary(engine_output: EngineOutput) -> dict:
     exceptions = engine_output.exceptions
     by_category = Counter(e.category for e in exceptions)
     by_severity = Counter(e.severity for e in exceptions)
+
+    # Aging against the industry-standard 48-hour SLA for open reconciliation
+    # breaks. This is a historical fixture scored against its own dataset end
+    # date, not a live queue - a large "breaching" count here is expected, not
+    # alarming, and must always be read with that framing (see README/
+    # ARCHITECTURE.md) rather than shown bare or suppressed.
+    ages = sorted(e.aging_days for e in exceptions)
+    aging = {
+        "median_days": ages[len(ages) // 2] if ages else 0,
+        "max_days": ages[-1] if ages else 0,
+        "buckets": {
+            "0-2d": sum(1 for a in ages if a <= 2),
+            "3-7d": sum(1 for a in ages if 3 <= a <= 7),
+            "8-30d": sum(1 for a in ages if 8 <= a <= 30),
+            "30d+": sum(1 for a in ages if a > 30),
+        },
+        "breaching_48h_sla": sum(1 for a in ages if a > 2),
+        "amount_at_risk_over_30d_paise": sum(
+            e.amount_at_risk_paise for e in exceptions if e.aging_days > 30
+        ),
+    }
+
     return {
         "count": len(exceptions),
         "total_amount_at_risk_paise": sum(e.amount_at_risk_paise for e in exceptions),
         "by_category": dict(sorted(by_category.items())),
         "by_severity": dict(sorted(by_severity.items())),
+        "aging": aging,
     }
 
 
@@ -280,6 +341,7 @@ def compute_metrics(dataset: Dataset, engine_output: EngineOutput, ground_truth:
             "link_scoring": link_scoring,
             "defect_confusion": compute_defect_confusion(engine_output, ground_truth),
         },
+        "fee_leakage": compute_fee_leakage(engine_output),
         "exceptions": exception_summary,
         "records_pct_exceptioned": (exception_summary["count"] / total_records) if total_records else 0.0,
     }

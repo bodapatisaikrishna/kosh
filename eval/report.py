@@ -23,11 +23,12 @@ import html
 import json
 import time
 from dataclasses import asdict
+from datetime import date, datetime
 from pathlib import Path
 
 from cash.forecast import compute_forecast
 from engine.baselines import null_baseline, oracle_baseline
-from engine.io import load_dataset
+from engine.io import Dataset, load_dataset
 from engine.pipeline import run_full, run_l0_l1, run_l0_l1_l2, run_llm_only
 from eval.io import load_ground_truth
 from eval.manifest import build_run_manifest
@@ -84,9 +85,39 @@ def _exception_dicts(engine_output, fixtures_dir: Path) -> list[dict]:
     return out
 
 
-def run_eval(fixtures_dir: Path, engine_name: str, seed: int | None = None, model_name: str | None = None) -> dict:
+def _event_date(value: str) -> date | None:
+    if not value:
+        return None
+    return datetime.fromisoformat(value).date() if "T" in value else date.fromisoformat(value)
+
+
+def _dataset_date_range(dataset: Dataset) -> tuple[date, date]:
+    """Earliest and latest event date anywhere in the dataset (order date,
+    payment capture, settlement, or bank value date) - the valid range for an
+    operator-supplied --as-of. Empty fields (e.g. a failed payment's
+    captured_at) are skipped rather than treated as a date."""
+    dates = (
+        [_event_date(o.order_date) for o in dataset.orders]
+        + [_event_date(p.captured_at) for p in dataset.payments]
+        + [_event_date(s.settled_at) for s in dataset.settlements]
+        + [_event_date(b.value_date) for b in dataset.bank]
+    )
+    real_dates = [d for d in dates if d is not None]
+    if not real_dates:
+        raise ValueError("dataset has no dated records at all - cannot validate an --as-of range")
+    return min(real_dates), max(real_dates)
+
+
+def run_eval(
+    fixtures_dir: Path, engine_name: str, seed: int | None = None, model_name: str | None = None, as_of: date | None = None
+) -> dict:
     dataset = load_dataset(fixtures_dir)
     ground_truth = load_ground_truth(fixtures_dir)
+
+    if as_of is not None:
+        earliest, latest = _dataset_date_range(dataset)
+        if not (earliest <= as_of <= latest):
+            raise ValueError(f"--as-of {as_of.isoformat()} is outside the dataset's date range [{earliest.isoformat()}, {latest.isoformat()}]")
 
     engine_fn = ENGINES[engine_name]
     started = time.time()
@@ -94,7 +125,7 @@ def run_eval(fixtures_dir: Path, engine_name: str, seed: int | None = None, mode
     generated_at = started
 
     metrics = compute_metrics(dataset, engine_output, ground_truth)
-    forecast = compute_forecast(dataset, engine_output.matches, engine_output.exceptions)
+    forecast = compute_forecast(dataset, engine_output.matches, engine_output.exceptions, as_of_date=as_of)
     manifest = build_run_manifest(fixtures_dir, engine_name, dataset, seed=seed, model_name=model_name)
 
     return {
@@ -133,11 +164,25 @@ def _llm_cost_card(thr: dict) -> str:
     )
 
 
+def _fee_leakage_card(fee_leakage: dict) -> str:
+    """A 5th headline card: money the merchant was overcharged in gateway fees,
+    tax on those fees, and FX (see eval/metrics.py::FEE_LEAKAGE_CATEGORIES).
+    Explicitly labelled as a lower bound - never presented as a total, since a
+    compound error coerced to UNEXPLAINED_VARIANCE contains real leakage this
+    number doesn't (and can't) count."""
+    return (
+        '<div class="card"><div class="label">Rs fee leakage</div>'
+        f'<div class="value" style="font-size:1.4rem">{_rupees(fee_leakage["total_paise"])}</div>'
+        f'<div class="muted" style="font-size:0.7rem">{fee_leakage["affected_records"]} records &middot; lower bound</div></div>'
+    )
+
+
 def render_html(report: dict) -> str:
     m = report["metrics"]
     acc = m["accuracy"]
     thr = m["throughput"]
     exc = m["exceptions"]
+    fee_leakage = m["fee_leakage"]
     cash = report["cash"]
 
     def esc(s: object) -> str:
@@ -159,7 +204,7 @@ def render_html(report: dict) -> str:
             if e.get("trace_file") else '<span class="muted">no agent trace (deterministically classified)</span>'
         )
         exception_rows.append(f"""
-        <tr class="exc-row" data-amount="{e['amount_at_risk_paise']}" data-category="{esc(e['category'])}" onclick="document.getElementById('detail-{i}').classList.toggle('open')">
+        <tr class="exc-row" data-amount="{e['amount_at_risk_paise']}" data-category="{esc(e['category'])}" data-aging="{e['aging_days']}" onclick="document.getElementById('detail-{i}').classList.toggle('open')">
           <td>{esc(e['category'])}</td>
           <td><span class="pill pill-{esc(e['severity'].lower())}">{esc(e['severity'])}</span></td>
           <td class="num">{_rupees(e['amount_at_risk_paise'])}</td>
@@ -198,6 +243,21 @@ def render_html(report: dict) -> str:
     )
     reconciliation_rows = "".join(
         f"<tr><td>{esc(name)}</td><td class='num'>{_rupees(val)}</td></tr>" for name, val in cash["reconciliation"].items()
+    )
+
+    fee_leakage_rows = "".join(
+        f"<tr><td>{esc(cat)}</td><td class='num'>{counts['count']}</td><td class='num'>{_rupees(counts['amount_paise'])}</td></tr>"
+        for cat, counts in fee_leakage["by_category"].items()
+    )
+
+    aging = exc["aging"]
+    max_bucket = max(aging["buckets"].values(), default=0) or 1
+    aging_bars = "".join(
+        f"""<div class="bar-col">
+              <div class="bar" style="height:{max(2, (count * 100) // max_bucket)}%"></div>
+              <div class="bar-label">{esc(bucket)} ({count})</div>
+            </div>"""
+        for bucket, count in aging["buckets"].items()
     )
 
     return f"""<!doctype html>
@@ -245,6 +305,7 @@ def render_html(report: dict) -> str:
     <div class="card"><div class="label">Auto-match rate</div><div class="value">{_pct(acc['auto_match_rate'])}</div></div>
     <div class="card risk"><div class="label">False-match rate</div><div class="value">{_pct(acc['false_match_rate'])}</div></div>
     <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">{_rupees(cash['reconciled_cash_paise'])}</div></div>
+    {_fee_leakage_card(fee_leakage)}
     <div class="card"><div class="label">Wall clock</div><div class="value">{thr['wall_clock_seconds']:.3f}s</div></div>
     {_llm_cost_card(thr)}
   </div>
@@ -258,15 +319,23 @@ def render_html(report: dict) -> str:
   <section>
     <h2>Exception queue</h2>
     <p>{exc['count']} exceptions &middot; {_rupees(exc['total_amount_at_risk_paise'])} at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
-    <table>
-      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
+    <table id="exception-table">
+      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th class="sortable" onclick="sortExceptions('aging')">Aging</th></tr>
       {exception_table_body}
     </table>
+
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Detected fee leakage (lower bound)</h3>
+    <p class="muted">Money the merchant was overcharged in gateway fees, tax on those fees, and FX - only what was actually detected and attributable to a fee leg, not a total.</p>
+    <table><tr><th>Category</th><th class="num">Count</th><th class="num">Rs</th></tr>{fee_leakage_rows or '<tr><td colspan="3">none</td></tr>'}</table>
+
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Exception aging</h3>
+    <p class="muted">Median {aging['median_days']}d &middot; max {aging['max_days']}d &middot; {aging['breaching_48h_sla']} of {exc['count']} past the industry 48-hour SLA for open reconciliation breaks. <strong>This is a historical 3-month fixture scored against its own end date, not a live queue</strong> - aging this large is expected here, not alarming; a live deployment would see a very different distribution.</p>
+    <div class="inflow-chart">{aging_bars}</div>
   </section>
 
   <section>
     <h2>Cash position</h2>
-    <p class="muted">As of {esc(cash['as_of_date'])} &middot; Rs stuck: <strong>{_rupees(cash['stuck_paise'])}</strong> ({len(cash['stuck_payment_ids'])} payments) &middot; Rs at risk: <strong>{_rupees(cash['at_risk_paise'])}</strong></p>
+    <p class="muted">As of {esc(cash['as_of_date'])} ({'supplied' if cash['as_of_source'] == 'supplied' else 'inferred from latest capture'}) &middot; Rs stuck: <strong>{_rupees(cash['stuck_paise'])}</strong> ({len(cash['stuck_payment_ids'])} payments) &middot; Rs at risk: <strong>{_rupees(cash['at_risk_paise'])}</strong></p>
     <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">14-day expected inflow</h3>
     <div class="inflow-chart">{inflow_bars}</div>
     <h3 style="font-size:0.95rem;margin:1.2rem 0 0.3rem;">Book cash vs. reconciled cash</h3>
@@ -284,21 +353,24 @@ def render_html(report: dict) -> str:
 <script>
   // Per-column ascending state, so sorting by category then by amount doesn't
   // share one toggle (each column remembers its own direction independently).
-  const sortAscByColumn = {{amount: true, category: true}};
+  const sortAscByColumn = {{amount: true, category: true, aging: true}};
   function sortExceptions(column) {{
     // column is "amount" (the brief's own explicit ask: "sortable by Rs at
-    // risk") or "category" (the header's own label - previously wired to
+    // risk"), "category" (the header's own label - previously wired to
     // amount regardless of which header you clicked, a real bug: the
     // "Category" header silently re-sorted by rupee amount, which looked
     // plausible only because the table's default order is already
-    // amount-descending).
-    const table = document.querySelectorAll("table")[1];
+    // amount-descending), or "aging" (days open, for triaging the oldest
+    // breaks first).
+    const table = document.getElementById("exception-table");
     const rows = Array.from(table.querySelectorAll("tr.exc-row"));
     const asc = sortAscByColumn[column];
     rows.sort((a, b) => {{
-      const diff = column === "amount"
-        ? Number(a.dataset.amount) - Number(b.dataset.amount)
-        : a.dataset.category.localeCompare(b.dataset.category);
+      if (column === "category") return asc
+        ? a.dataset.category.localeCompare(b.dataset.category)
+        : b.dataset.category.localeCompare(a.dataset.category);
+      const field = column === "aging" ? "aging" : "amount";
+      const diff = Number(a.dataset[field]) - Number(b.dataset[field]);
       return asc ? diff : -diff;
     }});
     sortAscByColumn[column] = !asc;
@@ -320,14 +392,19 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--engine", required=True, choices=sorted(ENGINES))
     parser.add_argument("--label", type=str, default=None, help="defaults to '<engine>_<fixtures-basename>'")
     parser.add_argument("--out", type=str, default="benchmarks")
+    parser.add_argument(
+        "--as-of", type=str, default=None,
+        help="ISO date to compute the cash position as of; defaults to the dataset's latest capture date",
+    )
     args = parser.parse_args(argv)
 
     fixtures_dir = Path(args.fixtures)
     label = args.label or f"{args.engine}_{fixtures_dir.name}"
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    as_of = date.fromisoformat(args.as_of) if args.as_of else None
 
-    report = run_eval(fixtures_dir, args.engine)
+    report = run_eval(fixtures_dir, args.engine, as_of=as_of)
     (out_dir / f"run_{label}.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (out_dir / f"run_{label}.html").write_text(render_html(report), encoding="utf-8")
     print(f"wrote {out_dir / f'run_{label}.json'} and .html")

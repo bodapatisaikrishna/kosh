@@ -1,6 +1,7 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
+    "as_of_source": "inferred",
     "at_risk_paise": 493326488,
     "book_cash_paise": 6942782666,
     "inflow_curve": [
@@ -9064,12 +9065,12 @@
     }
   ],
   "fixtures": "data/fixtures/run_10000",
-  "generated_at_unix": 1788336461.401897,
+  "generated_at_unix": 1788361759.264378,
   "manifest": {
     "engine": "full",
     "fixtures_dir": "data/fixtures/run_10000",
-    "generated_at_utc": "2026-09-02T08:07:41.570430+00:00",
-    "git_commit_sha": "8604fd6a1812be02f617cdf59271183cc18faec4",
+    "generated_at_utc": "2026-09-02T15:09:19.449875+00:00",
+    "git_commit_sha": "f83fca8df133c8ab8d129fb26e7e2d744eb4968d",
     "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "8876dc1ab844e0c3e31ca32a547e930a3826eebc2a6bd97f1da0e18c192dd849",
@@ -9193,6 +9194,18 @@
       "total_records": 9317
     },
     "exceptions": {
+      "aging": {
+        "amount_at_risk_over_30d_paise": 212413306,
+        "breaching_48h_sla": 525,
+        "buckets": {
+          "0-2d": 25,
+          "3-7d": 29,
+          "30d+": 357,
+          "8-30d": 139
+        },
+        "max_days": 89,
+        "median_days": 45
+      },
       "by_category": {
         "DUPLICATE_PAYMENT": 101,
         "FEE_VARIANCE": 92,
@@ -9212,6 +9225,25 @@
       "count": 550,
       "total_amount_at_risk_paise": 493326488
     },
+    "fee_leakage": {
+      "affected_records": 219,
+      "by_category": {
+        "FEE_VARIANCE": {
+          "amount_paise": 595470,
+          "count": 92
+        },
+        "FX_VARIANCE": {
+          "amount_paise": 6958674,
+          "count": 55
+        },
+        "TAX_VARIANCE": {
+          "amount_paise": 68613,
+          "count": 72
+        }
+      },
+      "is_lower_bound": true,
+      "total_paise": 7622757
+    },
     "records_pct_exceptioned": 0.0590318772136954,
     "throughput": {
       "cost_per_1000_records_micros": 0,
@@ -9219,9 +9251,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 268961.0154082074,
+      "records_per_second": 231220.94781053887,
       "records_processed": 9317,
-      "wall_clock_seconds": 0.03464070800691843
+      "wall_clock_seconds": 0.0402947920083534
     }
   }
 }

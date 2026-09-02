@@ -1,6 +1,6 @@
 PY ?= python3
 
-.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo multiseed adversarial verify-deterministic freeze api dashboard clean
+.PHONY: gen sample test trace eval-null eval-oracle eval-l0l1 eval-l0l1l2 eval-full l2-profile l3-profile demo demo-cash multiseed adversarial verify-deterministic freeze api dashboard clean
 
 gen:
 	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
@@ -40,6 +40,17 @@ demo:
 	$(PY) -m eval.report --fixtures data/fixtures/run_2000 --engine full --label demo
 	@echo ""
 	@echo "Demo complete. Open benchmarks/run_demo.html for the full dashboard."
+
+# Same demo, but --as-of 30 days before the fixed 2026-08-31 dataset end
+# (data/generator/generate.py::DEFAULT_END_DATE) - the inferred default (the
+# dataset's own last day) leaves almost nothing still in flight, so the cash
+# panel's 14-day curve is nearly flat. This viewpoint shows the panel doing
+# real work: more captured-but-unsettled payments still ahead of their SLA.
+demo-cash:
+	$(PY) -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
+	$(PY) -m eval.report --fixtures data/fixtures/run_2000 --engine full --label demo-cash --as-of 2026-08-01
+	@echo ""
+	@echo "Demo (cash viewpoint) complete. Open benchmarks/run_demo-cash.html for the full dashboard."
 
 multiseed:
 	$(PY) -m scripts.multiseed

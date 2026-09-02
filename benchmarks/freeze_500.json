@@ -1,6 +1,7 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
+    "as_of_source": "inferred",
     "at_risk_paise": 28489399,
     "book_cash_paise": 328605509,
     "inflow_curve": [
@@ -830,13 +831,13 @@
     }
   ],
   "fixtures": "data/fixtures/run_500",
-  "generated_at_unix": 1788336460.6163468,
+  "generated_at_unix": 1788361758.437613,
   "manifest": {
     "engine": "full",
     "fixtures_dir": "data/fixtures/run_500",
-    "generated_at_utc": "2026-09-02T08:07:40.639840+00:00",
-    "git_commit_sha": "8604fd6a1812be02f617cdf59271183cc18faec4",
-    "git_dirty": false,
+    "generated_at_utc": "2026-09-02T15:09:18.478329+00:00",
+    "git_commit_sha": "f83fca8df133c8ab8d129fb26e7e2d744eb4968d",
+    "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "0f9714d8ffea9ae90c6588ff17b45b4890153c8c83309092a1c9a83f598f8220",
       "orders.csv": "20f7d62e8ff26d4980586eb0409c567b5e87d51b91a753003b47303bb05d1544",
@@ -956,6 +957,18 @@
       "total_records": 461
     },
     "exceptions": {
+      "aging": {
+        "amount_at_risk_over_30d_paise": 12781320,
+        "breaching_48h_sla": 45,
+        "buckets": {
+          "0-2d": 3,
+          "3-7d": 0,
+          "30d+": 34,
+          "8-30d": 11
+        },
+        "max_days": 87,
+        "median_days": 56
+      },
       "by_category": {
         "DUPLICATE_PAYMENT": 5,
         "FEE_VARIANCE": 4,
@@ -975,6 +988,25 @@
       "count": 48,
       "total_amount_at_risk_paise": 28489399
     },
+    "fee_leakage": {
+      "affected_records": 8,
+      "by_category": {
+        "FEE_VARIANCE": {
+          "amount_paise": 13040,
+          "count": 4
+        },
+        "FX_VARIANCE": {
+          "amount_paise": 125140,
+          "count": 1
+        },
+        "TAX_VARIANCE": {
+          "amount_paise": 2301,
+          "count": 3
+        }
+      },
+      "is_lower_bound": true,
+      "total_paise": 140481
+    },
     "records_pct_exceptioned": 0.10412147505422993,
     "throughput": {
       "cost_per_1000_records_micros": 0,
@@ -982,9 +1014,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 166498.6025028084,
+      "records_per_second": 149279.49190596314,
       "records_processed": 461,
-      "wall_clock_seconds": 0.0027687920082826167
+      "wall_clock_seconds": 0.0030881669954396784
     }
   }
 }

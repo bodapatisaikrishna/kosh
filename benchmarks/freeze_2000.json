@@ -1,6 +1,7 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
+    "as_of_source": "inferred",
     "at_risk_paise": 167201303,
     "book_cash_paise": 1419788203,
     "inflow_curve": [
@@ -2307,12 +2308,12 @@
     }
   ],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788336460.8520188,
+  "generated_at_unix": 1788361758.688641,
   "manifest": {
     "engine": "full",
     "fixtures_dir": "data/fixtures/run_2000",
-    "generated_at_utc": "2026-09-02T08:07:40.891298+00:00",
-    "git_commit_sha": "8604fd6a1812be02f617cdf59271183cc18faec4",
+    "generated_at_utc": "2026-09-02T15:09:18.725995+00:00",
+    "git_commit_sha": "f83fca8df133c8ab8d129fb26e7e2d744eb4968d",
     "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "05b5c2370c26ad40ca4f3eecb643eef3aa3a848ba6e3e9a70f938b7f0964c87d",
@@ -2433,6 +2434,18 @@
       "total_records": 1858
     },
     "exceptions": {
+      "aging": {
+        "amount_at_risk_over_30d_paise": 65110524,
+        "breaching_48h_sla": 129,
+        "buckets": {
+          "0-2d": 10,
+          "3-7d": 10,
+          "30d+": 77,
+          "8-30d": 42
+        },
+        "max_days": 89,
+        "median_days": 35
+      },
       "by_category": {
         "DUPLICATE_PAYMENT": 20,
         "FEE_VARIANCE": 19,
@@ -2452,6 +2465,25 @@
       "count": 139,
       "total_amount_at_risk_paise": 167201303
     },
+    "fee_leakage": {
+      "affected_records": 42,
+      "by_category": {
+        "FEE_VARIANCE": {
+          "amount_paise": 85241,
+          "count": 19
+        },
+        "FX_VARIANCE": {
+          "amount_paise": 872000,
+          "count": 8
+        },
+        "TAX_VARIANCE": {
+          "amount_paise": 90299,
+          "count": 15
+        }
+      },
+      "is_lower_bound": true,
+      "total_paise": 1047540
+    },
     "records_pct_exceptioned": 0.07481162540365985,
     "throughput": {
       "cost_per_1000_records_micros": 0,
@@ -2459,9 +2491,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 215107.51721953522,
+      "records_per_second": 219658.540798475,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.008637541002826765
+      "wall_clock_seconds": 0.008458583004539832
     }
   }
 }

@@ -1,6 +1,7 @@
 {
   "cash": {
     "as_of_date": "2026-08-31",
+    "as_of_source": "inferred",
     "at_risk_paise": 0,
     "book_cash_paise": 1419788203,
     "inflow_curve": [
@@ -116,12 +117,12 @@
   "engine": "l0l1l2",
   "exceptions_detail": [],
   "fixtures": "data/fixtures/run_2000",
-  "generated_at_unix": 1788336461.807963,
+  "generated_at_unix": 1788361759.7095912,
   "manifest": {
     "engine": "l0l1l2",
     "fixtures_dir": "data/fixtures/run_2000",
-    "generated_at_utc": "2026-09-02T08:07:41.835216+00:00",
-    "git_commit_sha": "8604fd6a1812be02f617cdf59271183cc18faec4",
+    "generated_at_utc": "2026-09-02T15:09:19.741048+00:00",
+    "git_commit_sha": "f83fca8df133c8ab8d129fb26e7e2d744eb4968d",
     "git_dirty": true,
     "input_file_sha256": {
       "bank_statement.csv": "05b5c2370c26ad40ca4f3eecb643eef3aa3a848ba6e3e9a70f938b7f0964c87d",
@@ -242,10 +243,41 @@
       "total_records": 1858
     },
     "exceptions": {
+      "aging": {
+        "amount_at_risk_over_30d_paise": 0,
+        "breaching_48h_sla": 0,
+        "buckets": {
+          "0-2d": 0,
+          "3-7d": 0,
+          "30d+": 0,
+          "8-30d": 0
+        },
+        "max_days": 0,
+        "median_days": 0
+      },
       "by_category": {},
       "by_severity": {},
       "count": 0,
       "total_amount_at_risk_paise": 0
+    },
+    "fee_leakage": {
+      "affected_records": 0,
+      "by_category": {
+        "FEE_VARIANCE": {
+          "amount_paise": 0,
+          "count": 0
+        },
+        "FX_VARIANCE": {
+          "amount_paise": 0,
+          "count": 0
+        },
+        "TAX_VARIANCE": {
+          "amount_paise": 0,
+          "count": 0
+        }
+      },
+      "is_lower_bound": true,
+      "total_paise": 0
     },
     "records_pct_exceptioned": 0.0,
     "throughput": {
@@ -254,9 +286,9 @@
       "input_tokens": 0,
       "llm_calls": 0,
       "output_tokens": 0,
-      "records_per_second": 410864.96799384867,
+      "records_per_second": 365814.0653170163,
       "records_processed": 1858,
-      "wall_clock_seconds": 0.00452216700068675
+      "wall_clock_seconds": 0.005079082999145612
     }
   }
 }

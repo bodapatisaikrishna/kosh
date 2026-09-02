@@ -94,6 +94,18 @@
     "total_records": 1858
   },
   "exceptions": {
+    "aging": {
+      "amount_at_risk_over_30d_paise": 0,
+      "breaching_48h_sla": 0,
+      "buckets": {
+        "0-2d": 1858,
+        "3-7d": 0,
+        "30d+": 0,
+        "8-30d": 0
+      },
+      "max_days": 0,
+      "median_days": 0
+    },
     "by_category": {
       "UNRECONCILED": 1858
     },
@@ -103,6 +115,25 @@
     },
     "count": 1858,
     "total_amount_at_risk_paise": 1391458257
+  },
+  "fee_leakage": {
+    "affected_records": 0,
+    "by_category": {
+      "FEE_VARIANCE": {
+        "amount_paise": 0,
+        "count": 0
+      },
+      "FX_VARIANCE": {
+        "amount_paise": 0,
+        "count": 0
+      },
+      "TAX_VARIANCE": {
+        "amount_paise": 0,
+        "count": 0
+      }
+    },
+    "is_lower_bound": true,
+    "total_paise": 0
   },
   "records_pct_exceptioned": 1.0,
   "throughput": {

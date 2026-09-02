@@ -14,6 +14,10 @@ The judging bar: *"Throughput plus measured accuracy plus an honest exception li
 | 2,000 | 97.74% | 100.00% / 99.95% | **0.00%** | 139 | ~7ms |
 | 10,000 | 97.83% | 100.00% / 100.00% | **0.00%** | 550 | ~32ms |
 
+**Fee leakage — the industry-standard reconciliation metric — is now a headline number, not buried in the exception ledger:** Kosh found **₹10,475.40** the merchant was overcharged in gateway fees, tax, and FX across `run_2000`'s 2,000 transactions (42 records, `FEE_VARIANCE`/`TAX_VARIANCE`/`FX_VARIANCE` only — timing/duplication/attribution categories deliberately excluded). Reported as a **lower bound**, always: a compound error coerced to `UNEXPLAINED_VARIANCE` contains real leakage this number can't isolate to a single fee leg.
+
+**Exception aging** against the industry 48-hour SLA for open reconciliation breaks: median 35 days, max 89, 129 of 139 breaching. **This is not a live queue** — `run_2000` is a fixed, historical 3-month fixture scored against its own end date, so aging this large is the expected result of scoring a static snapshot, not a finding about operational neglect.
+
 **False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads **0.00%** at every scale tested, including a real, non-scripted LLM run (below) — that's checked directly, not asserted. It's also not a vacuous zero: the harness is mutation-tested (inject 10 wrong links and it reports 0.24%, drop half the matches and recall halves), so it demonstrably fails when the engine is wrong.
 
 **Not a `seed=42` artifact** — 6 independent seeds, fresh 2,000-record fixture each, deterministic pipeline only (hardening sprint Task 1):
@@ -169,7 +173,7 @@ Same `--seed` → byte-identical output, every time. A small companion fixture, 
 - The reference fixture's own UTR-truncation defect happens to either leave the UTR fully intact or remove it entirely — L0's partial-prefix-match branch is exercised by unit test, not by `run_2000` itself.
 - Volume seasonality, ticket-size distributions, and defect rates are hand-tuned to look like a mid-size D2C merchant; not calibrated against any real portfolio.
 - The bank calendar covers 2025–2026 national holidays only, not state-specific ones.
-- `cash/forecast.py`'s "as of" date is inferred from the dataset's own latest capture date, not passed in explicitly — fine for a fixed historical fixture, not for a live deployment.
+- `cash/forecast.py`'s "as of" date **defaults** to the dataset's own latest capture date, and can now be supplied explicitly via `eval.report`'s `--as-of` flag. The default is deliberately the least informative viewpoint: at the dataset's own last day almost nothing is still in flight, so the 14-day curve is nearly flat (2 of 14 days nonzero, ₹4,990 on `run_2000`). An earlier, operator-chosen viewpoint on the same data shows far more (8 of 14 days, ₹2,08,228.03 at 30 days earlier — `make demo-cash`) — this is a presentation choice, not a correctness fix, and the report always labels which one you're looking at (`(supplied)` vs `(inferred from latest capture)`).
 - No FastAPI layer and no live/interactive dashboard — the static HTML report is the deliverable, per the brief's own explicit fallback preference over a broken Next.js app.
 
 ## Everything else

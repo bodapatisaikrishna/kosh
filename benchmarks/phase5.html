@@ -43,7 +43,8 @@
     <div class="card"><div class="label">Auto-match rate</div><div class="value">97.74%</div></div>
     <div class="card risk"><div class="label">False-match rate</div><div class="value">0.00%</div></div>
     <div class="card"><div class="label">Rs reconciled</div><div class="value" style="font-size:1.4rem">₹13,281,428.77</div></div>
-    <div class="card"><div class="label">Wall clock</div><div class="value">0.008s</div></div>
+    <div class="card"><div class="label">Rs fee leakage</div><div class="value" style="font-size:1.4rem">₹10,475.40</div><div class="muted" style="font-size:0.7rem">42 records &middot; lower bound</div></div>
+    <div class="card"><div class="label">Wall clock</div><div class="value">0.010s</div></div>
     
   </div>
 
@@ -56,10 +57,10 @@
   <section>
     <h2>Exception queue</h2>
     <p>139 exceptions &middot; ₹1,672,013.03 at risk &middot; <span class="muted">click a row for evidence + trace</span></p>
-    <table>
-      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th>Aging</th></tr>
+    <table id="exception-table">
+      <tr><th class="sortable" onclick="sortExceptions('category')">Category</th><th>Severity</th><th class="sortable num" onclick="sortExceptions('amount')">Rs at risk</th><th>Owner</th><th class="sortable" onclick="sortExceptions('aging')">Aging</th></tr>
       
-        <tr class="exc-row" data-amount="17715599" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-0').classList.toggle('open')">
+        <tr class="exc-row" data-amount="17715599" data-category="PERIOD_CUTOFF" data-aging="28" onclick="document.getElementById('detail-0').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹177,155.99</td>
@@ -77,7 +78,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="15747371" data-category="UNEXPLAINED_VARIANCE" onclick="document.getElementById('detail-1').classList.toggle('open')">
+        <tr class="exc-row" data-amount="15747371" data-category="UNEXPLAINED_VARIANCE" data-aging="56" onclick="document.getElementById('detail-1').classList.toggle('open')">
           <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹157,473.71</td>
@@ -95,7 +96,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="15489951" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-2').classList.toggle('open')">
+        <tr class="exc-row" data-amount="15489951" data-category="PERIOD_CUTOFF" data-aging="28" onclick="document.getElementById('detail-2').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹154,899.51</td>
@@ -113,7 +114,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="15216620" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-3').classList.toggle('open')">
+        <tr class="exc-row" data-amount="15216620" data-category="PERIOD_CUTOFF" data-aging="61" onclick="document.getElementById('detail-3').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹152,166.20</td>
@@ -131,7 +132,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="10242659" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-4').classList.toggle('open')">
+        <tr class="exc-row" data-amount="10242659" data-category="PERIOD_CUTOFF" data-aging="0" onclick="document.getElementById('detail-4').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹102,426.59</td>
@@ -149,7 +150,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="9197366" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-5').classList.toggle('open')">
+        <tr class="exc-row" data-amount="9197366" data-category="DUPLICATE_PAYMENT" data-aging="29" onclick="document.getElementById('detail-5').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹91,973.66</td>
@@ -167,7 +168,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="8469460" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-6').classList.toggle('open')">
+        <tr class="exc-row" data-amount="8469460" data-category="DUPLICATE_PAYMENT" data-aging="24" onclick="document.getElementById('detail-6').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹84,694.60</td>
@@ -185,7 +186,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6682444" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-7').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6682444" data-category="MISSING_SETTLEMENT" data-aging="58" onclick="document.getElementById('detail-7').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹66,824.44</td>
@@ -203,7 +204,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6178073" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-8').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6178073" data-category="MISSING_SETTLEMENT" data-aging="78" onclick="document.getElementById('detail-8').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹61,780.73</td>
@@ -221,7 +222,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5528279" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-9').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5528279" data-category="DUPLICATE_PAYMENT" data-aging="9" onclick="document.getElementById('detail-9').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹55,282.79</td>
@@ -239,7 +240,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5390459" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-10').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5390459" data-category="PERIOD_CUTOFF" data-aging="28" onclick="document.getElementById('detail-10').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-review_required">REVIEW_REQUIRED</span></td>
           <td class="num">₹53,904.59</td>
@@ -257,7 +258,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="4771387" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-11').classList.toggle('open')">
+        <tr class="exc-row" data-amount="4771387" data-category="PERIOD_CUTOFF" data-aging="0" onclick="document.getElementById('detail-11').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹47,713.87</td>
@@ -275,7 +276,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="3782477" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-12').classList.toggle('open')">
+        <tr class="exc-row" data-amount="3782477" data-category="PERIOD_CUTOFF" data-aging="0" onclick="document.getElementById('detail-12').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹37,824.77</td>
@@ -293,7 +294,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2992900" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-13').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2992900" data-category="REFUND_MISALLOCATION" data-aging="25" onclick="document.getElementById('detail-13').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹29,929.00</td>
@@ -311,7 +312,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2950932" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-14').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2950932" data-category="PERIOD_CUTOFF" data-aging="0" onclick="document.getElementById('detail-14').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹29,509.32</td>
@@ -329,7 +330,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2269993" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-15').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2269993" data-category="DUPLICATE_PAYMENT" data-aging="61" onclick="document.getElementById('detail-15').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹22,699.93</td>
@@ -347,7 +348,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2188605" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-16').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2188605" data-category="PERIOD_CUTOFF" data-aging="28" onclick="document.getElementById('detail-16').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹21,886.05</td>
@@ -365,7 +366,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1793664" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-17').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1793664" data-category="MISSING_SETTLEMENT" data-aging="53" onclick="document.getElementById('detail-17').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹17,936.64</td>
@@ -383,7 +384,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1725500" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-18').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1725500" data-category="UNIDENTIFIED_CREDIT" data-aging="26" onclick="document.getElementById('detail-18').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹17,255.00</td>
@@ -401,7 +402,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1696000" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-19').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1696000" data-category="UNIDENTIFIED_CREDIT" data-aging="38" onclick="document.getElementById('detail-19').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹16,960.00</td>
@@ -419,7 +420,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1498031" data-category="UNEXPLAINED_VARIANCE" onclick="document.getElementById('detail-20').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1498031" data-category="UNEXPLAINED_VARIANCE" data-aging="13" onclick="document.getElementById('detail-20').classList.toggle('open')">
           <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,980.31</td>
@@ -437,7 +438,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1476243" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-21').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1476243" data-category="MISSING_SETTLEMENT" data-aging="28" onclick="document.getElementById('detail-21').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,762.43</td>
@@ -455,7 +456,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1469600" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-22').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1469600" data-category="UNIDENTIFIED_CREDIT" data-aging="34" onclick="document.getElementById('detail-22').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,696.00</td>
@@ -473,7 +474,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1454000" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-23').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1454000" data-category="UNIDENTIFIED_CREDIT" data-aging="2" onclick="document.getElementById('detail-23').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,540.00</td>
@@ -491,7 +492,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1448900" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-24').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1448900" data-category="UNIDENTIFIED_CREDIT" data-aging="74" onclick="document.getElementById('detail-24').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,489.00</td>
@@ -509,7 +510,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1417700" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-25').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1417700" data-category="PERIOD_CUTOFF" data-aging="60" onclick="document.getElementById('detail-25').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹14,177.00</td>
@@ -527,7 +528,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1354000" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-26').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1354000" data-category="UNIDENTIFIED_CREDIT" data-aging="62" onclick="document.getElementById('detail-26').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹13,540.00</td>
@@ -545,7 +546,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1071600" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-27').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1071600" data-category="MISSING_SETTLEMENT" data-aging="3" onclick="document.getElementById('detail-27').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹10,716.00</td>
@@ -563,7 +564,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="949290" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-28').classList.toggle('open')">
+        <tr class="exc-row" data-amount="949290" data-category="DUPLICATE_PAYMENT" data-aging="10" onclick="document.getElementById('detail-28').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹9,492.90</td>
@@ -581,7 +582,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="781413" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-29').classList.toggle('open')">
+        <tr class="exc-row" data-amount="781413" data-category="REFUND_MISALLOCATION" data-aging="63" onclick="document.getElementById('detail-29').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹7,814.13</td>
@@ -599,7 +600,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="776726" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-30').classList.toggle('open')">
+        <tr class="exc-row" data-amount="776726" data-category="REFUND_MISALLOCATION" data-aging="31" onclick="document.getElementById('detail-30').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹7,767.26</td>
@@ -617,7 +618,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="726649" data-category="UNEXPLAINED_VARIANCE" onclick="document.getElementById('detail-31').classList.toggle('open')">
+        <tr class="exc-row" data-amount="726649" data-category="UNEXPLAINED_VARIANCE" data-aging="55" onclick="document.getElementById('detail-31').classList.toggle('open')">
           <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹7,266.49</td>
@@ -635,7 +636,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="654440" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-32').classList.toggle('open')">
+        <tr class="exc-row" data-amount="654440" data-category="DUPLICATE_PAYMENT" data-aging="73" onclick="document.getElementById('detail-32').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹6,544.40</td>
@@ -653,7 +654,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="616658" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-33').classList.toggle('open')">
+        <tr class="exc-row" data-amount="616658" data-category="MISSING_SETTLEMENT" data-aging="31" onclick="document.getElementById('detail-33').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹6,166.58</td>
@@ -671,7 +672,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="610900" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-34').classList.toggle('open')">
+        <tr class="exc-row" data-amount="610900" data-category="UNIDENTIFIED_CREDIT" data-aging="7" onclick="document.getElementById('detail-34').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹6,109.00</td>
@@ -689,7 +690,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="551942" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-35').classList.toggle('open')">
+        <tr class="exc-row" data-amount="551942" data-category="MISSING_SETTLEMENT" data-aging="75" onclick="document.getElementById('detail-35').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹5,519.42</td>
@@ -707,7 +708,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="542200" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-36').classList.toggle('open')">
+        <tr class="exc-row" data-amount="542200" data-category="UNIDENTIFIED_CREDIT" data-aging="42" onclick="document.getElementById('detail-36').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹5,422.00</td>
@@ -725,7 +726,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="529000" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-37').classList.toggle('open')">
+        <tr class="exc-row" data-amount="529000" data-category="DUPLICATE_PAYMENT" data-aging="19" onclick="document.getElementById('detail-37').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹5,290.00</td>
@@ -743,7 +744,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="519900" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-38').classList.toggle('open')">
+        <tr class="exc-row" data-amount="519900" data-category="UNIDENTIFIED_CREDIT" data-aging="6" onclick="document.getElementById('detail-38').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹5,199.00</td>
@@ -761,7 +762,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="484880" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-39').classList.toggle('open')">
+        <tr class="exc-row" data-amount="484880" data-category="REFUND_MISALLOCATION" data-aging="23" onclick="document.getElementById('detail-39').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4,848.80</td>
@@ -779,7 +780,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="481300" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-40').classList.toggle('open')">
+        <tr class="exc-row" data-amount="481300" data-category="REFUND_MISALLOCATION" data-aging="66" onclick="document.getElementById('detail-40').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4,813.00</td>
@@ -797,7 +798,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="468300" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-41').classList.toggle('open')">
+        <tr class="exc-row" data-amount="468300" data-category="UNIDENTIFIED_CREDIT" data-aging="61" onclick="document.getElementById('detail-41').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4,683.00</td>
@@ -815,7 +816,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="304800" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-42').classList.toggle('open')">
+        <tr class="exc-row" data-amount="304800" data-category="MISSING_SETTLEMENT" data-aging="61" onclick="document.getElementById('detail-42').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹3,048.00</td>
@@ -833,7 +834,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="298100" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-43').classList.toggle('open')">
+        <tr class="exc-row" data-amount="298100" data-category="MISSING_SETTLEMENT" data-aging="2" onclick="document.getElementById('detail-43').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,981.00</td>
@@ -851,7 +852,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="296325" data-category="FX_VARIANCE" onclick="document.getElementById('detail-44').classList.toggle('open')">
+        <tr class="exc-row" data-amount="296325" data-category="FX_VARIANCE" data-aging="51" onclick="document.getElementById('detail-44').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,963.25</td>
@@ -869,7 +870,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="293900" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-45').classList.toggle('open')">
+        <tr class="exc-row" data-amount="293900" data-category="REFUND_MISALLOCATION" data-aging="89" onclick="document.getElementById('detail-45').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,939.00</td>
@@ -887,7 +888,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="291416" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-46').classList.toggle('open')">
+        <tr class="exc-row" data-amount="291416" data-category="MISSING_SETTLEMENT" data-aging="42" onclick="document.getElementById('detail-46').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,914.16</td>
@@ -905,7 +906,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="289000" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-47').classList.toggle('open')">
+        <tr class="exc-row" data-amount="289000" data-category="UNIDENTIFIED_CREDIT" data-aging="26" onclick="document.getElementById('detail-47').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,890.00</td>
@@ -923,7 +924,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="286000" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-48').classList.toggle('open')">
+        <tr class="exc-row" data-amount="286000" data-category="DUPLICATE_PAYMENT" data-aging="3" onclick="document.getElementById('detail-48').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,860.00</td>
@@ -941,7 +942,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="272732" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-49').classList.toggle('open')">
+        <tr class="exc-row" data-amount="272732" data-category="MISSING_SETTLEMENT" data-aging="69" onclick="document.getElementById('detail-49').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,727.32</td>
@@ -959,7 +960,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="261600" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-50').classList.toggle('open')">
+        <tr class="exc-row" data-amount="261600" data-category="UNIDENTIFIED_CREDIT" data-aging="18" onclick="document.getElementById('detail-50').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,616.00</td>
@@ -977,7 +978,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="256200" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-51').classList.toggle('open')">
+        <tr class="exc-row" data-amount="256200" data-category="MISSING_SETTLEMENT" data-aging="54" onclick="document.getElementById('detail-51').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,562.00</td>
@@ -995,7 +996,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="254800" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-52').classList.toggle('open')">
+        <tr class="exc-row" data-amount="254800" data-category="DUPLICATE_PAYMENT" data-aging="68" onclick="document.getElementById('detail-52').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,548.00</td>
@@ -1013,7 +1014,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="247282" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-53').classList.toggle('open')">
+        <tr class="exc-row" data-amount="247282" data-category="DUPLICATE_PAYMENT" data-aging="46" onclick="document.getElementById('detail-53').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,472.82</td>
@@ -1031,7 +1032,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="231407" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-54').classList.toggle('open')">
+        <tr class="exc-row" data-amount="231407" data-category="MISSING_SETTLEMENT" data-aging="23" onclick="document.getElementById('detail-54').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,314.07</td>
@@ -1049,7 +1050,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="225300" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-55').classList.toggle('open')">
+        <tr class="exc-row" data-amount="225300" data-category="PERIOD_CUTOFF" data-aging="28" onclick="document.getElementById('detail-55').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,253.00</td>
@@ -1067,7 +1068,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="217834" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-56').classList.toggle('open')">
+        <tr class="exc-row" data-amount="217834" data-category="PERIOD_CUTOFF" data-aging="28" onclick="document.getElementById('detail-56').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,178.34</td>
@@ -1085,7 +1086,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="211391" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-57').classList.toggle('open')">
+        <tr class="exc-row" data-amount="211391" data-category="DUPLICATE_PAYMENT" data-aging="38" onclick="document.getElementById('detail-57').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,113.91</td>
@@ -1103,7 +1104,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="200900" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-58').classList.toggle('open')">
+        <tr class="exc-row" data-amount="200900" data-category="MISSING_SETTLEMENT" data-aging="0" onclick="document.getElementById('detail-58').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,009.00</td>
@@ -1121,7 +1122,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="200400" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-59').classList.toggle('open')">
+        <tr class="exc-row" data-amount="200400" data-category="REFUND_MISALLOCATION" data-aging="69" onclick="document.getElementById('detail-59').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2,004.00</td>
@@ -1139,7 +1140,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="199409" data-category="FX_VARIANCE" onclick="document.getElementById('detail-60').classList.toggle('open')">
+        <tr class="exc-row" data-amount="199409" data-category="FX_VARIANCE" data-aging="46" onclick="document.getElementById('detail-60').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,994.09</td>
@@ -1157,7 +1158,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="167700" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-61').classList.toggle('open')">
+        <tr class="exc-row" data-amount="167700" data-category="DUPLICATE_PAYMENT" data-aging="31" onclick="document.getElementById('detail-61').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,677.00</td>
@@ -1175,7 +1176,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="128006" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-62').classList.toggle('open')">
+        <tr class="exc-row" data-amount="128006" data-category="DUPLICATE_PAYMENT" data-aging="4" onclick="document.getElementById('detail-62').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,280.06</td>
@@ -1193,7 +1194,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="117000" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-63').classList.toggle('open')">
+        <tr class="exc-row" data-amount="117000" data-category="UNIDENTIFIED_CREDIT" data-aging="17" onclick="document.getElementById('detail-63').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,170.00</td>
@@ -1211,7 +1212,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="111128" data-category="FX_VARIANCE" onclick="document.getElementById('detail-64').classList.toggle('open')">
+        <tr class="exc-row" data-amount="111128" data-category="FX_VARIANCE" data-aging="54" onclick="document.getElementById('detail-64').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,111.28</td>
@@ -1229,7 +1230,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="101341" data-category="UNEXPLAINED_VARIANCE" onclick="document.getElementById('detail-65').classList.toggle('open')">
+        <tr class="exc-row" data-amount="101341" data-category="UNEXPLAINED_VARIANCE" data-aging="5" onclick="document.getElementById('detail-65').classList.toggle('open')">
           <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,013.41</td>
@@ -1247,7 +1248,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="100018" data-category="FX_VARIANCE" onclick="document.getElementById('detail-66').classList.toggle('open')">
+        <tr class="exc-row" data-amount="100018" data-category="FX_VARIANCE" data-aging="40" onclick="document.getElementById('detail-66').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1,000.18</td>
@@ -1265,7 +1266,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="91100" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-67').classList.toggle('open')">
+        <tr class="exc-row" data-amount="91100" data-category="DUPLICATE_PAYMENT" data-aging="69" onclick="document.getElementById('detail-67').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹911.00</td>
@@ -1283,7 +1284,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="88000" data-category="UNIDENTIFIED_CREDIT" onclick="document.getElementById('detail-68').classList.toggle('open')">
+        <tr class="exc-row" data-amount="88000" data-category="UNIDENTIFIED_CREDIT" data-aging="81" onclick="document.getElementById('detail-68').classList.toggle('open')">
           <td>UNIDENTIFIED_CREDIT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹880.00</td>
@@ -1301,7 +1302,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="84983" data-category="FX_VARIANCE" onclick="document.getElementById('detail-69').classList.toggle('open')">
+        <tr class="exc-row" data-amount="84983" data-category="FX_VARIANCE" data-aging="86" onclick="document.getElementById('detail-69').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹849.83</td>
@@ -1319,7 +1320,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="81000" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-70').classList.toggle('open')">
+        <tr class="exc-row" data-amount="81000" data-category="MISSING_SETTLEMENT" data-aging="86" onclick="document.getElementById('detail-70').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹810.00</td>
@@ -1337,7 +1338,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="67266" data-category="UNEXPLAINED_VARIANCE" onclick="document.getElementById('detail-71').classList.toggle('open')">
+        <tr class="exc-row" data-amount="67266" data-category="UNEXPLAINED_VARIANCE" data-aging="80" onclick="document.getElementById('detail-71').classList.toggle('open')">
           <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹672.66</td>
@@ -1355,7 +1356,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="60400" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-72').classList.toggle('open')">
+        <tr class="exc-row" data-amount="60400" data-category="MISSING_SETTLEMENT" data-aging="26" onclick="document.getElementById('detail-72').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹604.00</td>
@@ -1373,7 +1374,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="59660" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-73').classList.toggle('open')">
+        <tr class="exc-row" data-amount="59660" data-category="DUPLICATE_PAYMENT" data-aging="39" onclick="document.getElementById('detail-73').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹596.60</td>
@@ -1391,7 +1392,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="57457" data-category="UNEXPLAINED_VARIANCE" onclick="document.getElementById('detail-74').classList.toggle('open')">
+        <tr class="exc-row" data-amount="57457" data-category="UNEXPLAINED_VARIANCE" data-aging="1" onclick="document.getElementById('detail-74').classList.toggle('open')">
           <td>UNEXPLAINED_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹574.57</td>
@@ -1409,7 +1410,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="55092" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-75').classList.toggle('open')">
+        <tr class="exc-row" data-amount="55092" data-category="TAX_VARIANCE" data-aging="12" onclick="document.getElementById('detail-75').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹550.92</td>
@@ -1427,7 +1428,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="50675" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-76').classList.toggle('open')">
+        <tr class="exc-row" data-amount="50675" data-category="PERIOD_CUTOFF" data-aging="59" onclick="document.getElementById('detail-76').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹506.75</td>
@@ -1445,7 +1446,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="49800" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-77').classList.toggle('open')">
+        <tr class="exc-row" data-amount="49800" data-category="REFUND_MISALLOCATION" data-aging="67" onclick="document.getElementById('detail-77').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹498.00</td>
@@ -1463,7 +1464,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="49100" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-78').classList.toggle('open')">
+        <tr class="exc-row" data-amount="49100" data-category="MISSING_SETTLEMENT" data-aging="37" onclick="document.getElementById('detail-78').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹491.00</td>
@@ -1481,7 +1482,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="48400" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-79').classList.toggle('open')">
+        <tr class="exc-row" data-amount="48400" data-category="ORPHAN_CHARGEBACK" data-aging="25" onclick="document.getElementById('detail-79').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹484.00</td>
@@ -1499,7 +1500,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="45470" data-category="FX_VARIANCE" onclick="document.getElementById('detail-80').classList.toggle('open')">
+        <tr class="exc-row" data-amount="45470" data-category="FX_VARIANCE" data-aging="40" onclick="document.getElementById('detail-80').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹454.70</td>
@@ -1517,7 +1518,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="45200" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-81').classList.toggle('open')">
+        <tr class="exc-row" data-amount="45200" data-category="ORPHAN_CHARGEBACK" data-aging="10" onclick="document.getElementById('detail-81').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹452.00</td>
@@ -1535,7 +1536,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="43700" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-82').classList.toggle('open')">
+        <tr class="exc-row" data-amount="43700" data-category="ORPHAN_CHARGEBACK" data-aging="74" onclick="document.getElementById('detail-82').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹437.00</td>
@@ -1553,7 +1554,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="40900" data-category="REFUND_MISALLOCATION" onclick="document.getElementById('detail-83').classList.toggle('open')">
+        <tr class="exc-row" data-amount="40900" data-category="REFUND_MISALLOCATION" data-aging="21" onclick="document.getElementById('detail-83').classList.toggle('open')">
           <td>REFUND_MISALLOCATION</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹409.00</td>
@@ -1571,7 +1572,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="40077" data-category="PERIOD_CUTOFF" onclick="document.getElementById('detail-84').classList.toggle('open')">
+        <tr class="exc-row" data-amount="40077" data-category="PERIOD_CUTOFF" data-aging="0" onclick="document.getElementById('detail-84').classList.toggle('open')">
           <td>PERIOD_CUTOFF</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹400.77</td>
@@ -1589,7 +1590,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="38839" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-85').classList.toggle('open')">
+        <tr class="exc-row" data-amount="38839" data-category="MISSING_SETTLEMENT" data-aging="61" onclick="document.getElementById('detail-85').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹388.39</td>
@@ -1607,7 +1608,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="38800" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-86').classList.toggle('open')">
+        <tr class="exc-row" data-amount="38800" data-category="ORPHAN_CHARGEBACK" data-aging="13" onclick="document.getElementById('detail-86').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹388.00</td>
@@ -1625,7 +1626,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="38000" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-87').classList.toggle('open')">
+        <tr class="exc-row" data-amount="38000" data-category="ORPHAN_CHARGEBACK" data-aging="44" onclick="document.getElementById('detail-87').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹380.00</td>
@@ -1643,7 +1644,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="37700" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-88').classList.toggle('open')">
+        <tr class="exc-row" data-amount="37700" data-category="ORPHAN_CHARGEBACK" data-aging="3" onclick="document.getElementById('detail-88').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹377.00</td>
@@ -1661,7 +1662,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="36100" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-89').classList.toggle('open')">
+        <tr class="exc-row" data-amount="36100" data-category="ORPHAN_CHARGEBACK" data-aging="11" onclick="document.getElementById('detail-89').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹361.00</td>
@@ -1679,7 +1680,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="34700" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-90').classList.toggle('open')">
+        <tr class="exc-row" data-amount="34700" data-category="ORPHAN_CHARGEBACK" data-aging="13" onclick="document.getElementById('detail-90').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹347.00</td>
@@ -1697,7 +1698,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="32000" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-91').classList.toggle('open')">
+        <tr class="exc-row" data-amount="32000" data-category="DUPLICATE_PAYMENT" data-aging="72" onclick="document.getElementById('detail-91').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹320.00</td>
@@ -1715,7 +1716,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="29500" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-92').classList.toggle('open')">
+        <tr class="exc-row" data-amount="29500" data-category="DUPLICATE_PAYMENT" data-aging="30" onclick="document.getElementById('detail-92').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹295.00</td>
@@ -1733,7 +1734,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="28769" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-93').classList.toggle('open')">
+        <tr class="exc-row" data-amount="28769" data-category="DUPLICATE_PAYMENT" data-aging="23" onclick="document.getElementById('detail-93').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹287.69</td>
@@ -1751,7 +1752,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="27965" data-category="FX_VARIANCE" onclick="document.getElementById('detail-94').classList.toggle('open')">
+        <tr class="exc-row" data-amount="27965" data-category="FX_VARIANCE" data-aging="63" onclick="document.getElementById('detail-94').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹279.65</td>
@@ -1769,7 +1770,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="27700" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-95').classList.toggle('open')">
+        <tr class="exc-row" data-amount="27700" data-category="ORPHAN_CHARGEBACK" data-aging="56" onclick="document.getElementById('detail-95').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹277.00</td>
@@ -1787,7 +1788,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="27600" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-96').classList.toggle('open')">
+        <tr class="exc-row" data-amount="27600" data-category="MISSING_SETTLEMENT" data-aging="77" onclick="document.getElementById('detail-96').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹276.00</td>
@@ -1805,7 +1806,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="22500" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-97').classList.toggle('open')">
+        <tr class="exc-row" data-amount="22500" data-category="ORPHAN_CHARGEBACK" data-aging="20" onclick="document.getElementById('detail-97').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹225.00</td>
@@ -1823,7 +1824,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="21400" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-98').classList.toggle('open')">
+        <tr class="exc-row" data-amount="21400" data-category="ORPHAN_CHARGEBACK" data-aging="30" onclick="document.getElementById('detail-98').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹214.00</td>
@@ -1841,7 +1842,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="18300" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-99').classList.toggle('open')">
+        <tr class="exc-row" data-amount="18300" data-category="DUPLICATE_PAYMENT" data-aging="81" onclick="document.getElementById('detail-99').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹183.00</td>
@@ -1859,7 +1860,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="18100" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-100').classList.toggle('open')">
+        <tr class="exc-row" data-amount="18100" data-category="ORPHAN_CHARGEBACK" data-aging="41" onclick="document.getElementById('detail-100').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹181.00</td>
@@ -1877,7 +1878,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="18000" data-category="MISSING_SETTLEMENT" onclick="document.getElementById('detail-101').classList.toggle('open')">
+        <tr class="exc-row" data-amount="18000" data-category="MISSING_SETTLEMENT" data-aging="55" onclick="document.getElementById('detail-101').classList.toggle('open')">
           <td>MISSING_SETTLEMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹180.00</td>
@@ -1895,7 +1896,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="16800" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-102').classList.toggle('open')">
+        <tr class="exc-row" data-amount="16800" data-category="ORPHAN_CHARGEBACK" data-aging="6" onclick="document.getElementById('detail-102').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹168.00</td>
@@ -1913,7 +1914,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="16300" data-category="DUPLICATE_PAYMENT" onclick="document.getElementById('detail-103').classList.toggle('open')">
+        <tr class="exc-row" data-amount="16300" data-category="DUPLICATE_PAYMENT" data-aging="23" onclick="document.getElementById('detail-103').classList.toggle('open')">
           <td>DUPLICATE_PAYMENT</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹163.00</td>
@@ -1931,7 +1932,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="16027" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-104').classList.toggle('open')">
+        <tr class="exc-row" data-amount="16027" data-category="FEE_VARIANCE" data-aging="22" onclick="document.getElementById('detail-104').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹160.27</td>
@@ -1949,7 +1950,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="15795" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-105').classList.toggle('open')">
+        <tr class="exc-row" data-amount="15795" data-category="FEE_VARIANCE" data-aging="5" onclick="document.getElementById('detail-105').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹157.95</td>
@@ -1967,7 +1968,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="13457" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-106').classList.toggle('open')">
+        <tr class="exc-row" data-amount="13457" data-category="TAX_VARIANCE" data-aging="37" onclick="document.getElementById('detail-106').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹134.57</td>
@@ -1985,7 +1986,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="10252" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-107').classList.toggle('open')">
+        <tr class="exc-row" data-amount="10252" data-category="FEE_VARIANCE" data-aging="34" onclick="document.getElementById('detail-107').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹102.52</td>
@@ -2003,7 +2004,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="9400" data-category="ORPHAN_CHARGEBACK" onclick="document.getElementById('detail-108').classList.toggle('open')">
+        <tr class="exc-row" data-amount="9400" data-category="ORPHAN_CHARGEBACK" data-aging="47" onclick="document.getElementById('detail-108').classList.toggle('open')">
           <td>ORPHAN_CHARGEBACK</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹94.00</td>
@@ -2021,7 +2022,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="7094" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-109').classList.toggle('open')">
+        <tr class="exc-row" data-amount="7094" data-category="FEE_VARIANCE" data-aging="30" onclick="document.getElementById('detail-109').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹70.94</td>
@@ -2039,7 +2040,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="7023" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-110').classList.toggle('open')">
+        <tr class="exc-row" data-amount="7023" data-category="FEE_VARIANCE" data-aging="11" onclick="document.getElementById('detail-110').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹70.23</td>
@@ -2057,7 +2058,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6702" data-category="FX_VARIANCE" onclick="document.getElementById('detail-111').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6702" data-category="FX_VARIANCE" data-aging="52" onclick="document.getElementById('detail-111').classList.toggle('open')">
           <td>FX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹67.02</td>
@@ -2075,7 +2076,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="6011" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-112').classList.toggle('open')">
+        <tr class="exc-row" data-amount="6011" data-category="FEE_VARIANCE" data-aging="82" onclick="document.getElementById('detail-112').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹60.11</td>
@@ -2093,7 +2094,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5932" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-113').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5932" data-category="TAX_VARIANCE" data-aging="31" onclick="document.getElementById('detail-113').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹59.32</td>
@@ -2111,7 +2112,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5738" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-114').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5738" data-category="TAX_VARIANCE" data-aging="65" onclick="document.getElementById('detail-114').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹57.38</td>
@@ -2129,7 +2130,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5081" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-115').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5081" data-category="FEE_VARIANCE" data-aging="26" onclick="document.getElementById('detail-115').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹50.81</td>
@@ -2147,7 +2148,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="4718" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-116').classList.toggle('open')">
+        <tr class="exc-row" data-amount="4718" data-category="FEE_VARIANCE" data-aging="11" onclick="document.getElementById('detail-116').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹47.18</td>
@@ -2165,7 +2166,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="4017" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-117').classList.toggle('open')">
+        <tr class="exc-row" data-amount="4017" data-category="FEE_VARIANCE" data-aging="35" onclick="document.getElementById('detail-117').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹40.17</td>
@@ -2183,7 +2184,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="3167" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-118').classList.toggle('open')">
+        <tr class="exc-row" data-amount="3167" data-category="TAX_VARIANCE" data-aging="52" onclick="document.getElementById('detail-118').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹31.67</td>
@@ -2201,7 +2202,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="2815" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-119').classList.toggle('open')">
+        <tr class="exc-row" data-amount="2815" data-category="FEE_VARIANCE" data-aging="22" onclick="document.getElementById('detail-119').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹28.15</td>
@@ -2219,7 +2220,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1923" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-120').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1923" data-category="TAX_VARIANCE" data-aging="2" onclick="document.getElementById('detail-120').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹19.23</td>
@@ -2237,7 +2238,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1833" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-121').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1833" data-category="TAX_VARIANCE" data-aging="23" onclick="document.getElementById('detail-121').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹18.33</td>
@@ -2255,7 +2256,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1775" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-122').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1775" data-category="FEE_VARIANCE" data-aging="78" onclick="document.getElementById('detail-122').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹17.75</td>
@@ -2273,7 +2274,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1659" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-123').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1659" data-category="FEE_VARIANCE" data-aging="9" onclick="document.getElementById('detail-123').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹16.59</td>
@@ -2291,7 +2292,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="1260" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-124').classList.toggle('open')">
+        <tr class="exc-row" data-amount="1260" data-category="FEE_VARIANCE" data-aging="70" onclick="document.getElementById('detail-124').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹12.60</td>
@@ -2309,7 +2310,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="841" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-125').classList.toggle('open')">
+        <tr class="exc-row" data-amount="841" data-category="TAX_VARIANCE" data-aging="55" onclick="document.getElementById('detail-125').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹8.41</td>
@@ -2327,7 +2328,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="808" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-126').classList.toggle('open')">
+        <tr class="exc-row" data-amount="808" data-category="TAX_VARIANCE" data-aging="42" onclick="document.getElementById('detail-126').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹8.08</td>
@@ -2345,7 +2346,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="649" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-127').classList.toggle('open')">
+        <tr class="exc-row" data-amount="649" data-category="FEE_VARIANCE" data-aging="10" onclick="document.getElementById('detail-127').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹6.49</td>
@@ -2363,7 +2364,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="446" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-128').classList.toggle('open')">
+        <tr class="exc-row" data-amount="446" data-category="FEE_VARIANCE" data-aging="65" onclick="document.getElementById('detail-128').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4.46</td>
@@ -2381,7 +2382,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="445" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-129').classList.toggle('open')">
+        <tr class="exc-row" data-amount="445" data-category="TAX_VARIANCE" data-aging="33" onclick="document.getElementById('detail-129').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4.45</td>
@@ -2399,7 +2400,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="414" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-130').classList.toggle('open')">
+        <tr class="exc-row" data-amount="414" data-category="TAX_VARIANCE" data-aging="75" onclick="document.getElementById('detail-130').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹4.14</td>
@@ -2417,7 +2418,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="288" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-131').classList.toggle('open')">
+        <tr class="exc-row" data-amount="288" data-category="TAX_VARIANCE" data-aging="62" onclick="document.getElementById('detail-131').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2.88</td>
@@ -2435,7 +2436,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="228" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-132').classList.toggle('open')">
+        <tr class="exc-row" data-amount="228" data-category="TAX_VARIANCE" data-aging="35" onclick="document.getElementById('detail-132').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹2.28</td>
@@ -2453,7 +2454,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="161" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-133').classList.toggle('open')">
+        <tr class="exc-row" data-amount="161" data-category="FEE_VARIANCE" data-aging="5" onclick="document.getElementById('detail-133').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.61</td>
@@ -2471,7 +2472,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="157" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-134').classList.toggle('open')">
+        <tr class="exc-row" data-amount="157" data-category="FEE_VARIANCE" data-aging="78" onclick="document.getElementById('detail-134').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.57</td>
@@ -2489,7 +2490,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="152" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-135').classList.toggle('open')">
+        <tr class="exc-row" data-amount="152" data-category="FEE_VARIANCE" data-aging="87" onclick="document.getElementById('detail-135').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.52</td>
@@ -2507,7 +2508,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="149" data-category="FEE_VARIANCE" onclick="document.getElementById('detail-136').classList.toggle('open')">
+        <tr class="exc-row" data-amount="149" data-category="FEE_VARIANCE" data-aging="44" onclick="document.getElementById('detail-136').classList.toggle('open')">
           <td>FEE_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.49</td>
@@ -2525,7 +2526,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="128" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-137').classList.toggle('open')">
+        <tr class="exc-row" data-amount="128" data-category="TAX_VARIANCE" data-aging="61" onclick="document.getElementById('detail-137').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹1.28</td>
@@ -2543,7 +2544,7 @@
             </div>
           </td>
         </tr>
-        <tr class="exc-row" data-amount="5" data-category="TAX_VARIANCE" onclick="document.getElementById('detail-138').classList.toggle('open')">
+        <tr class="exc-row" data-amount="5" data-category="TAX_VARIANCE" data-aging="37" onclick="document.getElementById('detail-138').classList.toggle('open')">
           <td>TAX_VARIANCE</td>
           <td><span class="pill pill-standard">STANDARD</span></td>
           <td class="num">₹0.05</td>
@@ -2562,11 +2563,31 @@
           </td>
         </tr>
     </table>
+
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Detected fee leakage (lower bound)</h3>
+    <p class="muted">Money the merchant was overcharged in gateway fees, tax on those fees, and FX - only what was actually detected and attributable to a fee leg, not a total.</p>
+    <table><tr><th>Category</th><th class="num">Count</th><th class="num">Rs</th></tr><tr><td>FEE_VARIANCE</td><td class='num'>19</td><td class='num'>₹852.41</td></tr><tr><td>FX_VARIANCE</td><td class='num'>8</td><td class='num'>₹8,720.00</td></tr><tr><td>TAX_VARIANCE</td><td class='num'>15</td><td class='num'>₹902.99</td></tr></table>
+
+    <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">Exception aging</h3>
+    <p class="muted">Median 35d &middot; max 89d &middot; 129 of 139 past the industry 48-hour SLA for open reconciliation breaks. <strong>This is a historical 3-month fixture scored against its own end date, not a live queue</strong> - aging this large is expected here, not alarming; a live deployment would see a very different distribution.</p>
+    <div class="inflow-chart"><div class="bar-col">
+              <div class="bar" style="height:12%"></div>
+              <div class="bar-label">0-2d (10)</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:12%"></div>
+              <div class="bar-label">3-7d (10)</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:54%"></div>
+              <div class="bar-label">8-30d (42)</div>
+            </div><div class="bar-col">
+              <div class="bar" style="height:100%"></div>
+              <div class="bar-label">30d+ (77)</div>
+            </div></div>
   </section>
 
   <section>
     <h2>Cash position</h2>
-    <p class="muted">As of 2026-08-31 &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹1,672,013.03</strong></p>
+    <p class="muted">As of 2026-08-31 (inferred from latest capture) &middot; Rs stuck: <strong>₹491,707.54</strong> (38 payments) &middot; Rs at risk: <strong>₹1,672,013.03</strong></p>
     <h3 style="font-size:0.95rem;margin-bottom:0.3rem;">14-day expected inflow</h3>
     <div class="inflow-chart"><div class="bar-col">
               <div class="bar" style="height:100%"></div>
@@ -2621,26 +2642,29 @@
     <table><tr><th>Defect type</th><th>Outcome counts</th></tr><tr><td>compound_fee_tax_error</td><td>{&quot;detected&quot;: 6}</td></tr><tr><td>consolidated_payout</td><td>{&quot;correctly_resolved&quot;: 8}</td></tr><tr><td>duplicate_payment</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>fee_mismatch_wrong_tier</td><td>{&quot;detected&quot;: 19}</td></tr><tr><td>fx_variance</td><td>{&quot;detected&quot;: 8}</td></tr><tr><td>gst_variance</td><td>{&quot;detected&quot;: 15}</td></tr><tr><td>missing_settlement</td><td>{&quot;detected&quot;: 20}</td></tr><tr><td>orphan_chargeback</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>period_cutoff</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>refund_misallocation</td><td>{&quot;detected&quot;: 9}</td></tr><tr><td>rounding_drift</td><td>{&quot;correctly_resolved&quot;: 25}</td></tr><tr><td>settlement_split</td><td>{&quot;correctly_resolved&quot;: 11}</td></tr><tr><td>unidentified_credit</td><td>{&quot;detected&quot;: 14}</td></tr><tr><td>utr_mangled</td><td>{&quot;correctly_resolved&quot;: 20}</td></tr></table>
   </section>
 
-  <footer><p class="muted">commit <code>8604fd6a1812</code> <strong style="color:#b00020">(dirty tree)</strong> &middot; generated 2026-09-02T08:07:41.965591+00:00</p></footer>
+  <footer><p class="muted">commit <code>f83fca8df133</code> <strong style="color:#b00020">(dirty tree)</strong> &middot; generated 2026-09-02T15:09:19.887812+00:00</p></footer>
 
 <script>
   // Per-column ascending state, so sorting by category then by amount doesn't
   // share one toggle (each column remembers its own direction independently).
-  const sortAscByColumn = {amount: true, category: true};
+  const sortAscByColumn = {amount: true, category: true, aging: true};
   function sortExceptions(column) {
     // column is "amount" (the brief's own explicit ask: "sortable by Rs at
-    // risk") or "category" (the header's own label - previously wired to
+    // risk"), "category" (the header's own label - previously wired to
     // amount regardless of which header you clicked, a real bug: the
     // "Category" header silently re-sorted by rupee amount, which looked
     // plausible only because the table's default order is already
-    // amount-descending).
-    const table = document.querySelectorAll("table")[1];
+    // amount-descending), or "aging" (days open, for triaging the oldest
+    // breaks first).
+    const table = document.getElementById("exception-table");
     const rows = Array.from(table.querySelectorAll("tr.exc-row"));
     const asc = sortAscByColumn[column];
     rows.sort((a, b) => {
-      const diff = column === "amount"
-        ? Number(a.dataset.amount) - Number(b.dataset.amount)
-        : a.dataset.category.localeCompare(b.dataset.category);
+      if (column === "category") return asc
+        ? a.dataset.category.localeCompare(b.dataset.category)
+        : b.dataset.category.localeCompare(a.dataset.category);
+      const field = column === "aging" ? "aging" : "amount";
+      const diff = Number(a.dataset[field]) - Number(b.dataset[field]);
       return asc ? diff : -diff;
     });
     sortAscByColumn[column] = !asc;
