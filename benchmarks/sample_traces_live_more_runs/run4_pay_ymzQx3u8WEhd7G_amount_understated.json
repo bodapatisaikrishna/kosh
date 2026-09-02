@@ -1,0 +1,203 @@
+{
+  "backend": "nim",
+  "cost_usd_micros": 12239,
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 16390,
+  "llm_calls": 7,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 1838,
+  "record_id": "pay_ymzQx3u8WEhd7G",
+  "result": {
+    "exception": {
+      "affected": {
+        "payment_id": "pay_ymzQx3u8WEhd7G",
+        "record_id": "pay_ymzQx3u8WEhd7G",
+        "source": "payments"
+      },
+      "aging_days": 13,
+      "amount_at_risk_paise": 1537,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [
+        "Payment pay_ymzQx3u8WEhd7G has a fee variance of 1,537 paise (observed 30,732 vs expected 29,195) that explain_variance could not decompose into any known cause (returned UNEXPLAINED). The payment is linked to settlement setl_p7l4JVGHn8xQmP. No candidate matches found within 5 days and 50,000 paise tolerance. Amount at risk (Rs 15.37) is well below Rs 50,000 threshold."
+      ],
+      "recommended_action": "Investigate fee calculation for netbanking payment pay_ymzQx3u8WEhd7G (gross: 1,536,600 paise). Expected fee: 29,195 paise, observed: 30,732 paise. Variance of 1,537 paise (Rs 15.37) remains unexplained by fee tier, GST rate, rounding, or known refunds.",
+      "severity": "STANDARD",
+      "suggested_owner": "Finance Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_ymzQx3u8WEhd7G",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-08-18T09:26:00",
+            "fee_paise": 30732,
+            "gross_paise": 1536600,
+            "gst_paise": 7837,
+            "international": false,
+            "method": "netbanking",
+            "net_paise": 1498031,
+            "order_id": "order_xGrxGJd2AdZowS",
+            "payment_id": "pay_ymzQx3u8WEhd7G",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_p7l4JVGHn8xQmP",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_p7l4JVGHn8xQmP",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 64155,
+              "gross_paise": 3295700,
+              "gst_paise": 13853,
+              "net_paise": 3217692,
+              "num_payments": 3,
+              "settled_at": "2026-08-20",
+              "settlement_id": "setl_p7l4JVGHn8xQmP",
+              "utr": "ICICN44644118766"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 1536600,
+            "international": false,
+            "method": "netbanking"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 29195,
+              "gst_paise": 5255,
+              "net_paise": 1502150
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 1536600,
+              "international": false,
+              "method": "netbanking"
+            },
+            "expected_paise": 29195,
+            "observed_paise": 30732
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": 1537,
+              "detail": "1537 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 0,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "pay_ymzQx3u8WEhd7G"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000,
+            "date_window_days": 5,
+            "limit": 20,
+            "record_id": "pay_ymzQx3u8WEhd7G"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_at_risk_paise": 1537,
+            "category": "FEE_VARIANCE",
+            "rationale": "Payment pay_ymzQx3u8WEhd7G has a fee variance of 1,537 paise (observed 30,732 vs expected 29,195) that explain_variance could not decompose into any known cause (returned UNEXPLAINED). The payment is linked to settlement setl_p7l4JVGHn8xQmP. No candidate matches found within 5 days and 50,000 paise tolerance. Amount at risk (Rs 15.37) is well below Rs 50,000 threshold.",
+            "recommended_action": "Investigate fee calculation for netbanking payment pay_ymzQx3u8WEhd7G (gross: 1,536,600 paise). Expected fee: 29,195 paise, observed: 30,732 paise. Variance of 1,537 paise (Rs 15.37) remains unexplained by fee tier, GST rate, rounding, or known refunds.",
+            "severity": "LOW"
+          },
+          "name": "raise_exception",
+          "result": {
+            "category_coerced_from": null,
+            "exception": {
+              "affected": {
+                "payment_id": "pay_ymzQx3u8WEhd7G",
+                "record_id": "pay_ymzQx3u8WEhd7G",
+                "source": "payments"
+              },
+              "aging_days": 13,
+              "amount_at_risk_paise": 1537,
+              "category": "FEE_VARIANCE",
+              "evidence_chain": [
+                "Payment pay_ymzQx3u8WEhd7G has a fee variance of 1,537 paise (observed 30,732 vs expected 29,195) that explain_variance could not decompose into any known cause (returned UNEXPLAINED). The payment is linked to settlement setl_p7l4JVGHn8xQmP. No candidate matches found within 5 days and 50,000 paise tolerance. Amount at risk (Rs 15.37) is well below Rs 50,000 threshold."
+              ],
+              "recommended_action": "Investigate fee calculation for netbanking payment pay_ymzQx3u8WEhd7G (gross: 1,536,600 paise). Expected fee: 29,195 paise, observed: 30,732 paise. Variance of 1,537 paise (Rs 15.37) remains unexplained by fee tier, GST rate, rounding, or known refunds.",
+              "severity": "STANDARD",
+              "suggested_owner": "Finance Ops"
+            },
+            "status": "ok",
+            "unexplained_leg_count": 1
+          }
+        }
+      ]
+    }
+  ]
+}
