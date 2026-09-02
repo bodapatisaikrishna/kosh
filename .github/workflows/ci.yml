@@ -18,17 +18,25 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Installing the llm extra too (not just dev) so tests/test_nim_client.py
-      # and tests/test_anthropic_client.py actually run against a mocked
-      # client, instead of skipping via pytest.importorskip - both are fully
-      # offline (unittest.mock.MagicMock, never a real socket), so this is
-      # free extra coverage, not a live-key requirement. No NIM_API_KEY or
-      # ANTHROPIC_API_KEY secret is configured or needed: nothing in the test
-      # suite ever calls a real LLM. The two scripts that do
-      # (scripts/run_live_residual.py, scripts/run_ablation_llm_only.py)
-      # are not part of pytest and are never invoked here.
+      # Installing the llm and api extras too (not just dev) so
+      # tests/test_nim_client.py, tests/test_anthropic_client.py, and
+      # tests/test_api.py all actually run against a mocked client / an
+      # in-process TestClient, instead of skipping via
+      # pytest.importorskip("fastapi") or pytest.importorskip("anthropic")-
+      # style guards - all fully offline (unittest.mock.MagicMock or
+      # FastAPI's own TestClient, never a real socket), so this is free
+      # extra coverage, not a live-key or live-server requirement. Found by
+      # a post-freeze verification pass: the api/ extra was added after this
+      # workflow was written and never wired in here, so all 14
+      # tests/test_api.py cases were silently skipped in CI (242 passed, 1
+      # skipped, not 257) despite passing locally with the extra installed.
+      # No NIM_API_KEY or ANTHROPIC_API_KEY secret is configured or needed:
+      # nothing in the test suite ever calls a real LLM. The two scripts
+      # that do (scripts/run_live_residual.py,
+      # scripts/run_ablation_llm_only.py) are not part of pytest and are
+      # never invoked here.
       - name: Install dependencies
-        run: pip install -e ".[dev,llm]"
+        run: pip install -e ".[dev,llm,api]"
 
       # The float lint (tests/test_no_floats.py) and the null/oracle baseline
       # checks (tests/test_eval_baselines.py) need no separate CI steps -
