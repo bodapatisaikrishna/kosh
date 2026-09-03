@@ -178,7 +178,7 @@ Same `--seed` → byte-identical output, every time. A small companion fixture, 
 
 ## Everything else
 
-Full command reference, every phase's own results, and the complete list of bugs found and fixed along the way (with the exact reasoning that caught each one) live in [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) (the original 7-phase build plan this repo follows).
+Full command reference, every phase's own results, and the complete list of bugs found and fixed along the way (with the exact reasoning that caught each one) live in [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) (the original 7-phase build plan this repo follows). [`ENGINEERING_LOG.md`](ENGINEERING_LOG.md) is the chronological version of the same history — one commit at a time, in the order it actually happened.
 
 ```bash
 pip install -e ".[dev]"                                                        # +.[llm] for the anthropic/openai-backed tests
