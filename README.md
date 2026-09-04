@@ -8,7 +8,7 @@ Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa — plus a forwar
 [![CI](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml/badge.svg)](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml)
 [![Python 3.11 – 3.14](https://img.shields.io/badge/python-3.11%20%E2%80%93%203.14-blue)](pyproject.toml)
 [![Tests](https://img.shields.io/badge/tests-257%20passing-brightgreen)](tests/)
-[![Coverage](https://img.shields.io/badge/coverage-89%25-brightgreen)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-88%25-brightgreen)](tests/)
 [![False-match rate](https://img.shields.io/badge/false--match%20rate-0.00%25-brightgreen)](benchmarks/)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-0-blue)](pyproject.toml)
 
@@ -34,7 +34,7 @@ Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that act
 | **Money found** | ₹76,227.57 in gateway fee / tax / FX overcharges, across 219 records |
 | **Throughput** | ~146k records/sec sustained — verified linear out to 93,030 records |
 | **LLM cost** | $0.056 per 1,000 records — only **0.31%** of records ever reach a model |
-| **Verification** | 257 tests · 89% coverage · reproduced byte-for-byte from a clean clone |
+| **Verification** | 257 tests · 88% coverage · reproduced byte-for-byte from a clean clone |
 
 > The track's own bar: *"Throughput plus measured accuracy plus an honest exception list. One cherry-picked match proves nothing."*
 >
@@ -206,7 +206,7 @@ A 0.00% false-match rate is exactly the kind of claim that should invite suspici
 | **Null + oracle baselines**, frozen as regression fixtures | Scorer drift going unnoticed | `tests/baselines/` |
 | **Determinism test** — two runs, byte-identical output, no duplicate links or ledger entries | Hidden nondeterminism | `make verify-deterministic` |
 | **13 malformed-input cases** — missing column, duplicate header, non-UTF8 bytes, duplicate primary key, row overflow | Silent mis-reconciliation of a broken bank export; every case fails loudly with file, row, and field named | `tests/test_malformed_input.py` |
-| **257 tests, 89% coverage, CI green on Python 3.11 / 3.12 / 3.13 / 3.14**, integer-paise AST lint, pinned lockfile | "It passes on the author's machine" — and `requires-python = ">=3.11"` is an unbounded claim, so the matrix tests the whole range rather than the two it was written on | `.github/workflows/ci.yml`, `pytest` |
+| **257 tests, 88% coverage, CI green on Python 3.11 / 3.12 / 3.13 / 3.14**, integer-paise AST lint, pinned lockfile | "It passes on the author's machine" — and `requires-python = ">=3.11"` is an unbounded claim, so the matrix tests the whole range rather than the two it was written on | `.github/workflows/ci.yml`, `pytest` |
 
 Every frozen benchmark reproduces **byte-for-byte from a clean clone against the committed lockfile** — accuracy, exceptions, fee leakage, and aging all verified identical, not assumed.
 
