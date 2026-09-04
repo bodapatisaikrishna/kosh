@@ -17,7 +17,7 @@ One bank credit is rarely one payment. It's a *batch*: the sum of several settle
 | **False-match rate** | **0.00%** — at every scale, across 6 seeds, under 7 adversarial attacks |
 | **Money found** | **₹10,475.40** in gateway fee / tax / FX overcharges, across 2,000 transactions |
 | **Throughput** | 219,659 records/sec deterministic (8.46ms for 2,000) |
-| **LLM cost** | $0.056 per 1,000 records — 0.32% of records ever reach the model |
+| **LLM cost** | $0.056 per 1,000 records — only 0.3% of records ever reach the model, at both 2k and 10k scale |
 | **Verification** | 257 tests, 89% coverage, reproduced byte-for-byte from a clean clone |
 
 > The track's own bar: *"Throughput plus measured accuracy plus an honest exception list. One cherry-picked match proves nothing."*
@@ -49,9 +49,9 @@ One bank credit is rarely one payment. It's a *batch*: the sum of several settle
 | L0 exact-key | 97.76% | 99.33% | 99.82% | UTR / FK joins |
 | L1 tolerance | 0.78% | 0.26% | 0.06% | UTR rekeyed with a transposed digit |
 | L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
-| L3 agent | residual only | 6 records | — | variances no deterministic rule can decompose |
+| L3 agent | 1 record | 6 records | 29 records | variances no deterministic rule can decompose |
 
-L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens — that *is* the deterministic-first thesis, quantified.
+L3 saw **6 of 1,858 records (0.32%)** on `run_2000` — and **29 of 9,317 (0.31%)** on `run_10000`. That ratio holding flat across a 20× scale increase is the deterministic-first thesis quantified: the residual grows linearly, not explosively, so LLM cost stays a rounding error at any scale. The other 99.7% cost zero tokens.
 
 **Ablation — what each layer, and an all-LLM alternative, actually buys you:**
 
@@ -138,6 +138,7 @@ A 0.00% false-match rate is exactly the kind of claim that should invite suspici
 | Evidence | What it rules out | Source |
 |---|---|---|
 | **7 adversarial attacks**, hand-built to force a false match at each layer — transposed-digit UTRs, coincidental subset sums, a refund that makes two settlements collide, one UTR on two bank rows | "It only works on friendly data" — **0 of 7 produced a false match**; all `REFUSED` or `CORRECT`. Attack `f` found a **real double-claim bug**, fixed, retested | [`benchmarks/adversarial.json`](benchmarks/adversarial.json), `make adversarial` |
+| **L3 run live at full scale** — 29-record residual from `run_10000`, 245 real LLM calls, fresh cache | "The agent claims rest on 6 records" — a real rate (25/29), and it surfaced a turn-budget exhaustion plus the fallback-beats-LLM finding that 6 records hid | [`phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json) |
 | **6 independent seeds**, fresh 2,000-record fixture each | "It's a `seed=42` artifact" — mean 97.71%, stddev 0.36pp, **0.00% false-match on every seed** | [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), `make multiseed` |
 | **Mutation-tested harness** — inject 10 deliberately wrong links, it reports 0.24%; drop half the true matches, recall halves | "The scorer is vacuous / always says zero" — it demonstrably fails when the engine is wrong | `tests/test_eval_baselines.py` |
 | **Null + oracle baselines**, frozen as regression fixtures | Scorer drift going unnoticed | `tests/baselines/` |
@@ -182,7 +183,7 @@ Deterministic first, LLM last — five layers, each seeing only what the one abo
 L0  Deterministic joins   (exact keys)         → 99.33% of matched links
 L1  Tolerance matching    (±amount, ±date)     → 0.26%
 L2  Combinatorial solver  (subset-sum)         → 0.41%
-L3  LLM agent             (residual only)      → 6 records (0.32% of all records)
+L3  LLM agent             (residual only)      → 6 records (0.32%) — 29 (0.31%) at 10k
 L4  Exception ledger      (honest remainder)   → 139 exceptions, every category covered
 ```
 
