@@ -359,7 +359,7 @@ Sample error, verbatim: `orders.csv: missing required column(s): ['invoice_no']`
 
 **Two real domain findings, checked empirically before hard-coding a rule**: a `payment.captured_at` of `""` is the *correct* value for a `status="failed"` payment (never captured, genuinely no timestamp) — not validated as malformed. `bank.credit_paise`/`debit_paise` are deliberately **not** validated non-negative — `data/generator/defects.py`'s settlement-adjustment injector can legitimately drive one below zero (confirmed: seed 100 in Task 1's sweep produced a real `credit_paise: -34800`); non-negativity is enforced on `gross_paise` instead, checked clean across all 4 fixtures.
 
-**12 tests** (`tests/test_malformed_input.py`) cover all 10 required cases — missing column, duplicate header, non-integer amount, negative-where-only-positive-valid, unexpected date format, empty file, headers-only file, non-UTF8 bytes, duplicate primary key, row with more fields than header — plus a clean-fixture sanity check and the failed-payment-empty-date non-false-positive check. All 8 committed benchmarks regenerated and diffed byte-for-byte afterward — zero drift. Commit `0e3a68d`.
+**12 tests** (`tests/test_malformed_input.py`, later 13 — see §11.10) cover all 10 required cases — missing column, duplicate header, non-integer amount, negative-where-only-positive-valid, unexpected date format, empty file, headers-only file, non-UTF8 bytes, duplicate primary key, row with more fields than header — plus a clean-fixture sanity check and the failed-payment-empty-date non-false-positive check. All 8 committed benchmarks regenerated and diffed byte-for-byte afterward — zero drift. Commit `0e3a68d`.
 
 ### 11.6 — Task 6: production properties
 

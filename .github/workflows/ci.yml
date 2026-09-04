@@ -31,7 +31,7 @@ jobs:
       # FastAPI's own TestClient, never a real socket), so this is free
       # extra coverage, not a live-key or live-server requirement. Found by
       # a post-freeze verification pass: the api/ extra was added after this
-      # workflow was written and never wired in here, so all 14
+      # workflow was written and never wired in here, so all 15
       # tests/test_api.py cases were silently skipped in CI (242 passed, 1
       # skipped, not 257) despite passing locally with the extra installed.
       # No NIM_API_KEY or ANTHROPIC_API_KEY secret is configured or needed:
