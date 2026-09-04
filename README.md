@@ -273,12 +273,6 @@ Written plainly, because an honest limitations list *is* the deliverable — a s
 
 ---
 
-## Everything else
-
-| Document | What it answers |
-|---|---|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | *Why it's built this way* — design rationale, every bug and the reasoning that caught it |
-| [`RESULTS.md`](RESULTS.md) | *What's true right now* — every measured number, each naming its source file |
 
 ```bash
 pip install -e ".[dev]"                                                        # +.[llm] for SDK-backed tests, +.[api] for the API
