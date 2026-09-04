@@ -16,7 +16,7 @@ One bank credit is rarely one payment. It's a *batch*: the sum of several settle
 | **Auto-match rate** | 97.74% @ 2,000 records (97.83% @ 10,000) |
 | **False-match rate** | **0.00%** — at every scale, across 6 seeds, under 7 adversarial attacks |
 | **Money found** | **₹10,475.40** in gateway fee / tax / FX overcharges, across 2,000 transactions |
-| **Throughput** | 219,659 records/sec deterministic (8.46ms for 2,000) |
+| **Throughput** | ~146k records/sec sustained — verified linear out to 93,030 records |
 | **LLM cost** | $0.056 per 1,000 records — only 0.3% of records ever reach the model, at both 2k and 10k scale |
 | **Verification** | 257 tests, 89% coverage, reproduced byte-for-byte from a clean clone |
 
@@ -41,6 +41,19 @@ One bank credit is rarely one payment. It's a *batch*: the sum of several settle
 **False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads **0.00%** at every scale tested, including a real, non-scripted LLM run — checked directly against ground truth, not asserted.
 
 **₹10,475.40 in fee leakage** — the industry-standard reconciliation metric, and the number a finance team actually cares about. That's what the merchant was overcharged in gateway fees, tax on those fees, and FX across `run_2000`'s 2,000 transactions (42 records; `FEE_VARIANCE`/`TAX_VARIANCE`/`FX_VARIANCE` only — timing, duplication, and attribution problems are deliberately excluded, since folding them in would inflate the number into meaninglessness). Reported as a **lower bound**, always: a compound error coerced to `UNEXPLAINED_VARIANCE` contains real leakage this number cannot isolate to a single fee leg.
+
+**Throughput scales linearly to 10× the frozen benchmark.** The freeze stops at 9,317 records, so the pipeline was run out to 93,030 to check the claim actually holds — false-match stayed **0.00% at every scale**:
+
+| Scored records | Wall clock | rec/s | Auto-match | False-match |
+|---|---|---|---|---|
+| 9,317 | 40ms | 231,191 | 97.83% | **0.00%** |
+| 23,228 | 111ms | 209,943 | 97.83% | **0.00%** |
+| 46,506 | 318ms | 146,364 | 97.82% | **0.00%** |
+| **93,030** | **638ms** | 145,773 | 97.82% | **0.00%** |
+
+The final doubling has a scaling exponent of **1.006** — linear to three decimal places — and the rate plateaus around 146k records/sec. The higher rate at small N is amortisation, not a faster path: **146k/sec is the honest sustained figure**, not the 231k a 9,317-record run reports. L2's subset-sum is the only superlinear component, and it stays bounded by design (≤40 candidates, 250ms deadline), which is why the curve flattens rather than exploding. Source: [`benchmarks/scaling_100k.json`](benchmarks/scaling_100k.json).
+
+**Seed-robustness and scale, tested together.** The 6-seed sweep above is all at 2,000 records and the 10,000-record result is a single seed — so "0.00% at scale" rested on one seed. Five seeds at **10,000 records** each: 97.83–97.84% auto-match, **100% recall on every seed**, **0.00% false-match on every seed** — tighter spread than at 2,000, as a larger sample should be. Source: [`benchmarks/multiseed_10k.json`](benchmarks/multiseed_10k.json).
 
 **Every layer earns its place** — measured, not asserted:
 
@@ -140,6 +153,7 @@ A 0.00% false-match rate is exactly the kind of claim that should invite suspici
 | **7 adversarial attacks**, hand-built to force a false match at each layer — transposed-digit UTRs, coincidental subset sums, a refund that makes two settlements collide, one UTR on two bank rows | "It only works on friendly data" — **0 of 7 produced a false match**; all `REFUSED` or `CORRECT`. Attack `f` found a **real double-claim bug**, fixed, retested | [`benchmarks/adversarial.json`](benchmarks/adversarial.json), `make adversarial` |
 | **L3 run live at full scale** — 29-record residual from `run_10000`, 245 real LLM calls, fresh cache | "The agent claims rest on 6 records" — a real rate (25/29), and it surfaced a turn-budget exhaustion plus the fallback-beats-LLM finding that 6 records hid | [`phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json) |
 | **6 independent seeds**, fresh 2,000-record fixture each | "It's a `seed=42` artifact" — mean 97.71%, stddev 0.36pp, **0.00% false-match on every seed** | [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), `make multiseed` |
+| **Scaled to 93,030 records** — 10× the frozen benchmark, plus 5 seeds at 10,000 | "It only holds at the sizes you froze" / "0.00% at scale is one seed" — false-match stayed 0.00% at every scale and every seed; wall clock scaled linearly (exponent 1.006) | [`scaling_100k.json`](benchmarks/scaling_100k.json), [`multiseed_10k.json`](benchmarks/multiseed_10k.json) |
 | **Mutation-tested harness** — inject 10 deliberately wrong links, it reports 0.24%; drop half the true matches, recall halves | "The scorer is vacuous / always says zero" — it demonstrably fails when the engine is wrong | `tests/test_eval_baselines.py` |
 | **Null + oracle baselines**, frozen as regression fixtures | Scorer drift going unnoticed | `tests/baselines/` |
 | **Determinism test** — two runs, byte-identical output, no duplicate links or ledger entries | Hidden nondeterminism | `make verify-deterministic` |

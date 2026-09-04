@@ -1,0 +1,40 @@
+{
+  "baseline_from_freeze_10000": {
+    "records_per_second": 231191,
+    "scored": 9317,
+    "wall_seconds": 0.0403
+  },
+  "note": "Scaling validation beyond the 3-scale freeze. Deterministic pipeline only (client=None), seed=42, same generator params as the frozen fixtures. Confirms false-match stays 0.00% and wall-clock scales linearly (exponent 1.006 over the final doubling) out to 93,030 scored records - 10x the largest frozen benchmark. Fixtures generated to temp dirs and deleted; regenerate with the same seed for byte-identical input.",
+  "runs": [
+    {
+      "auto": 0.978302049250904,
+      "exc": 1291,
+      "false": 0.0,
+      "gen_s": 0.797900915145874,
+      "records": 25000,
+      "rps": 209943.41901714235,
+      "scored": 23228,
+      "wall_s": 0.11063933372497559
+    },
+    {
+      "auto": 0.9782393669634025,
+      "exc": 2573,
+      "false": 0.0,
+      "gen_s": 2.0451319217681885,
+      "records": 50000,
+      "rps": 146364.4201476248,
+      "scored": 46506,
+      "wall_s": 0.31774115562438965
+    },
+    {
+      "auto": 0.9782435773406428,
+      "exc": 5135,
+      "false": 0.0,
+      "gen_s": 5.925424098968506,
+      "records": 100000,
+      "rps": 145773.15315860554,
+      "scored": 93030,
+      "wall_s": 0.6381833553314209
+    }
+  ]
+}

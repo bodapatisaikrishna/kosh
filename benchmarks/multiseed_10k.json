@@ -1,0 +1,47 @@
+{
+  "any_false_match": false,
+  "note": "Multi-seed sweep at 10,000 records. The committed benchmarks/multiseed/ sweep runs 6 seeds at 2,000 records; this repeats it at 10,000 so seed-robustness and scale are tested together rather than separately. Deterministic pipeline only.",
+  "records_per_seed": 10000,
+  "results": [
+    {
+      "auto": 0.9783656420691871,
+      "exc": 558,
+      "false": 0.0,
+      "prec": 1.0,
+      "rec": 1.0,
+      "seed": 1
+    },
+    {
+      "auto": 0.9783940664301838,
+      "exc": 558,
+      "false": 0.0,
+      "prec": 1.0,
+      "rec": 1.0,
+      "seed": 7
+    },
+    {
+      "auto": 0.9783192014596973,
+      "exc": 550,
+      "false": 0.0,
+      "prec": 1.0,
+      "rec": 1.0,
+      "seed": 42
+    },
+    {
+      "auto": 0.9782702237521514,
+      "exc": 547,
+      "false": 0.0,
+      "prec": 1.0,
+      "rec": 1.0,
+      "seed": 100
+    },
+    {
+      "auto": 0.9782702237521514,
+      "exc": 553,
+      "false": 0.0,
+      "prec": 1.0,
+      "rec": 1.0,
+      "seed": 2026
+    }
+  ]
+}

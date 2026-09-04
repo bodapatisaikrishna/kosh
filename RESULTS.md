@@ -478,3 +478,29 @@ Three of four are label-only misses with the money exactly right: the model foun
 **13.2 — On this class, the deterministic fallback beats the LLM: 29/29 vs 25/29.** With `client=None` every residual record is blanket-labelled `UNEXPLAINED_VARIANCE`, which for a defect *defined* as undecomposable is correct 100% of the time. The LLM attempts a specific cause and is wrong 4 times in 29. This is not an argument against L3 — it is the sharpest available statement of where L3 does and does not earn its cost: on residuals that can genuinely be decomposed, not on a class whose correct answer is "no single cause explains this."
 
 Both are recorded because the run produced them, not because they help.
+
+
+---
+
+## 14. Validation beyond the frozen scales
+
+Four claims were each proven at exactly one scale. All four were re-tested at the largest scale available, deterministic-only, free to run.
+
+**14.1 — Cash identity ties at 10,000.** The brief's own test: *"reconciled cash vs book cash, with the delta fully explained — if those don't tie, you have a bug."* Previously verified on `run_2000` and `sample_200` only. At `run_10000`: book ₹69,42,78,266 vs reconciled ₹65,27,72,733, a gap of ₹4,15,05,533 — **named to the paisa, remainder exactly 0**.
+
+**14.2 — Determinism holds at 10,000.** `tests/test_determinism.py` runs on `run_2000`. Re-run at 10k: two passes produced identical output across **19,610 links and 550 exceptions**, no duplicates.
+
+**14.3 — Seeds × scale, tested together.** The committed sweep is 6 seeds at 2,000; the 10,000 result was one seed. Those two dimensions had never been crossed, so "0.00% at scale" rested on a single seed. Five seeds at 10,000: auto-match 97.83–97.84%, **100% recall on every seed**, **0.00% false-match on every seed** — a tighter spread than at 2,000 (96.99–97.96%), which is what a larger sample should do. Source: [`benchmarks/multiseed_10k.json`](benchmarks/multiseed_10k.json).
+
+**14.4 — Throughput out to 93,030 records (10× the freeze).** "Throughput" is in the track's own bar and was proven only to 9,317.
+
+| Scored | Wall clock | rec/s | Auto-match | False-match |
+|---|---|---|---|---|
+| 9,317 | 40ms | 231,191 | 97.83% | 0.00% |
+| 23,228 | 111ms | 209,943 | 97.83% | 0.00% |
+| 46,506 | 318ms | 146,364 | 97.82% | 0.00% |
+| 93,030 | 638ms | 145,773 | 97.82% | 0.00% |
+
+Scaling exponents between consecutive points: 1.106, 1.520, **1.006**. The mid-range 1.52 is a single step, not a trend — the final doubling is linear to three decimal places and the rate plateaus at ~146k/sec. L2's subset-sum is the only superlinear component and stays bounded by construction (≤40 candidates, 250ms deadline), which is why the curve flattens rather than blowing up.
+
+**One correction this forced**: the README previously headlined **219,659 rec/s**, a `run_2000` figure. It does not survive scale — the sustained rate is **~146k/sec**, and that is now the number quoted. The higher small-N rates are amortisation, not a faster code path. Source: [`benchmarks/scaling_100k.json`](benchmarks/scaling_100k.json).
