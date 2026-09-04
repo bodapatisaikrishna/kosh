@@ -1,0 +1,63 @@
+{
+  "auto_match_rate": 0.9783192014596973,
+  "backend": "nim",
+  "cost_usd_micros": 463948,
+  "defect_confusion": {
+    "compound_fee_tax_error": {
+      "detected": 25,
+      "misclassified": 4
+    },
+    "consolidated_payout": {
+      "correctly_resolved": 8
+    },
+    "duplicate_payment": {
+      "detected": 101
+    },
+    "fee_mismatch_wrong_tier": {
+      "detected": 91
+    },
+    "fx_variance": {
+      "detected": 55,
+      "misclassified": 3
+    },
+    "gst_variance": {
+      "detected": 72,
+      "misclassified": 1
+    },
+    "missing_settlement": {
+      "detected": 101
+    },
+    "orphan_chargeback": {
+      "detected": 16
+    },
+    "period_cutoff": {
+      "detected": 15,
+      "missed": 1
+    },
+    "refund_misallocation": {
+      "detected": 50
+    },
+    "rounding_drift": {
+      "correctly_resolved": 127
+    },
+    "settlement_split": {
+      "correctly_resolved": 14
+    },
+    "unidentified_credit": {
+      "detected": 16
+    },
+    "utr_mangled": {
+      "correctly_resolved": 22
+    }
+  },
+  "exceptions_total": 550,
+  "false_match_rate": 0.0,
+  "fixtures": "data/fixtures/run_10000",
+  "input_tokens": 616815,
+  "llm_calls": 245,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 70701,
+  "precision": 1.0,
+  "recall": 1.0,
+  "wall_clock_seconds": 1214.3358747959137
+}

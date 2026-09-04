@@ -238,7 +238,7 @@ Leftover unused imports/variables from earlier refactors (a `Counter` no longer 
 - Recall is 99.95% on `run_2000`, not 100%: two settlements net to exactly ₹0, so a bank credit genuinely cannot evidence whether they rode along in a consolidated batch. Kosh refuses rather than guesses — this costs 2 links on purpose.
 - `PERIOD_CUTOFF`'s >4-day threshold is tuned to this fixture's observed distribution, not a law; one boundary case at exactly 3 days is genuinely indistinguishable from a slow weekend and is left as real residual rather than forced.
 - `propose_match`'s rationale-citation check (constraint 5) is a best-effort structural check — does the text contain a known record ID — not a semantic verification that the citation actually supports the claim. Documented as such, not silently assumed to be stronger than it is.
-- The live L3 residual is small (6 records) — a real, non-cherry-picked sample of what this specific fixture produces, but still a small sample; the 4/6-turn-budget-exhaustion rate seen before the fix (§6.4) is an honest signal that budget/prompting has room to improve on genuinely hard cases, not something smoothed over.
+- The live L3 residual on `run_2000` is small (6 records). This was later addressed by running the agent against `run_10000`'s 29-record residual — see §13 — which gave a real rate (25/29, 86%) and surfaced two findings six records could not: a turn-budget exhaustion, and the deterministic fallback outscoring the LLM on this one defect class.
 - No FastAPI layer, no live interactive dashboard — the static HTML report is the deliverable, per the brief's own explicit fallback preference over a broken from-scratch app.
 - The brief specifies Anthropic's Claude; the real live run used NVIDIA NIM's Nemotron because that's the key available. `AnthropicClient` is spec-complete and unit-tested against a mock, never run live. Documented, not hidden.
 - `auto_match_rate` and `hands_off_rate` are currently defined identically (`eval/metrics.py`) — holds until a layer exists that can leave a record neither matched nor exceptioned.
@@ -448,3 +448,33 @@ Everything above (§§1–11) is the submission: code-frozen, benchmarked, judge
 **Dependencies**: `fastapi`/`uvicorn` re-added to `pyproject.toml` as an `api` extra (Task 6.4 removed them for zero usage — that reasoning doesn't apply once they're genuinely imported by `api/main.py`). Exact-pinned to the versions actually resolved (`fastapi==0.141.1`, `uvicorn==0.52.4` — a version bump from the brief's `>=0.110` floor was required: `fastapi==0.110`'s bundled `starlette` TestClient predates a breaking change in the `httpx` version already pulled in transitively by `anthropic`/`openai`). Lockfile regenerated to include the `api` extra's closure.
 
 **Verification**: 244/244 tests passing (229 + 15 new), `pyflakes` clean including `api/`. Verified live, not just in pytest: the API server and dashboard dev server both started and driven through an actual browser — the run form submitted, all four panels rendered with real numbers, an exception row expanded and its trace link resolved with a real `200` (not a 404), the layer-waterfall chart confirmed to render real proportioned bars (not an empty grid), and the historical-benchmark picker confirmed against `freeze_10000`'s real record count (9,317). No `engine/*.py` file was modified.
+
+
+---
+
+## 13. L3 at full scale — the 29-record residual
+
+Every earlier live L3 number came from `run_2000`'s **6-record** residual: too few to state a rate. The agent was therefore run against `run_10000`'s **29-record** residual — same code, same model (`nvidia/nemotron-3-ultra-550b-a55b`), fresh cache so nothing replayed.
+
+**Run**: 29 records, 245 LLM calls, 1,214s wall clock, 616,815 input / 70,701 output tokens, $0.464 at NIM's published rate. Source: [`benchmarks/phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json).
+
+**Headline metrics unchanged**, and this is the point: auto-match 97.83%, false-match **0.00%**, precision 100%, recall 100%, 550 exceptions — identical to the deterministic `freeze_10000` run. L3 sees 29 of 9,317 records; it cannot move the top line, and didn't.
+
+**Per-class result: `compound_fee_tax_error` 25/29 detected (86%).** Every one of the 4 misses was checked by hand against `ground_truth.json`:
+
+| Record | What happened | Amount |
+|---|---|---|
+| `pay_4cXgekcH1NC0sO` | `TAX_VARIANCE` instead of `UNEXPLAINED_VARIANCE` | 130 paise — exact |
+| `pay_l23vdlUo60FAXP` | `FEE_VARIANCE` | 20,579 paise — exact |
+| `pay_z8mbHMXa8wIMih` | `TAX_VARIANCE` | 33 paise — exact |
+| `pay_wkjO7N4t4iTfU1` | `AGENT_INCOMPLETE`, 12 turns exhausted | fallback record-level hint (1,475,545 paise) vs. true 182 paise |
+
+Three of four are label-only misses with the money exactly right: the model found the true variance, then named a single cause because the multi-leg coercion correctly refused to fire on one unexplained leg.
+
+**Two things six records could never have shown:**
+
+**13.1 — The 12-turn budget is not always enough.** Raised from 8 after the original 4-of-6 exhaustion (§4), and every `run_2000` run since showed zero `AGENT_INCOMPLETE` — which made 12 look settled. At 29 records, one exhausted (~3%). The isolation path did exactly its job: the record is on the ledger with the reason attached rather than crashing the batch. But its `amount_at_risk_paise` is `_amount_hint`'s record-level figure, not a measured variance — 1,475,545 paise against a true defect of 182. Honest as "unknown, needs review," misleading if read as ₹ at risk. Trace committed: [`sample_traces_live_10k/agent_incomplete_turn_budget.json`](benchmarks/sample_traces_live_10k/agent_incomplete_turn_budget.json).
+
+**13.2 — On this class, the deterministic fallback beats the LLM: 29/29 vs 25/29.** With `client=None` every residual record is blanket-labelled `UNEXPLAINED_VARIANCE`, which for a defect *defined* as undecomposable is correct 100% of the time. The LLM attempts a specific cause and is wrong 4 times in 29. This is not an argument against L3 — it is the sharpest available statement of where L3 does and does not earn its cost: on residuals that can genuinely be decomposed, not on a class whose correct answer is "no single cause explains this."
+
+Both are recorded because the run produced them, not because they help.

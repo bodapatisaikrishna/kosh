@@ -1,0 +1,235 @@
+{
+  "backend": "nim",
+  "cost_usd_micros": 17064,
+  "final_decision": "exception",
+  "from_cache": false,
+  "input_tokens": 19644,
+  "llm_calls": 8,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "output_tokens": 3292,
+  "record_id": "pay_l23vdlUo60FAXP",
+  "result": {
+    "exception": {
+      "affected": {
+        "payment_id": "pay_l23vdlUo60FAXP",
+        "record_id": "pay_l23vdlUo60FAXP",
+        "source": "payments"
+      },
+      "aging_days": 52,
+      "amount_at_risk_paise": 20579,
+      "category": "FEE_VARIANCE",
+      "evidence_chain": [
+        "Payment pay_l23vdlUo60FAXP (gross 7678600, netbanking, domestic) has fee_paise=153572 and gst_paise=39161, but compute_expected_fee returns fee=145893, gst=26261, net=7506446. The observed net is 7485867. explain_variance on the net delta (-20579 paise) returned UNEXPLAINED. The payment is included in settlement setl_TGDyF3IjtkRnlR (confirmed via bank credit btxn_yeZNpFxr1oMa matching settlement net 65588406). Order order_0FjvXIHhnb4JFb matches payment gross and method. No refund or adjustment found. The 20579 paise discrepancy (fee +7679, GST +12900) cannot be attributed to known fee tier, GST rate, rounding, or refund."
+      ],
+      "recommended_action": "Review fee/GST calculation for netbanking payment pay_l23vdlUo60FAXP. Expected net 7506446 (fee 145893 + GST 26261) vs actual net 7485867 (fee 153572 + GST 39161). Variance of 20579 paise remains UNEXPLAINED after explain_variance decomposition.",
+      "severity": "STANDARD",
+      "suggested_owner": "Finance Ops"
+    }
+  },
+  "source": "payments",
+  "turns": [
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "pay_l23vdlUo60FAXP",
+            "source": "payments"
+          },
+          "name": "get_record",
+          "result": {
+            "captured_at": "2026-07-10T21:57:00",
+            "fee_paise": 153572,
+            "gross_paise": 7678600,
+            "gst_paise": 39161,
+            "international": false,
+            "method": "netbanking",
+            "net_paise": 7485867,
+            "order_id": "order_0FjvXIHhnb4JFb",
+            "payment_id": "pay_l23vdlUo60FAXP",
+            "refund_id": null,
+            "refund_paise": 0,
+            "settlement_id": "setl_TGDyF3IjtkRnlR",
+            "status": "captured"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "gross_paise": 7678600,
+            "international": false,
+            "method": "netbanking"
+          },
+          "name": "compute_expected_fee",
+          "result": {
+            "result": {
+              "fee_paise": 145893,
+              "gst_paise": 26261,
+              "net_paise": 7506446
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "context": {
+              "gross_paise": 7678600,
+              "international": false,
+              "method": "netbanking"
+            },
+            "expected_paise": 7506446,
+            "observed_paise": 7485867
+          },
+          "name": "explain_variance",
+          "result": {
+            "result": {
+              "cause": "UNEXPLAINED",
+              "delta_paise": -20579,
+              "detail": "-20579 paise not explained by fee tier, GST rate, a known refund, or rounding"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "setl_TGDyF3IjtkRnlR",
+            "source": "settlements"
+          },
+          "name": "get_record",
+          "result": {
+            "result": {
+              "adjustment_paise": 0,
+              "fee_paise": 1329311,
+              "gross_paise": 69559570,
+              "gst_paise": 250794,
+              "net_paise": 65588406,
+              "num_payments": 29,
+              "settled_at": "2026-07-14",
+              "settlement_id": "setl_TGDyF3IjtkRnlR",
+              "utr": "KKBKN42526612197"
+            },
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "record_id": "order_0FjvXIHhnb4JFb",
+            "source": "orders"
+          },
+          "name": "get_record",
+          "result": {
+            "currency": "INR",
+            "customer_id": "cust_GxHNX5yQeb0B",
+            "gross_paise": 7678600,
+            "intended_method": "netbanking",
+            "invoice_no": "INV-2026-004105",
+            "order_date": "2026-07-10",
+            "order_id": "order_0FjvXIHhnb4JFb",
+            "status": "paid"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 100000,
+            "date_window_days": 5,
+            "limit": 10,
+            "record_id": "setl_TGDyF3IjtkRnlR"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [
+              {
+                "balance_paise": 2898238540,
+                "bank_txn_id": "btxn_yeZNpFxr1oMa",
+                "credit_paise": 65588406,
+                "debit_paise": 0,
+                "narration": "IMPS/KKBKN42526612197/RAZORPAYSOFT/",
+                "table": "bank",
+                "value_date": "2026-07-14"
+              }
+            ],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_tolerance_paise": 50000,
+            "date_window_days": 5,
+            "limit": 20,
+            "record_id": "pay_l23vdlUo60FAXP"
+          },
+          "name": "find_candidates",
+          "result": {
+            "result": [],
+            "status": "ok"
+          }
+        }
+      ]
+    },
+    {
+      "assistant_text": null,
+      "tool_calls": [
+        {
+          "arguments": {
+            "amount_at_risk_paise": 20579,
+            "category": "FEE_VARIANCE",
+            "rationale": "Payment pay_l23vdlUo60FAXP (gross 7678600, netbanking, domestic) has fee_paise=153572 and gst_paise=39161, but compute_expected_fee returns fee=145893, gst=26261, net=7506446. The observed net is 7485867. explain_variance on the net delta (-20579 paise) returned UNEXPLAINED. The payment is included in settlement setl_TGDyF3IjtkRnlR (confirmed via bank credit btxn_yeZNpFxr1oMa matching settlement net 65588406). Order order_0FjvXIHhnb4JFb matches payment gross and method. No refund or adjustment found. The 20579 paise discrepancy (fee +7679, GST +12900) cannot be attributed to known fee tier, GST rate, rounding, or refund.",
+            "recommended_action": "Review fee/GST calculation for netbanking payment pay_l23vdlUo60FAXP. Expected net 7506446 (fee 145893 + GST 26261) vs actual net 7485867 (fee 153572 + GST 39161). Variance of 20579 paise remains UNEXPLAINED after explain_variance decomposition.",
+            "severity": "LOW"
+          },
+          "name": "raise_exception",
+          "result": {
+            "category_coerced_from": null,
+            "exception": {
+              "affected": {
+                "payment_id": "pay_l23vdlUo60FAXP",
+                "record_id": "pay_l23vdlUo60FAXP",
+                "source": "payments"
+              },
+              "aging_days": 52,
+              "amount_at_risk_paise": 20579,
+              "category": "FEE_VARIANCE",
+              "evidence_chain": [
+                "Payment pay_l23vdlUo60FAXP (gross 7678600, netbanking, domestic) has fee_paise=153572 and gst_paise=39161, but compute_expected_fee returns fee=145893, gst=26261, net=7506446. The observed net is 7485867. explain_variance on the net delta (-20579 paise) returned UNEXPLAINED. The payment is included in settlement setl_TGDyF3IjtkRnlR (confirmed via bank credit btxn_yeZNpFxr1oMa matching settlement net 65588406). Order order_0FjvXIHhnb4JFb matches payment gross and method. No refund or adjustment found. The 20579 paise discrepancy (fee +7679, GST +12900) cannot be attributed to known fee tier, GST rate, rounding, or refund."
+              ],
+              "recommended_action": "Review fee/GST calculation for netbanking payment pay_l23vdlUo60FAXP. Expected net 7506446 (fee 145893 + GST 26261) vs actual net 7485867 (fee 153572 + GST 39161). Variance of 20579 paise remains UNEXPLAINED after explain_variance decomposition.",
+              "severity": "STANDARD",
+              "suggested_owner": "Finance Ops"
+            },
+            "status": "ok",
+            "unexplained_leg_count": 1
+          }
+        }
+      ]
+    }
+  ]
+}

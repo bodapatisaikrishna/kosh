@@ -84,7 +84,7 @@ L3 saw **6 of 1,858 records (0.32%)**. The other 99.68% cost zero LLM tokens —
 
 The right-hand column is the half most systems get wrong: four defect types exist specifically to punish an engine that flags everything it doesn't instantly recognise. Precision on *not* raising a false alarm is scored as hard as recall on real defects. Every one of these 13 classes is exact; the 14th is the live-LLM one, below.
 
-\* `compound_fee_tax_error` is L3's live residual, not deterministic. Across **4 real live runs** of the same 6-record residual, detected counts were 6, 4, 5, and 3 out of 6 — genuine model investigation-depth variance, not a code difference. Reported as the honest range rather than the best run. See [Limitations](#limitations).
+\* `compound_fee_tax_error` is L3's live residual, not deterministic, so it varies run to run with how thoroughly the model investigates. The best evidence is the larger sample: run live against `run_10000`'s **29-record residual**, L3 scored **25/29 (86%)** — see [the full-scale L3 run](#l3-at-full-scale-29-records) below. The four `run_2000` runs (6, 4, 5, 3 out of 6) are the same behaviour on a sample too small to draw a rate from. See [Limitations](#limitations).
 
 **Exception aging** against the industry 48-hour SLA for open reconciliation breaks: median 35 days, max 89, 129 of 139 breaching. **This is not a live queue** — `run_2000` is a fixed, historical 3-month fixture scored against its own end date, so aging this large is the expected result of scoring a static snapshot, not a finding about operational neglect. Stated here rather than quietly omitted, because the number looks alarming and isn't.
 
@@ -104,6 +104,30 @@ The right-hand column is the half most systems get wrong: four defect types exis
 Zero `AGENT_INCOMPLETE`, zero false matches, zero invented categories — verified by hand against ground truth for every asserted link, category, and amount, not read off the summary. 51 real LLM calls, 487s wall clock, **$0.104 total → $0.056 per 1,000 records** (the brief's target is <$0.50/1000), computed from real token counts against NIM's published rate — not estimated. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/).
 
 **The structural fix behind it**: L3's tool layer recomputes the category to `UNEXPLAINED_VARIANCE` — and the amount to the true net delta, not one leg's — whenever the model's own tool-call history shows 2+ comparisons it couldn't decompose. The prompt asks; the tool layer *enforces*. It fires when the evidence supports it and correctly refuses on weaker evidence, rather than papering over real run-to-run variance by guessing.
+
+### L3 at full scale (29 records)
+
+The `run_2000` residual is only 6 records — too few to claim a rate from. So the agent was also run live against **`run_10000`'s 29-record residual**: 245 LLM calls, 20 minutes, `nvidia/nemotron-3-ultra-550b-a55b`. Source: [`benchmarks/phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json).
+
+**Headline metrics did not move.** Auto-match 97.83%, false-match **0.00%**, precision 100%, recall 100%, 550 exceptions — byte-identical to the deterministic `freeze_10000` run. L3 touches 29 of 9,317 records; it cannot and did not shift the top-line numbers.
+
+**On its own defect class, L3 scored 25/29 (86%)** — a real rate from a real sample, replacing four noisy readings off six records. The 4 it got wrong, verified by hand against `ground_truth.json`:
+
+| Record | Outcome | Amount |
+|---|---|---|
+| `pay_4cXgekcH1NC0sO` | labelled `TAX_VARIANCE`, not `UNEXPLAINED_VARIANCE` | ₹1.30 — **exact** |
+| `pay_l23vdlUo60FAXP` | labelled `FEE_VARIANCE` | ₹205.79 — **exact** |
+| `pay_z8mbHMXa8wIMih` | labelled `TAX_VARIANCE` | ₹0.33 — **exact** |
+| `pay_wkjO7N4t4iTfU1` | `AGENT_INCOMPLETE` — exhausted its 12-turn budget | fallback hint, not a computed claim |
+
+Three of the four are **label-only misses with the money exactly right** — the model found the real variance, then named one cause instead of "multiple causes, undecomposable," because the multi-leg coercion correctly declined to fire on insufficient evidence.
+
+**Two findings the 6-record sample could never have surfaced:**
+
+1. **A turn-budget exhaustion at 29 records** (1 of 29, ~3%). Every `run_2000` run reported zero `AGENT_INCOMPLETE`, which made the 12-turn budget look sufficient. At scale it isn't, always. The fallback did its job — the record is on the ledger, flagged for review, with the reason attached — but its stated amount is a record-level hint, not a measured variance, and reads far larger than the true ₹1.82. Trace: [`sample_traces_live_10k/agent_incomplete_turn_budget.json`](benchmarks/sample_traces_live_10k/agent_incomplete_turn_budget.json).
+2. **The deterministic fallback outscores the LLM on this class** — 29/29 vs 25/29. Not a paradox: with no client, every residual record is blanket-labelled `UNEXPLAINED_VARIANCE`, which for `compound_fee_tax_error` is definitionally correct every time. The LLM attempts a specific cause and is wrong 4 times out of 29. **On this one class, the cheap fallback wins.** L3's value is on residuals that are genuinely decomposable — not on a class defined by being undecomposable.
+
+Reported because it's what the run produced, not because it flatters the architecture.
 
 ---
 
@@ -221,7 +245,7 @@ Same `--seed` → byte-identical output, every time. A small committed fixture, 
 Written plainly, because an honest limitations list *is* the deliverable — a shorter list with something suppressed would be a worse submission.
 
 - **Recall is 99.95% on `run_2000`, not 100%.** Two settlements net to exactly ₹0, so a bank credit genuinely cannot evidence whether they rode along in a consolidated payout — a zero-value term is degenerate in a subset-sum. Refusing costs 2 links; guessing would risk the false-match rate this project exists to protect.
-- **L3's category for a compound fee+GST error can be a single-cause label** when the model's own investigation surfaces only one unexplained leg. Across 4 real live runs: 6, 4, 5, 3 detected out of 6. In 3 of 4 runs every amount was exact to the paisa; in the 4th, one amount was **materially understated** (₹15.37 reported vs. the true ₹41.19) because the model checked the fee leg and never called `explain_variance` on the GST leg. The fee-leg arithmetic was exactly correct — this is an incomplete *investigation* reported honestly, not a computation error, and not something the tool layer will guess its way past. Sources: [`phase5_live_residual_run3.json`](benchmarks/phase5_live_residual_run3.json), [`run4.json`](benchmarks/phase5_live_residual_run4.json).
+- **L3's category for a compound fee+GST error can be a single-cause label** when the model's investigation surfaces only one unexplained leg. At full scale — `run_10000`'s 29-record residual — it scored **25/29 (86%)**; three of the four misses named one cause instead of "undecomposable" while getting the money *exactly* right, and one exhausted its 12-turn budget into `AGENT_INCOMPLETE`. On this specific class the deterministic fallback actually scores better (29/29), because blanket-labelling everything `UNEXPLAINED_VARIANCE` is definitionally correct for a defect defined by being undecomposable. L3 earns its place on residuals that *can* be decomposed, not this one. Sources: [`phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json), [`sample_traces_live_10k/`](benchmarks/sample_traces_live_10k/).
 - **The brief specifies Anthropic's Claude**; the real agent ran against NVIDIA NIM's Nemotron, because that's the key that was available. `AnthropicClient` is spec-complete and unit-tested against a mock, never run live. Documented, not hidden.
 - **`PERIOD_CUTOFF`'s >4-day threshold is tuned to this fixture's distribution**, not a law — on a different merchant's cycle it needs re-derivation, and one boundary case at exactly 3 days is genuinely indistinguishable from a slow weekend.
 - **Defect rates are tuned so all 14 types appear at N=2000**; at N=500 some fire once or twice, so per-class recall at that scale is a small-sample number.

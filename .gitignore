@@ -21,3 +21,4 @@ data/fixtures/*
 dashboard/node_modules/
 dashboard/.next/
 dashboard/next-env.d.ts
+traces_10k/
