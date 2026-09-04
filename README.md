@@ -1,7 +1,7 @@
 # Kosh — AI Finance Controller
 
 [![CI](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml/badge.svg)](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml)
-[![Python 3.11 | 3.12](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](pyproject.toml)
+[![Python 3.11 – 3.14](https://img.shields.io/badge/python-3.11%20%E2%80%93%203.14-blue)](pyproject.toml)
 [![Tests](https://img.shields.io/badge/tests-257%20passing-brightgreen)](tests/)
 [![False-match rate](https://img.shields.io/badge/false--match%20rate-0.00%25-brightgreen)](benchmarks/)
 
@@ -158,7 +158,7 @@ A 0.00% false-match rate is exactly the kind of claim that should invite suspici
 | **Null + oracle baselines**, frozen as regression fixtures | Scorer drift going unnoticed | `tests/baselines/` |
 | **Determinism test** — two runs, byte-identical output, no duplicate links or ledger entries | Hidden nondeterminism | `make verify-deterministic` |
 | **13 malformed-input cases** — missing column, duplicate header, non-UTF8 bytes, duplicate primary key, row overflow | Silent mis-reconciliation of a broken bank export; every case fails loudly with file, row, and field named | `tests/test_malformed_input.py` |
-| **257 tests, 89% coverage, CI on Python 3.11 + 3.12**, integer-paise AST lint, pinned lockfile | "It passes on the author's machine" | `.github/workflows/ci.yml`, `pytest` |
+| **257 tests, 89% coverage, CI green on Python 3.11 / 3.12 / 3.13 / 3.14**, integer-paise AST lint, pinned lockfile | "It passes on the author's machine" — and `requires-python = ">=3.11"` is an unbounded claim, so the matrix tests the whole range rather than the two it was written on | `.github/workflows/ci.yml`, `pytest` |
 
 Every frozen benchmark reproduces **byte-for-byte from a clean clone against the committed lockfile** — accuracy, exceptions, fee leakage, and aging all verified identical, not assumed.
 

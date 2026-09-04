@@ -504,3 +504,36 @@ Four claims were each proven at exactly one scale. All four were re-tested at th
 Scaling exponents between consecutive points: 1.106, 1.520, **1.006**. The mid-range 1.52 is a single step, not a trend — the final doubling is linear to three decimal places and the rate plateaus at ~146k/sec. L2's subset-sum is the only superlinear component and stays bounded by construction (≤40 candidates, 250ms deadline), which is why the curve flattens rather than blowing up.
 
 **One correction this forced**: the README previously headlined **219,659 rec/s**, a `run_2000` figure. It does not survive scale — the sustained rate is **~146k/sec**, and that is now the number quoted. The higher small-N rates are amortisation, not a faster code path. Source: [`benchmarks/scaling_100k.json`](benchmarks/scaling_100k.json).
+
+
+---
+
+## 15. Robustness sweep — degenerate inputs, solver cost on real data, memory, Python range
+
+**15.1 — Degenerate and minimum-size inputs.** Nothing below 200 records had ever been run. The brief's own floor is 50.
+
+| Orders | Scored | Auto-match | False-match | Cash ties |
+|---|---|---|---|---|
+| 1 | 1 | 100.00% | 0.00% | yes |
+| 2 | 3 | 33.33% | 0.00% | yes |
+| 5 | 6 | 83.33% | 0.00% | yes |
+| 10 | 11 | 90.91% | 0.00% | yes |
+| 50 (brief's minimum) | 43 | 95.35% | 0.00% | yes |
+| 200 | 185 | 97.84% | 0.00% | yes |
+
+No crashes, no divide-by-zero on an empty layer, and the book-vs-reconciled identity ties to the paisa at every size including a single-record dataset. Low auto-match at n=2 is not a defect: the generator's `max(1, ...)` floor guarantees every defect type appears at least once, so a 3-record dataset is almost entirely defective by construction.
+
+**15.2 — L2's published p99 is a stress number; on real data the solver is ~2,500× faster.** `benchmarks/phase4_solver_perf.json` reports p99 = 49.8ms against a 250ms budget, measured on 2,000 synthetic worst-case instances (40 candidates each). Re-run to confirm it still holds: p99 **44.9ms**, max 99.2ms, status counts identical (`SOLVED` 919 / `AMBIGUOUS` 1004 / `NONE` 77 — deterministic).
+
+Instrumenting a *real* run tells a different and equally honest story:
+
+| Fixture | L2 invocations | p50 | max | Statuses seen |
+|---|---|---|---|---|
+| `run_2000` | 22 | 0.005ms | 0.018ms | `SOLVED` 8, `NONE` 14 |
+| `run_10000` | 24 | 0.004ms | 0.015ms | `SOLVED` 8, `NONE` 16 |
+
+On production-shaped data the solver is invoked ~24 times and never exceeds **0.018ms** — four orders of magnitude inside its budget — and `AMBIGUOUS` never occurs naturally; it only fires under the deliberately-constructed adversarial attack `g`. The synthetic profile measures the safety margin, not the cost.
+
+**15.3 — Memory at 100,000 orders: 319 MB peak RSS**, producing 192,741 links and 5,135 exceptions. Never previously measured.
+
+**15.4 — Python version range.** `pyproject.toml` declares `requires-python = ">=3.11"` — unbounded — while CI tested only 3.11 and 3.12. Verified 3.14 locally with the full `[dev,llm,api]` extras first, then widened the matrix. All four now green on GitHub runners: **257 passed on 3.11, 3.12, 3.13 and 3.14** (run 33867354652).
