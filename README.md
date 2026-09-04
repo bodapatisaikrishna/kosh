@@ -235,6 +235,17 @@ make demo-cash           # cash forecast from an operator-chosen viewpoint
 pytest                   # 257 tests
 ```
 
+**Deeper dives**, once the extras are installed (`pip install -e ".[dev]"` — add `.[llm]` for SDK-backed tests, `.[api]` for the API):
+
+```bash
+python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
+python -m engine.l2_subset --profile --trials 2000 --seed 42                   # L2 solver timing
+export NIM_API_KEY=...
+python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultra-550b-a55b
+```
+
+`make gen`, `sample`, `test`, `trace`, `eval-null`, `eval-oracle`, `eval-l0l1`, `eval-l0l1l2`, `eval-full`, `l2-profile`, `l3-profile`, `demo`, `demo-cash`, `multiseed`, `adversarial`, `verify-deterministic`, `freeze`, `api`, `dashboard` wrap the same commands.
+
 ---
 
 ## Architecture
@@ -320,18 +331,6 @@ Written plainly, because an honest limitations list *is* the deliverable — a s
 - **`auto_match_rate` and `hands_off_rate` are currently identical** (see `eval/metrics.py`) — holds until a layer can leave a record neither matched nor exceptioned.
 - **The fixture's UTR-truncation defect either leaves the UTR intact or removes it entirely** — L0's partial-prefix branch is exercised by unit test, not by `run_2000` itself.
 - **Volume seasonality, ticket sizes, and defect rates are hand-tuned** to look like a mid-size D2C merchant; not calibrated against a real portfolio. The bank calendar covers 2025–2026 national holidays only, not state-specific ones.
-
----
-
-```bash
-pip install -e ".[dev]"                                                        # +.[llm] for SDK-backed tests, +.[api] for the API
-python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
-python -m engine.l2_subset --profile --trials 2000 --seed 42                   # L2 solver timing
-export NIM_API_KEY=...
-python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultra-550b-a55b
-```
-
-`make gen`, `sample`, `test`, `trace`, `eval-null`, `eval-oracle`, `eval-l0l1`, `eval-l0l1l2`, `eval-full`, `l2-profile`, `l3-profile`, `demo`, `demo-cash`, `multiseed`, `adversarial`, `verify-deterministic`, `freeze`, `api`, `dashboard` wrap the same commands.
 
 ---
 
