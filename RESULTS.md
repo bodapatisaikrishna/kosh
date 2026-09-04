@@ -1,8 +1,10 @@
 # Kosh — Full Results Log
 
-**Snapshot date: 2026-09-02, commit `2ae30aa`.** This is a single consolidated record of every number, every success, and every failure produced while building Kosh — the AI Finance Controller for Razorpay Buildathon 2026, Track 04. It is deliberately exhaustive: `README.md` gives the curated headline story and `ARCHITECTURE.md` gives the narrative build history; this file is the detailed ledger underneath both, kept as one file so numbers don't drift across three places. If you regenerate any benchmark, re-check the numbers here rather than trusting this file blindly — every figure below names its source file.
+**Snapshot: 2026-09-04.** This is a single consolidated record of every number, every success, and every failure produced while building Kosh — the AI Finance Controller for Razorpay Buildathon 2026, Track 04. It is deliberately exhaustive: `README.md` gives the curated headline story and `ARCHITECTURE.md` gives the narrative build history; this file is the detailed ledger underneath both, kept as one file so numbers don't drift across three places. If you regenerate any benchmark, re-check the numbers here rather than trusting this file blindly — every figure below names its source file.
 
-**§§1–10 below are the original build (through commit `b36e02f`, 2026-09-01) — left as originally written.** §11 covers the hardening sprint that followed (all 7 tasks, this same date range) — multi-seed validation, adversarial red-teaming, an all-LLM ablation, malformed-input handling, production hardening, and a final re-freeze, run against the completed build below. **Code is frozen as of §11.8** — no further engine commits after this point; anything found later goes into Known Limitations, not a rushed fix against an already-reported number.
+**How this file is laid out.** §§1–10 are the original seven-phase build (through commit `85350a3`), left as originally written. §11 is the hardening sprint that followed — multi-seed validation, adversarial red-teaming, an all-LLM ablation, malformed-input handling, production hardening, and a final re-freeze. **Code is frozen as of §11.8**: no further engine commits, and anything found later goes into Known Limitations rather than a rushed fix against an already-reported number. §§12–15 are what came after the freeze — the FastAPI/dashboard stretch goals, the full-scale L3 run, validation past the frozen scales, and a robustness sweep — none of which touched the engine.
+
+Test counts quoted inside a section are the count *at that point in the build*, not today's. Current state: **257 tests passing** on Python 3.11 / 3.12 / 3.13 / 3.14.
 
 ---
 
@@ -138,7 +140,7 @@ This project's own judging bar says an honest exception list beats a shorter, su
 
 **Found**: first live L3 batch run died with `openai.InternalServerError: Error code: 504` and every result was lost — `asyncio.gather` propagates the first exception and discards every sibling result.
 **Fixed**: added `TransientBackendError` (distinct from `RateLimitedError` — a 5xx means the request was never processed, so retrying is safe), retried with the same exponential backoff; each record in `run_l3` now runs in isolation so one failure becomes its own honest `AGENT_INCOMPLETE` ledger entry instead of destroying five completed investigations.
-**Verified**: two new tests (a transient error retried then succeeds; a permanently-failing record leaves its sibling's result intact). Commit `f7b7ebb`.
+**Verified**: two new tests (a transient error retried then succeeds; a permanently-failing record leaves its sibling's result intact). Commit `bf9db67`.
 
 ### 6.2 — A 504 wasn't the only real backend failure
 
@@ -148,79 +150,79 @@ Later in the same live-run effort, the model returned `NotFoundError: 404` (a ge
 
 **Found**: during the original Phase 5 build, a live run showed the model doing genuinely excellent reasoning — correctly tracing payment → settlement → the settlement's own bank credit — then calling `propose_match` with all three IDs. The tool's `_infer_link_type` inferred a link type from table names alone: any (payment, bank) pair became `"chargeback_payment"`, regardless of whether that bank row was actually a debit. The tool asserted "this payment has a chargeback" against what was actually its own settlement credit — a confirmed false link, exactly the class of error this whole project exists to hold at 0%.
 **Fixed**: link-type inference now checks the bank row's actual `debit_paise`; a credit is rejected outright with a `ToolError` naming the real scope boundary (`propose_match` only asserts links to the record under investigation, not between two other bundled IDs).
-**Verified**: new regression tests — the bad case is rejected outright (not partially applied), the genuine chargeback case still links correctly. Commit `81cc88c`. The run that surfaced this was NOT committed as the reference synthetic set, precisely because it contained a confirmed false match.
+**Verified**: new regression tests — the bad case is rejected outright (not partially applied), the genuine chargeback case still links correctly. Commit `78d339f`. The run that surfaced this was NOT committed as the reference synthetic set, precisely because it contained a confirmed false match.
 
 ### 6.4 — `max_turns=8` was one turn too tight
 
 **Found**: reading raw trace files for all 4 `AGENT_INCOMPLETE` cases from the first clean live residual run (§4, Attempt 1) — every one showed genuinely thorough, correct investigation that simply ran out of budget by roughly one turn.
 **Fixed**: `DEFAULT_MAX_TURNS` 8 → 12.
 **Side effect caught in the same pass**: the trace cache key (`_cache_key`) didn't include `max_turns` — changing the budget without also bumping `PROMPT_VERSION` would have silently replayed a stale trace from the old budget forever. Fixed by adding `max_turns` to the key directly.
-**Verified**: new test proving a changed `max_turns` misses the cache correctly. Commit `9a9ff61`.
+**Verified**: new test proving a changed `max_turns` misses the cache correctly. Commit `393b1fb`.
 
 ### 6.5 — The model invented its own exception categories
 
 **Found**: Attempt 2's live run (§4) returned `"FEE_CALCULATION_VARIANCE"` and `"unexplained_fee_variance"` — neither a real category — accepted with zero validation, silently breaking category-keyed scoring downstream.
 **Fixed**: `raise_exception` now validates `category` against `RECOMMENDED_ACTIONS`'s keys (also exposed as a JSON-schema `enum` on the tool spec, so the model sees the valid list up front), rejecting an invalid one with a `ToolError` that names the real options — giving the model a chance to self-correct within its remaining turns rather than polluting the ledger.
-**Verified**: new test confirms an invented category is rejected and the loop doesn't silently close. Commit `9a9ff61`.
+**Verified**: new test confirms an invented category is rejected and the loop doesn't silently close. Commit `393b1fb`.
 
 ### 6.6 — An exception cited the wrong amount entirely
 
 **Found**: the same Attempt 2 run reported `amount_at_risk_paise: 58700` (₹587, the payment's full gross amount) for a defect whose real variance was 142 paise (₹1.42) — the model conflated "the transaction size" with "the amount actually at risk."
 **Fixed**: the `raise_exception` tool schema now explicitly documents `amount_at_risk_paise` as "the specific unexplained amount... NOT the payment's or settlement's full gross/net amount," with a worked example.
-**Verified**: Attempt 4's re-run shows 5 of 6 amounts exact to the paisa against ground truth — direct before/after evidence the fix worked. Commit `9a9ff61`.
+**Verified**: Attempt 4's re-run shows 5 of 6 amounts exact to the paisa against ground truth — direct before/after evidence the fix worked. Commit `393b1fb`.
 
 ### 6.7 — L3's own exceptions were invisible to per-defect-class scoring
 
 **Found**: after fixing §6.5–6.6, `compute_defect_confusion` still showed `compound_fee_tax_error: {detected: 2, missed: 4}` — but 4 of those "missed" cases had, in fact, been correctly raised as exceptions. Root cause: `raise_exception`'s `affected` dict only ever carried `{"record_id": ..., "source": ...}`; `eval/metrics.py`'s `CATEGORY_IDENTITY_FIELDS` for `FEE_VARIANCE`/`TAX_VARIANCE`/etc. looks for `"payment_id"`, a field that was never there. A correct exception, invisible to scoring, looks identical to a missed one.
 **Fixed**: `affected` now also carries the source-specific ID field (`payment_id`/`bank_txn_id`/etc, via the same `_ID_FIELD` map `get_record` already uses), in both `raise_exception` and its `HIGH_VALUE_MATCH_REVIEW` companion, and in `l3_agent.py`'s upstream-failure fallback path. Also added `AGENT_INCOMPLETE` to `CATEGORY_IDENTITY_FIELDS` so a turn-budget exhaustion now scores as "misclassified" (something was raised) rather than "missed" (nothing was raised).
-**Verified**: new tests construct a real `FEE_VARIANCE` exception via `raise_exception` and confirm `compute_defect_confusion` now counts it correctly; a second test does the same for `AGENT_INCOMPLETE`. Commit `9a9ff61`.
+**Verified**: new tests construct a real `FEE_VARIANCE` exception via `raise_exception` and confirm `compute_defect_confusion` now counts it correctly; a second test does the same for `AGENT_INCOMPLETE`. Commit `393b1fb`.
 
 ### 6.8 — Fresh-clone `pytest` failed outright (7 tests)
 
 **Found**: by actually running `git clone && pytest` — the judge's most natural command — rather than the sequence used during development (`make demo` first, which happens to generate the needed fixture as a side effect, masking the bug).
 **Fixed**: `tests/conftest.py` gained a session-scoped autouse fixture that regenerates `data/fixtures/run_2000` only if genuinely absent — regeneration is deterministic and takes under a second, so this is the honest fix rather than committing derived CSVs as source.
-**Verified**: fresh clone + clean venv + `git clone && pytest` alone: 151/151 (was 144 passed / 7 failed); the auto-generated fixture reproduces committed benchmark numbers to 1e-12. Commit `f554f90`.
+**Verified**: fresh clone + clean venv + `git clone && pytest` alone: 151/151 (was 144 passed / 7 failed); the auto-generated fixture reproduces committed benchmark numbers to 1e-12. Commit `a0c6894`.
 
 ### 6.9 — L2 and L3 both contributed exactly zero on the original fixture
 
 **Found**: not a crash — an honestly-reported result that nonetheless left the architecture's core claim ("five layers, each earning its place") unproven on the actual demo data. Root cause: the original generator was too kind, not the engine too good.
 **Fixed**: two new realistic defect injectors — `consolidated_payout` (one bank credit paying 2–4 same-day settlements, no per-settlement UTR, solvable only by subset-sum) and `compound_fee_tax_error` (fee tier AND tax rate both wrong at once, so no single-cause hypothesis decomposes it — genuine L3 work). Two choices deliberately cut against making the numbers look easy: L1's narration-similarity gate was made *stricter* so it correctly rejects consolidated payouts on amount rather than unfamiliar wording; a genuine ₹0-net-settlement ambiguity was fixed by excluding degenerate zero-value subset-sum terms rather than guessing, costing 2 links of recall (99.95%, not 100%) on purpose.
-**Verified**: full re-run at all 3 scales, false-match rate held at 0.00% throughout; L2 and L3 now measurably non-zero (§3). Commit `c004d45`.
+**Verified**: full re-run at all 3 scales, false-match rate held at 0.00% throughout; L2 and L3 now measurably non-zero (§3). Commit `7e43eb9`.
 
 ### 6.10 — `cost_usd_micros` was silently hardcoded to 0, always
 
 **Found**: while checking Phase 5's own "<$0.50/1000 records" cost checkpoint against Attempt 4's live run — there was no real number to check. `EngineMeta.cost_usd_micros` existed in the contract and was correctly threaded through `eval/metrics.py`'s `cost_per_1000_records` formula, but nothing anywhere ever *set* it. Every committed benchmark, including live runs with real tokens billed against a real account, reported exactly 0.
 **Fixed**: `engine/llm/pricing.py` — a small per-model $/1M-token table (NIM's rate for `nvidia/nemotron-3-ultra-550b-a55b` sourced from its public OpenRouter listing, since NVIDIA doesn't publish per-token pricing for the hosted NIM preview endpoint itself; Anthropic's official rates included for the never-live `AnthropicClient`) feeding `cost_usd_micros(model, input_tokens, output_tokens)`, wired through `l3_agent.py`'s per-trace and aggregate cost, `pipeline.py`'s meta construction, and a new "LLM cost" headline card in `eval/report.py` — shown only when `llm_calls > 0`, so a deterministic-only run never shows a misleading "$0.00".
-**Verified**: recomputed retroactively from already-recorded token counts (no new API calls needed) for the two existing live-run artifacts; new unit tests for the pricing function (known model, zero tokens, unknown model reports 0 not a guess, result is always an int). Commit `2e25649`.
+**Verified**: recomputed retroactively from already-recorded token counts (no new API calls needed) for the two existing live-run artifacts; new unit tests for the pricing function (known model, zero tokens, unknown model reports 0 not a guess, result is always an int). Commit `c4ae195`.
 
 ### 6.11 — `aging_days` was silently hardcoded to 0, always
 
 **Found**: the exact same failure shape as §6.10, found by the same discipline — swept every field in `engine/contract.py` after finding the cost bug. `aging_days` is part of the brief's own exception-ledger shape and its own dashboard column; every row read "0d," for every exception, at every scale.
 **Fixed**: `infer_as_of_date(dataset)` extracted to `engine/io.py` as a shared source of truth (deduped from `cash/forecast.py`'s private, near-identical copy), plus `aging_days(as_of, event_date_str)`. Every deterministic classifier now passes the record's own real underlying event date (a payment's `captured_at`, a settlement's `settled_at`, a bank line's `value_date`); L3's `raise_exception` and its companion do the same for the residual record under investigation.
 **Side bug caught in the same pass**: `infer_as_of_date` crashed with `max() arg is an empty sequence` on a dataset with zero payments — true for two existing isolated-classifier unit tests. Fixed with a fallback chain (settlement/bank dates, then real wall-clock as a last resort for a fully-empty dataset) rather than coupling every isolated test to a full payments list.
-**Verified**: every committed benchmark's accuracy numbers confirmed byte-identical before/after by diff (not assumed) — only `aging_days` and naturally-volatile timing fields changed. 5 new tests. Commit `708f657`.
+**Verified**: every committed benchmark's accuracy numbers confirmed byte-identical before/after by diff (not assumed) — only `aging_days` and naturally-volatile timing fields changed. 5 new tests. Commit `adc6f62`.
 
 ### 6.12 — `suggested_owner` was real but never differentiated
 
 **Found**: the fourth field in the same shape — never *unset* (always its dataclass default, `"Reconciliation Ops"`), but never *overridden* either. Every category, every exception, every scale showed the identical owner — a column that carries zero information is the same failure as one that's silently 0.
 **Fixed**: `SUGGESTED_OWNERS`, a category-to-team map (Payments Ops, Finance Ops, Tax & Compliance, Disputes & Risk, Treasury, Finance Controller for high-value reviews, Reconciliation Ops kept as the genuine generalist catch-all), wired through both exception producers.
-**Verified**: `freeze_2000` now shows 6 distinct owners across 139 exceptions, not 1. New tests confirm three different categories get three genuinely different owners. Commit `1e27312`.
+**Verified**: `freeze_2000` now shows 6 distinct owners across 139 exceptions, not 1. New tests confirm three different categories get three genuinely different owners. Commit `ebd040d`.
 
 ### 6.13 — A test that claimed to cover `TIMEOUT` but never actually reached it
 
 **Found**: a pyflakes/coverage sweep, then manual verification — `test_timeout_returns_timeout_status_not_a_hang`'s own instance (40 candidates, an exactly-reachable target) hit `MAX_SOLUTIONS_TO_DETECT` (2) within the first few root-to-leaf paths, empirically confirmed to resolve in under 0.1ms, 5/5 trials. The assertion accepted `AMBIGUOUS`/`SOLVED`/`TIMEOUT` as all "passing," so this had silently never exercised the branch it was named after.
 **Fixed**: changed the target to one exactly *unreachable* (50 paise short of any achievable multiple, with zero tolerance) — zero solutions ever exist, so the search can never short-circuit and must genuinely explore the space. Confirmed empirically: exceeds a 10-second budget, and hits `TIMEOUT` deterministically (5/5 trials) at a realistic 50ms one. Assertion tightened to require exactly `"TIMEOUT"`.
-**Verified**: the fixed test passes and demonstrably exercises the real branch (unlike its predecessor). Commit `d77a9e5`.
+**Verified**: the fixed test passes and demonstrably exercises the real branch (unlike its predecessor). Commit `fc71036`.
 
 ### 6.14 — The dashboard's "Category" header sorted by amount, not category
 
 **Found**: by actually clicking the live dashboard (via a local HTTP server, so JavaScript genuinely executes — a static file snapshot does not) rather than trusting a substring test. The existing test only checked that the string `"function sortExceptions"` appeared in the rendered HTML — it could never have caught a header wired to the wrong column. `onclick="sortExceptions()"` on the "Category" `<th>` called a function that only ever read `dataset.amount`. It looked correct only because the table's own default order is already amount-descending, so clicking "Category" appeared to do something (it just re-sorted by amount, invisibly).
 **Fixed**: `sortExceptions(column)` is now parameterized (`'amount'` | `'category'`), each row carries both `data-amount` and `data-category`, each header calls the function with its own real column name, with independent per-column ascending state. Kept the brief's own explicit "sortable by ₹ at risk" requirement on the amount column, while making "Category" genuinely sort alphabetically as its own label promises.
-**Verified**: real `.click()` events dispatched on the actual header DOM elements on a live server — not just the function called directly — confirmed both columns sort correctly and independently. New tests check the header's `onclick` names its own column, not just that the function exists. Commit `b36e02f`.
+**Verified**: real `.click()` events dispatched on the actual header DOM elements on a live server — not just the function called directly — confirmed both columns sort correctly and independently. New tests check the header's `onclick` names its own column, not just that the function exists. Commit `85350a3`.
 
 ### 6.15 — Dead code (11 files) and one unused local, found via `pyflakes`
 
-Leftover unused imports/variables from earlier refactors (a `Counter` no longer needed after a rule change, an unused `SettlementRow`, unused `dataclasses.field`/`asdict` imports, six unused test imports, two unused test locals). All confirmed genuinely unreachable before removal; critically, regenerating the affected fixtures afterward reproduced byte-identical output (the removed code consumed no RNG state), so no committed benchmark was invalidated. Commits `9406773`, plus one more unused local found and fixed on 2026-09-01 in a test written that same day.
+Leftover unused imports/variables from earlier refactors (a `Counter` no longer needed after a rule change, an unused `SettlementRow`, unused `dataclasses.field`/`asdict` imports, six unused test imports, two unused test locals). All confirmed genuinely unreachable before removal; critically, regenerating the affected fixtures afterward reproduced byte-identical output (the removed code consumed no RNG state), so no committed benchmark was invalidated. Commits `c0d796c`, plus one more unused local found and fixed on 2026-09-01 in a test written that same day.
 
 ---
 
@@ -248,8 +250,8 @@ Leftover unused imports/variables from earlier refactors (a `Counter` no longer 
 
 ## 9. What's not done
 
-- **Demo video**: not recorded. Planned for Sep 4.
-- **Public repo push**: not done. `gh` is authenticated locally; no remote is configured. All 30 commits are local-only as of this snapshot. Planned for Sep 4.
+- **Demo video**: not recorded. This is the one outstanding item.
+- ~~**Public repo push**~~: done — [github.com/bodapatisaikrishna/kosh](https://github.com/bodapatisaikrishna/kosh), public, CI green on Python 3.11–3.14.
 
 Everything else — the generator, the eval harness, the four matching layers, the exception ledger, the cash forecast, the dashboard, and this document — is complete and verified as described above.
 
@@ -289,7 +291,7 @@ A 7-task, gated sprint against the completed build above (§§1–10): prove the
 | 2026 | 97.85% | **0.00%** | 140 | 5 |
 | 31337 | 97.96% | **0.00%** | 138 | 6 |
 
-**Mean auto-match: 97.71%, stddev: 0.36 percentage points. False-match: 0.00% at every single seed, no exceptions.** All 6 fixtures independently show 14/14 defect types present. Source: [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), `tests/test_multiseed.py` (regenerates live against the script's own function, not a frozen snapshot). Commit `7bbf12d`.
+**Mean auto-match: 97.71%, stddev: 0.36 percentage points. False-match: 0.00% at every single seed, no exceptions.** All 6 fixtures independently show 14/14 defect types present. Source: [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), `tests/test_multiseed.py` (regenerates live against the script's own function, not a frozen snapshot). Commit `04918c9`.
 
 ### 11.2 — Task 2: `compound_fee_tax_error` mislabeling, fixed structurally
 
@@ -305,7 +307,7 @@ A 7-task, gated sprint against the completed build above (§§1–10): prove the
 | After (run A) | 6/6 correctly `UNEXPLAINED_VARIANCE` | Model checked both legs |
 | After (run B, minutes later) | 4/6 `UNEXPLAINED_VARIANCE`, 1 correctly `TAX_VARIANCE` (single-cause, correctly not coerced), amounts exact in all 6 either way | Model checked only one leg that run — genuine LLM run-to-run variance, not a bug (see the trace: `unexplained_leg_count: 1`) |
 
-Both runs: zero `AGENT_INCOMPLETE`, zero false matches, zero wrong amounts, all 6 amounts exact to the paisa. Reported as both real numbers, not the better one cherry-picked. Source: [`benchmarks/phase5_live_residual.json`](benchmarks/phase5_live_residual.json), `benchmarks/sample_traces_live/`. Commit `c7e3b03`.
+Both runs: zero `AGENT_INCOMPLETE`, zero false matches, zero wrong amounts, all 6 amounts exact to the paisa. Reported as both real numbers, not the better one cherry-picked. Source: [`benchmarks/phase5_live_residual.json`](benchmarks/phase5_live_residual.json), `benchmarks/sample_traces_live/`. Commit `f553bd7`.
 
 **Post-freeze addendum (2 more real runs, done specifically because 2 data points isn't enough to claim a variance range)**: a 3rd run scored 5/6 detected, all 6 amounts still exact — [`benchmarks/phase5_live_residual_run3.json`](benchmarks/phase5_live_residual_run3.json). A 4th scored 3/6 detected and surfaced a genuinely new finding: for `pay_ymzQx3u8WEhd7G`, the model investigated only the fee leg (expected 29,195 paise, observed 30,732 paise, delta 1,537 paise — arithmetic exactly correct) and never called `explain_variance` on the GST leg at all, so the coercion's `unexplained_leg_count: 1` correctly did not fire — but the record's true ground-truth amount is 4,119 paise, not 1,537. **The "all amounts exact to the paisa" claim above holds for those first two runs specifically, not as a universal guarantee** — across all 4 real runs, detected counts are 6/4/5/3 out of 6 (not the narrower 4-6 the first two suggested), and a single-leg investigation's reported amount is only exact when that one leg happens to dominate the record's true compound total, which was true in every earlier case by coincidence and false in this one. Not a computation bug — the leg's own math is correct — a live-model investigation-completeness limitation, disclosed here rather than smoothed into a cleaner-looking range. Source: [`benchmarks/phase5_live_residual_run4.json`](benchmarks/phase5_live_residual_run4.json), [`benchmarks/sample_traces_live_more_runs/run4_pay_ymzQx3u8WEhd7G_amount_understated.json`](benchmarks/sample_traces_live_more_runs/run4_pay_ymzQx3u8WEhd7G_amount_understated.json).
 
@@ -325,7 +327,7 @@ Seven inputs hand-engineered to induce a false match at a specific layer, run th
 
 **Attack f found a real bug**: `l0_deterministic.py` matched the *same* settlement to two different bank rows sharing one UTR — a genuine double-claim, silently double-counting cash. The first fix attempt ("a settlement claimed once can't be claimed again") broke a real feature — `settlement_split` legitimately reuses one UTR across two genuine partial payouts — inflating `unidentified_credit_paise` on `run_2000` by ~3.65x, caught by the existing reconciliation-identity test and reverted before being committed. The correct fix, `engine/pipeline.py::_reconcile_settlement_credit_sums`, checks the *sum* of a settlement's linked credits against its own `net_paise` (±₹1 tolerance) across L0+L1+L2's combined output, not a claim count — refuses on a genuine over-claim, still allows a legitimate split. Verified against both scenarios directly, then all 8 committed benchmarks regenerated and diffed byte-for-byte (only volatile timing fields moved). 2 new tests.
 
-**0 of 7 attacks produced a `FALSE_MATCH` in the committed state** (1 of 7 did during development — caught and fixed before ever being committed). Source: [`benchmarks/adversarial.json`](benchmarks/adversarial.json). Commit `4847ef1`.
+**0 of 7 attacks produced a `FALSE_MATCH` in the committed state** (1 of 7 did during development — caught and fixed before ever being committed). Source: [`benchmarks/adversarial.json`](benchmarks/adversarial.json). Commit `3da7998`.
 
 ### 11.4 — Task 4: all-LLM ablation, and a real 10-hour hang it surfaced
 
@@ -345,7 +347,7 @@ Seven inputs hand-engineered to induce a false match at a specific layer, run th
 
 **A third, more serious gap, found live**: the first full-batch attempt hung **10+ hours with zero progress and no error**, surviving an overnight laptop sleep. `lsof` showed all 8 `DEFAULT_CONCURRENCY` connections `ESTABLISHED`, 0% CPU — every worker thread's `client.complete()` call was blocked on a TCP connection gone half-open across the sleep; the openai SDK's own 600s read timeout never fired because nothing ever arrived to time out against, and the existing per-record isolation only helps once something actually raises. Fixed with an outer `PER_RECORD_TIMEOUT_SECONDS=900` ceiling via `asyncio.wait_for`, proven with a test that a hung record times out without blocking its sibling. Disclosed, not hidden: this bounds the batch's logical progress, but `asyncio.run()`'s own cleanup can still be slow to return if the underlying OS thread never returns at all (Python can't force-kill a thread) — a materially better failure mode than before, not an absolute guarantee.
 
-**A mistake made investigating it, disclosed rather than glossed over**: the stuck process was killed on a several-minutes-stale snapshot (139 records, unchanged since the sleep) without re-verifying freshness immediately before acting. By the time the kill happened, the run had already recovered on its own and reached 159 records at its fastest pace of the entire run (~2.5/min). No data was lost — every trace and cache entry persists as it completes, so the relaunch resumed instantly from 159/348 — and the timeout fix stands on its own merits regardless, but the kill itself was premature. Full account in `ARCHITECTURE.md`. Commit `2ae30aa`.
+**A mistake made investigating it, disclosed rather than glossed over**: the stuck process was killed on a several-minutes-stale snapshot (139 records, unchanged since the sleep) without re-verifying freshness immediately before acting. By the time the kill happened, the run had already recovered on its own and reached 159 records at its fastest pace of the entire run (~2.5/min). No data was lost — every trace and cache entry persists as it completes, so the relaunch resumed instantly from 159/348 — and the timeout fix stands on its own merits regardless, but the kill itself was premature. Full account in `ARCHITECTURE.md`. Commit `fc03983`.
 
 ### 11.5 — Task 5: malformed input handling
 
@@ -357,7 +359,7 @@ Sample error, verbatim: `orders.csv: missing required column(s): ['invoice_no']`
 
 **Two real domain findings, checked empirically before hard-coding a rule**: a `payment.captured_at` of `""` is the *correct* value for a `status="failed"` payment (never captured, genuinely no timestamp) — not validated as malformed. `bank.credit_paise`/`debit_paise` are deliberately **not** validated non-negative — `data/generator/defects.py`'s settlement-adjustment injector can legitimately drive one below zero (confirmed: seed 100 in Task 1's sweep produced a real `credit_paise: -34800`); non-negativity is enforced on `gross_paise` instead, checked clean across all 4 fixtures.
 
-**12 tests** (`tests/test_malformed_input.py`) cover all 10 required cases — missing column, duplicate header, non-integer amount, negative-where-only-positive-valid, unexpected date format, empty file, headers-only file, non-UTF8 bytes, duplicate primary key, row with more fields than header — plus a clean-fixture sanity check and the failed-payment-empty-date non-false-positive check. All 8 committed benchmarks regenerated and diffed byte-for-byte afterward — zero drift. Commit `559fd2d`.
+**12 tests** (`tests/test_malformed_input.py`) cover all 10 required cases — missing column, duplicate header, non-integer amount, negative-where-only-positive-valid, unexpected date format, empty file, headers-only file, non-UTF8 bytes, duplicate primary key, row with more fields than header — plus a clean-fixture sanity check and the failed-payment-empty-date non-false-positive check. All 8 committed benchmarks regenerated and diffed byte-for-byte afterward — zero drift. Commit `0e3a68d`.
 
 ### 11.6 — Task 6: production properties
 
@@ -371,11 +373,11 @@ Sample error, verbatim: `orders.csv: missing required column(s): ['invoice_no']`
 
 > **Correction (§11.9)**: this sweep was incomplete. It checked only the three packages named in its own plan and missed `pandas` — which was not an extra but the sole entry in `[project.dependencies]`, and is likewise imported nowhere. Removed later; see §11.9.
 
-Commit `92aee7d`.
+Commit `218db04`.
 
 ### 11.7 — Sprint test suite status
 
-- **223/223 tests passing** as of commit `2ae30aa` (up from 174 at the start of the sprint — 49 new tests across Tasks 1–6, zero deletions).
+- **223/223 tests passing** as of commit `fc03983` (up from 174 at the start of the sprint — 49 new tests across Tasks 1–6, zero deletions).
 - **`pyflakes` clean** across `engine/`, `eval/`, `cash/`, `data/`, `tests/`, `scripts/` after every task.
 - **Zero unexpected benchmark drift** across all 6 committed tasks — every diff was byte-for-byte confirmed after every task that touched matching logic (Tasks 2, 3), and the tasks that didn't (1, 4, 5, 6) never invoke the affected code paths from any frozen benchmark's CLI mode.
 
