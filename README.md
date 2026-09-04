@@ -132,6 +132,8 @@ make demo
 
 Opens `benchmarks/run_demo.html` — the full 4-panel dashboard (headline strip, layer waterfall, exception queue with evidence-chain and agent-trace drill-down, cash position) from a fresh 2,000-record run. Verified in an isolated clone on a clean venv, not assumed.
 
+**Want to look before running anything?** [`benchmarks/freeze_2000.html`](benchmarks/freeze_2000.html) is the same dashboard, committed — identical engine, fixture, and numbers. Open it straight from the repo. (`run_demo.html` is regenerated output and deliberately not committed, same as `data/fixtures/` — everything reproducible from a seed stays out of git.)
+
 ```bash
 make freeze              # regenerate all 3 scales + phase benchmarks
 make multiseed           # the 6-seed sweep
