@@ -10,7 +10,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11", "3.12"]
+        # pyproject declares requires-python = ">=3.11", so the matrix tests
+        # the floor, the middle, and the newest release rather than just the
+        # two it happened to be developed on. 3.14 verified locally with the
+        # full [dev,llm,api] extras before being added here.
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
       - uses: actions/checkout@v4
 
