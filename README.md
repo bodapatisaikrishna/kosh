@@ -1,28 +1,44 @@
+<div align="center">
+
 # Kosh — AI Finance Controller
+
+**Three-way payment settlement reconciliation for an Indian online merchant.**
+Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa — plus a forward cash position.
 
 [![CI](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml/badge.svg)](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml)
 [![Python 3.11 – 3.14](https://img.shields.io/badge/python-3.11%20%E2%80%93%203.14-blue)](pyproject.toml)
 [![Tests](https://img.shields.io/badge/tests-257%20passing-brightgreen)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-89%25-brightgreen)](tests/)
 [![False-match rate](https://img.shields.io/badge/false--match%20rate-0.00%25-brightgreen)](benchmarks/)
-
-**Three-way payment settlement reconciliation for an Indian online merchant** — Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa, plus a forward cash position.
+[![Runtime deps](https://img.shields.io/badge/runtime%20deps-0-blue)](pyproject.toml)
 
 Built for the **Razorpay AI Buildathon 2026, Track 04** — *"Run the books and the cash position."*
 
-One bank credit is rarely one payment. It's a *batch*: the sum of several settlements, minus refunds, minus chargebacks, plus or minus adjustments — and the reference number that would tie it back is often mangled, truncated, or absent entirely. Today a human solves that in a spreadsheet. Kosh solves it in **8 milliseconds for 2,000 records**, and — the part that actually matters — it **refuses to guess** when the evidence is ambiguous.
+</div>
+
+---
+
+One bank credit is rarely one payment. It's a *batch*: the sum of several settlements, minus refunds, minus chargebacks, plus or minus adjustments — and the reference number that would tie it back is often mangled, truncated, or absent entirely. Today a human solves that in a spreadsheet.
+
+Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that actually matters — it **refuses to guess** when the evidence is ambiguous.
+
+![Kosh eval report — headline metrics at 10,000 records](docs/report-headline.png)
+
+<sub>`make demo` output, unmodified. Every panel shown on this page is a crop of the same committed report.</sub>
 
 | | |
 |---|---|
-| **Auto-match rate** | 97.74% @ 2,000 records (97.83% @ 10,000) |
-| **False-match rate** | **0.00%** — at every scale, across 6 seeds, under 7 adversarial attacks |
-| **Money found** | **₹10,475.40** in gateway fee / tax / FX overcharges, across 2,000 transactions |
+| **Auto-match rate** | 97.83% @ 10,000 records · 97.74% @ 2,000 · 97.61% @ 500 |
+| **False-match rate** | **0.00%** — every scale, 11 seeds, 7 adversarial attacks, and a live LLM run |
+| **Link scoring** | 19,610 of 19,610 links correct at 10k — precision *and* recall both 100.00% |
+| **Money found** | ₹76,227.57 in gateway fee / tax / FX overcharges, across 219 records |
 | **Throughput** | ~146k records/sec sustained — verified linear out to 93,030 records |
-| **LLM cost** | $0.056 per 1,000 records — only 0.3% of records ever reach the model, at both 2k and 10k scale |
-| **Verification** | 257 tests, 89% coverage, reproduced byte-for-byte from a clean clone |
+| **LLM cost** | $0.056 per 1,000 records — only **0.31%** of records ever reach a model |
+| **Verification** | 257 tests · 89% coverage · reproduced byte-for-byte from a clean clone |
 
 > The track's own bar: *"Throughput plus measured accuracy plus an honest exception list. One cherry-picked match proves nothing."*
 >
-> Every number on this page is measured against a machine-readable `ground_truth.json` with injected, labelled defects — never asserted, never hand-picked. The scale requirement is 50+ records; Kosh is frozen at 500 / 2,000 / 10,000.
+> Every number on this page is measured against a machine-readable `ground_truth.json` with injected, labelled defects — never asserted, never hand-picked. The scale requirement is 50+ records; Kosh is frozen at 500 / 2,000 / 10,000 and validated out to 93,030.
 
 **Contents** — [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Reproduce](#reproduce) · [Architecture](#architecture) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Why we generate our own data](#why-we-generate-our-own-data) · [Limitations](#limitations)
 
@@ -30,59 +46,35 @@ One bank credit is rarely one payment. It's a *batch*: the sum of several settle
 
 ## Results
 
-**Frozen benchmark, complete pipeline, 3 scales** ([`benchmarks/freeze_*.json`](benchmarks/)):
+### The frozen benchmark
 
-| Records | Auto-match | Precision / Recall | **False-match** | Exceptions | Wall clock |
+Complete pipeline, three scales, all committed ([`benchmarks/freeze_*.json`](benchmarks/)):
+
+| Records | Auto-match | Precision / Recall | False-match | Exceptions | Wall clock |
 |---|---|---|---|---|---|
-| 500 | 97.61% | 100.00% / 99.91% | **0.00%** | 48 | ~3ms |
-| 2,000 | 97.74% | 100.00% / 99.95% | **0.00%** | 139 | ~8ms |
-| 10,000 | 97.83% | 100.00% / 100.00% | **0.00%** | 550 | ~40ms |
+| 500 | 97.61% | 100.00% / 99.91% | **0.00%** | 48 | ~3 ms |
+| 2,000 | 97.74% | 100.00% / 99.95% | **0.00%** | 139 | ~8 ms |
+| **10,000** | **97.83%** | **100.00% / 100.00%** | **0.00%** | 550 | ~40 ms |
 
-**False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads **0.00%** at every scale tested, including a real, non-scripted LLM run — checked directly against ground truth, not asserted.
+**False-match rate is the headline metric, not auto-match rate.** In finance a wrong match is worse than no match — it silently corrupts the books, where an unmatched item merely sits in a queue for review. It reads 0.00% at every scale tested, including a real, non-scripted LLM run — checked directly against ground truth, not asserted.
 
-**₹10,475.40 in fee leakage** — the industry-standard reconciliation metric, and the number a finance team actually cares about. That's what the merchant was overcharged in gateway fees, tax on those fees, and FX across `run_2000`'s 2,000 transactions (42 records; `FEE_VARIANCE`/`TAX_VARIANCE`/`FX_VARIANCE` only — timing, duplication, and attribution problems are deliberately excluded, since folding them in would inflate the number into meaninglessness). Reported as a **lower bound**, always: a compound error coerced to `UNEXPLAINED_VARIANCE` contains real leakage this number cannot isolate to a single fee leg.
+At 10,000 records the link scoring is a clean sweep: **19,610 links asserted, 19,610 correct, 19,610 actually true.** Nothing wrong, nothing missing. That's a raw count, not a rounded rate.
 
-**Throughput scales linearly to 10× the frozen benchmark.** The freeze stops at 9,317 records, so the pipeline was run out to 93,030 to check the claim actually holds — false-match stayed **0.00% at every scale**:
+### Per-defect-class scoring
 
-| Scored records | Wall clock | rec/s | Auto-match | False-match |
-|---|---|---|---|---|
-| 9,317 | 40ms | 231,191 | 97.83% | **0.00%** |
-| 23,228 | 111ms | 209,943 | 97.83% | **0.00%** |
-| 46,506 | 318ms | 146,364 | 97.82% | **0.00%** |
-| **93,030** | **638ms** | 145,773 | 97.82% | **0.00%** |
+The generator injects 14 labelled defect types. Nine must be *caught*; five must be resolved **silently** — those five exist specifically to punish an engine that flags everything it doesn't instantly recognise.
 
-The final doubling has a scaling exponent of **1.006** — linear to three decimal places — and the rate plateaus around 146k records/sec. The higher rate at small N is amortisation, not a faster path: **146k/sec is the honest sustained figure**, not the 231k a 9,317-record run reports. L2's subset-sum is the only superlinear component, and it stays bounded by design (≤40 candidates, 250ms deadline), which is why the curve flattens rather than exploding. Source: [`benchmarks/scaling_100k.json`](benchmarks/scaling_100k.json).
+| Fixture | Injected defects | Correct | Wrong |
+|---|---|---|---|
+| `run_500` | 78 | **78 (100%)** | — |
+| `run_2000` | 203 | **203 (100%)** | — |
+| `run_10000` | 722 | 717 (99.31%) | 4 mislabelled, 1 missed |
 
-**Seed-robustness and scale, tested together.** The 6-seed sweep above is all at 2,000 records and the 10,000-record result is a single seed — so "0.00% at scale" rested on one seed. Five seeds at **10,000 records** each: 97.83–97.84% auto-match, **100% recall on every seed**, **0.00% false-match on every seed** — tighter spread than at 2,000, as a larger sample should be. Source: [`benchmarks/multiseed_10k.json`](benchmarks/multiseed_10k.json).
+At 500 and 2,000 records every injected defect lands in exactly the right bucket — zero misses, zero false alarms. **At 10,000 it does not**: three `fx_variance` and one `gst_variance` are mislabelled into a neighbouring fee category, and one boundary-case `period_cutoff` is missed outright. Stated here rather than left to be discovered, because the two smaller fixtures alone would imply a perfection that 722 defects doesn't support.
 
-**Every layer earns its place** — measured, not asserted:
+Full breakdown on `run_2000`, where every class is exact:
 
-| Layer | 500 | 2,000 | 10,000 | What only it can do |
-|---|---|---|---|---|
-| L0 exact-key | 97.76% | 99.33% | 99.82% | UTR / FK joins |
-| L1 tolerance | 0.78% | 0.26% | 0.06% | UTR rekeyed with a transposed digit |
-| L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
-| L3 agent | 1 record | 6 records | 29 records | variances no deterministic rule can decompose |
-
-L3 saw **6 of 1,858 records (0.32%)** on `run_2000` — and **29 of 9,317 (0.31%)** on `run_10000`. That ratio holding flat across a 20× scale increase is the deterministic-first thesis quantified: the residual grows linearly, not explosively, so LLM cost stays a rounding error at any scale. The other 99.7% cost zero tokens.
-
-**Ablation — what each layer, and an all-LLM alternative, actually buys you:**
-
-| Engine mode | Fixture | Auto-match | False-match | Precision / Recall | Cost |
-|---|---|---|---|---|---|
-| Null (matches nothing) | `run_2000` | 0.00% | 0.00% | 0.00% / 0.00% | $0 |
-| L0 + L1 | `run_2000` | 92.84% | **0.00%** | 100.00% / 99.54% | $0 |
-| L0 + L1 + L2 | `run_2000` | 97.74% | **0.00%** | 100.00% / 99.95% | $0 |
-| Full (+ L3 + L4) | `run_2000` | 97.74% | **0.00%** | 100.00% / 99.95% | $0 (deterministic CLI path) |
-| **All-LLM** (L3 only — L0–L2 *and* L4 bypassed) | `sample_200`\* | 81.52% | **0.00%** | 100.00% / 77.36% | $6.58 → **$35.76/1000 records** |
-
-\* 348 non-order records (payments + settlements + bank), not the 1,858-record `run_2000` — routing everything through a live LLM at 2,000-record scale costs materially more for the same architectural point. Real run: `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM, 1,207 LLM calls, 348/348 records, zero crashes. Source: [`benchmarks/ablation_llm_only.json`](benchmarks/ablation_llm_only.json).
-
-**The all-LLM row is the actual evidence for the architecture, not a knock against the model.** False-match holds at 0.00% even with every deterministic layer disabled — the "refuse rather than guess" discipline survives. What drops is *recall*: more genuinely ambiguous records get correctly refused rather than confidently matched, at **30–50× the cost** of the deterministic layers doing the same job for the 99.68% of records that never needed judgment. Deterministic-first isn't a shortcut around the LLM; it's what reserves LLM judgment for the cases that actually need it.
-
-**Per-defect-class scoring on `run_2000` — all 14 injected types, zero misses, zero false alarms:**
-
-| Correctly flagged as exceptions | | Correctly resolved *silently* (must NOT become exceptions) | |
+| Correctly flagged as exceptions | | Correctly resolved *silently* | |
 |---|---|---|---|
 | `missing_settlement` | 20/20 | `rounding_drift` | 25/25 |
 | `duplicate_payment` | 20/20 | `utr_mangled` | 20/20 |
@@ -95,15 +87,71 @@ L3 saw **6 of 1,858 records (0.32%)** on `run_2000` — and **29 of 9,317 (0.31%
 | `fx_variance` | 8/8 | | |
 | `compound_fee_tax_error` | 3–6/6\* | | |
 
-The right-hand column is the half most systems get wrong: four defect types exist specifically to punish an engine that flags everything it doesn't instantly recognise. Precision on *not* raising a false alarm is scored as hard as recall on real defects. Every one of these 13 classes is exact; the 14th is the live-LLM one, below.
+<sub>\* `compound_fee_tax_error` is L3's live residual, not deterministic, so it varies run to run. The best evidence is the larger sample: against `run_10000`'s 29-record residual, L3 scored <b>25/29 (86%)</b> — see <a href="#l3-at-full-scale-29-records">L3 at full scale</a>. The four `run_2000` runs (6, 4, 5, 3 out of 6) are the same behaviour on a sample too small to draw a rate from.</sub>
 
-\* `compound_fee_tax_error` is L3's live residual, not deterministic, so it varies run to run with how thoroughly the model investigates. The best evidence is the larger sample: run live against `run_10000`'s **29-record residual**, L3 scored **25/29 (86%)** — see [the full-scale L3 run](#l3-at-full-scale-29-records) below. The four `run_2000` runs (6, 4, 5, 3 out of 6) are the same behaviour on a sample too small to draw a rate from. See [Limitations](#limitations).
+### The money
 
-**Exception aging** against the industry 48-hour SLA for open reconciliation breaks: median 35 days, max 89, 129 of 139 breaching. **This is not a live queue** — `run_2000` is a fixed, historical 3-month fixture scored against its own end date, so aging this large is the expected result of scoring a static snapshot, not a finding about operational neglect. Stated here rather than quietly omitted, because the number looks alarming and isn't.
+![Fee leakage, exception aging, and the cash position](docs/report-cash.png)
+
+**₹76,227.57 in fee leakage** at 10,000 records (₹10,475.40 at 2,000) — the industry-standard reconciliation metric, and the number a finance team actually cares about. That's what the merchant was overcharged in gateway fees, tax on those fees, and FX. Only `FEE_VARIANCE` / `TAX_VARIANCE` / `FX_VARIANCE` count; timing, duplication, and attribution problems are deliberately excluded, since folding them in would inflate the number into meaninglessness.
+
+Always reported as a **lower bound**: a compound error coerced to `UNEXPLAINED_VARIANCE` contains real leakage this number cannot isolate to a single fee leg.
+
+**And the cash position, decomposed to the paisa.** Book cash ₹6,94,27,826.66; reconciled cash — money actually evidenced end to end — ₹6,52,77,273.37. The **₹41,50,553.29 gap is not a rounding difference**: it's named component by component (settled-but-not-credited, refunds, chargebacks, unidentified credits). **₹12,44,126.19 is stuck** across **198 named payment IDs** — captured, past SLA, not yet in the bank. Those are IDs a human can chase this afternoon, not an aggregate.
+
+### The honest remainder
+
+![Exception queue — 550 exceptions with category, severity, owner and age](docs/report-exceptions.png)
+
+550 exceptions, ₹49,33,264.88 at risk, each with a category, an owner, an age, and a click-through evidence chain. This is the queue a controller works on Monday morning — not a number quietly absorbed into a match rate.
+
+**Exception aging** against the industry 48-hour SLA: median 45 days, max 89, 525 of 550 breaching (at 2,000 records: 35 / 89 / 129 of 139). **This is not a live queue.** The fixture is a fixed, historical 3-month dataset scored against its own end date, so aging this large is the expected result of scoring a static snapshot, not a finding about operational neglect. Stated rather than quietly omitted, because the number looks alarming and isn't.
+
+### Every layer earns its place
+
+Measured, not asserted — share of correctly-matched links contributed by each layer:
+
+| Layer | 500 | 2,000 | 10,000 | What only it can do |
+|---|---|---|---|---|
+| L0 exact-key | 97.76% | 99.33% | 99.82% | UTR / FK joins |
+| L1 tolerance | 0.78% | 0.26% | 0.06% | UTR rekeyed with a transposed digit |
+| L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
+| L3 agent | 1 record | 6 records | 29 records | variances no deterministic rule can decompose |
+
+L3 saw **6 of 1,858 records (0.32%)** on `run_2000` and **29 of 9,317 (0.31%)** on `run_10000`. That ratio holding flat across a 20× scale increase is the deterministic-first thesis quantified: the residual grows linearly, not explosively, so LLM cost stays a rounding error at any scale. The other 99.7% of records cost zero tokens.
+
+### Throughput scales linearly to 10× the frozen benchmark
+
+The freeze stops at 9,317 records, so the pipeline was run out to 93,030 to check the claim actually holds. False-match stayed 0.00% at every scale:
+
+| Scored records | Wall clock | rec/s | Auto-match | False-match |
+|---|---|---|---|---|
+| 9,317 | 40 ms | 231,191 | 97.83% | **0.00%** |
+| 23,228 | 111 ms | 209,943 | 97.83% | **0.00%** |
+| 46,506 | 318 ms | 146,364 | 97.82% | **0.00%** |
+| **93,030** | **638 ms** | 145,773 | 97.82% | **0.00%** |
+
+The final doubling has a scaling exponent of **1.006** — linear to three decimal places — and the rate plateaus around 146k records/sec. The higher rate at small N is amortisation, not a faster path: **146k/sec is the honest sustained figure**, not the 231k a 9,317-record run reports. L2's subset-sum is the only superlinear component, and it stays bounded by design (≤40 candidates, 250 ms deadline), which is why the curve flattens rather than exploding. Source: [`scaling_100k.json`](benchmarks/scaling_100k.json).
+
+**Seed-robustness and scale, tested together.** The 6-seed sweep is at 2,000 records and the original 10,000 result was a single seed — so "0.00% at scale" rested on one seed. Five more seeds at 10,000 records each: 97.83–97.84% auto-match, 100% recall on every seed, 0.00% false-match on every seed — a tighter spread than at 2,000, as a larger sample should be. Source: [`multiseed_10k.json`](benchmarks/multiseed_10k.json).
+
+### Ablation — what each layer, and an all-LLM alternative, actually buys you
+
+| Engine mode | Fixture | Auto-match | False-match | Precision / Recall | Cost |
+|---|---|---|---|---|---|
+| Null (matches nothing) | `run_2000` | 0.00% | 0.00% | 0.00% / 0.00% | $0 |
+| L0 + L1 | `run_2000` | 92.84% | **0.00%** | 100.00% / 99.54% | $0 |
+| L0 + L1 + L2 | `run_2000` | 97.74% | **0.00%** | 100.00% / 99.95% | $0 |
+| Full (+ L3 + L4) | `run_2000` | 97.74% | **0.00%** | 100.00% / 99.95% | $0 (deterministic CLI path) |
+| **All-LLM** (L3 only — L0–L2 *and* L4 bypassed) | `sample_200`\* | 81.52% | **0.00%** | 100.00% / 77.36% | $6.58 → **$35.76 / 1000 records** |
+
+<sub>\* 348 non-order records (payments + settlements + bank), not the 1,858-record <code>run_2000</code> — routing everything through a live LLM at 2,000-record scale costs materially more for the same architectural point. Real run: <code>nvidia/nemotron-3-ultra-550b-a55b</code> via NVIDIA NIM, 1,207 LLM calls, 348/348 records, zero crashes. Source: <a href="benchmarks/ablation_llm_only.json"><code>ablation_llm_only.json</code></a>.</sub>
+
+**The all-LLM row is the actual evidence for the architecture, not a knock against the model.** False-match holds at 0.00% even with every deterministic layer disabled — the "refuse rather than guess" discipline survives. What drops is *recall*: more genuinely ambiguous records get correctly refused rather than confidently matched, at **30–50× the cost** of the deterministic layers doing the same job for the 99.68% of records that never needed judgment. Deterministic-first isn't a shortcut around the LLM; it's what reserves LLM judgment for the cases that actually need it.
 
 ### L3, run for real
 
-6 records that L0–L2 and L4's deterministic classifier genuinely could not resolve, sent live to `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM ([`benchmarks/phase5_live_residual.json`](benchmarks/phase5_live_residual.json)). *The brief specifies Anthropic's Claude; no key was available — a documented deviation, not a silent one.*
+6 records that L0–L2 and L4's deterministic classifier genuinely could not resolve, sent live to `nvidia/nemotron-3-ultra-550b-a55b` via NVIDIA NIM ([`phase5_live_residual.json`](benchmarks/phase5_live_residual.json)). *The brief specifies Anthropic's Claude; no key was available — a documented deviation, not a silent one.*
 
 | Record | Outcome |
 |---|---|
@@ -114,15 +162,15 @@ The right-hand column is the half most systems get wrong: four defect types exis
 | `pay_ymzQx3u8WEhd7G` | Correctly raised `UNEXPLAINED_VARIANCE`, ₹41.19 — exact |
 | `pay_3egKQ6BCralBAI` | Raised `TAX_VARIANCE`, ₹0.90 — exact amount, single-cause label: the model checked only the GST leg this run, so the multi-leg coercion correctly did not fire on one data point |
 
-Zero `AGENT_INCOMPLETE`, zero false matches, zero invented categories — verified by hand against ground truth for every asserted link, category, and amount, not read off the summary. 51 real LLM calls, 487s wall clock, **$0.104 total → $0.056 per 1,000 records** (the brief's target is <$0.50/1000), computed from real token counts against NIM's published rate — not estimated. Full traces: [`benchmarks/sample_traces_live/`](benchmarks/sample_traces_live/).
+Zero `AGENT_INCOMPLETE`, zero false matches, zero invented categories — verified by hand against ground truth for every asserted link, category, and amount, not read off the summary. 51 real LLM calls, 487 s wall clock, **$0.104 total → $0.056 per 1,000 records** (the brief's target is <$0.50/1000), computed from real token counts against NIM's published rate — not estimated. Full traces: [`sample_traces_live/`](benchmarks/sample_traces_live/).
 
 **The structural fix behind it**: L3's tool layer recomputes the category to `UNEXPLAINED_VARIANCE` — and the amount to the true net delta, not one leg's — whenever the model's own tool-call history shows 2+ comparisons it couldn't decompose. The prompt asks; the tool layer *enforces*. It fires when the evidence supports it and correctly refuses on weaker evidence, rather than papering over real run-to-run variance by guessing.
 
 ### L3 at full scale (29 records)
 
-The `run_2000` residual is only 6 records — too few to claim a rate from. So the agent was also run live against **`run_10000`'s 29-record residual**: 245 LLM calls, 20 minutes, `nvidia/nemotron-3-ultra-550b-a55b`. Source: [`benchmarks/phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json).
+The `run_2000` residual is only 6 records — too few to claim a rate from. So the agent was also run live against **`run_10000`'s 29-record residual**: 245 LLM calls, 20 minutes. Source: [`phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json).
 
-**Headline metrics did not move.** Auto-match 97.83%, false-match **0.00%**, precision 100%, recall 100%, 550 exceptions — byte-identical to the deterministic `freeze_10000` run. L3 touches 29 of 9,317 records; it cannot and did not shift the top-line numbers.
+**Headline metrics did not move.** Auto-match 97.83%, false-match 0.00%, precision 100%, recall 100%, 550 exceptions — byte-identical to the deterministic `freeze_10000` run. L3 touches 29 of 9,317 records; it cannot and did not shift the top-line numbers.
 
 **On its own defect class, L3 scored 25/29 (86%)** — a real rate from a real sample, replacing four noisy readings off six records. The 4 it got wrong, verified by hand against `ground_truth.json`:
 
@@ -137,7 +185,7 @@ Three of the four are **label-only misses with the money exactly right** — the
 
 **Two findings the 6-record sample could never have surfaced:**
 
-1. **A turn-budget exhaustion at 29 records** (1 of 29, ~3%). Every `run_2000` run reported zero `AGENT_INCOMPLETE`, which made the 12-turn budget look sufficient. At scale it isn't, always. The fallback did its job — the record is on the ledger, flagged for review, with the reason attached — but its stated amount is a record-level hint, not a measured variance, and reads far larger than the true ₹1.82. Trace: [`sample_traces_live_10k/agent_incomplete_turn_budget.json`](benchmarks/sample_traces_live_10k/agent_incomplete_turn_budget.json).
+1. **A turn-budget exhaustion at 29 records** (1 of 29, ~3%). Every `run_2000` run reported zero `AGENT_INCOMPLETE`, which made the 12-turn budget look sufficient. At scale it isn't, always. The fallback did its job — the record is on the ledger, flagged for review, with the reason attached — but its stated amount is a record-level hint, not a measured variance, and reads far larger than the true ₹1.82. Trace: [`agent_incomplete_turn_budget.json`](benchmarks/sample_traces_live_10k/agent_incomplete_turn_budget.json).
 2. **The deterministic fallback outscores the LLM on this class** — 29/29 vs 25/29. Not a paradox: with no client, every residual record is blanket-labelled `UNEXPLAINED_VARIANCE`, which for `compound_fee_tax_error` is definitionally correct every time. The LLM attempts a specific cause and is wrong 4 times out of 29. **On this one class, the cheap fallback wins.** L3's value is on residuals that are genuinely decomposable — not on a class defined by being undecomposable.
 
 Reported because it's what the run produced, not because it flatters the architecture.
@@ -146,13 +194,13 @@ Reported because it's what the run produced, not because it flatters the archite
 
 ## Why you can trust these numbers
 
-A 0.00% false-match rate is exactly the kind of claim that should invite suspicion. So it was attacked, not just measured:
+A 0.00% false-match rate is exactly the kind of claim that should invite suspicion. So it was attacked, not just measured.
 
 | Evidence | What it rules out | Source |
 |---|---|---|
-| **7 adversarial attacks**, hand-built to force a false match at each layer — transposed-digit UTRs, coincidental subset sums, a refund that makes two settlements collide, one UTR on two bank rows | "It only works on friendly data" — **0 of 7 produced a false match**; all `REFUSED` or `CORRECT`. Attack `f` found a **real double-claim bug**, fixed, retested | [`benchmarks/adversarial.json`](benchmarks/adversarial.json), `make adversarial` |
+| **7 adversarial attacks**, hand-built to force a false match at each layer — transposed-digit UTRs, coincidental subset sums, a refund that makes two settlements collide, one UTR on two bank rows | "It only works on friendly data" — **0 of 7 produced a false match**; all `REFUSED` or `CORRECT`. Attack `f` found a **real double-claim bug**, fixed and retested | [`adversarial.json`](benchmarks/adversarial.json), `make adversarial` |
 | **L3 run live at full scale** — 29-record residual from `run_10000`, 245 real LLM calls, fresh cache | "The agent claims rest on 6 records" — a real rate (25/29), and it surfaced a turn-budget exhaustion plus the fallback-beats-LLM finding that 6 records hid | [`phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json) |
-| **6 independent seeds**, fresh 2,000-record fixture each | "It's a `seed=42` artifact" — mean 97.71%, stddev 0.36pp, **0.00% false-match on every seed** | [`benchmarks/multiseed/summary.json`](benchmarks/multiseed/summary.json), `make multiseed` |
+| **6 independent seeds**, fresh 2,000-record fixture each | "It's a `seed=42` artifact" — mean 97.71%, stddev 0.36 pp, 0.00% false-match on every seed | [`multiseed/summary.json`](benchmarks/multiseed/summary.json), `make multiseed` |
 | **Scaled to 93,030 records** — 10× the frozen benchmark, plus 5 seeds at 10,000 | "It only holds at the sizes you froze" / "0.00% at scale is one seed" — false-match stayed 0.00% at every scale and every seed; wall clock scaled linearly (exponent 1.006) | [`scaling_100k.json`](benchmarks/scaling_100k.json), [`multiseed_10k.json`](benchmarks/multiseed_10k.json) |
 | **Mutation-tested harness** — inject 10 deliberately wrong links, it reports 0.24%; drop half the true matches, recall halves | "The scorer is vacuous / always says zero" — it demonstrably fails when the engine is wrong | `tests/test_eval_baselines.py` |
 | **Null + oracle baselines**, frozen as regression fixtures | Scorer drift going unnoticed | `tests/baselines/` |
@@ -176,7 +224,7 @@ make demo
 
 Opens `benchmarks/run_demo.html` — the full 4-panel dashboard (headline strip, layer waterfall, exception queue with evidence-chain and agent-trace drill-down, cash position) from a fresh 2,000-record run. Verified in an isolated clone on a clean venv, not assumed.
 
-**Want to look before running anything?** [`benchmarks/freeze_2000.html`](benchmarks/freeze_2000.html) is the same dashboard, committed — identical engine, fixture, and numbers. Open it straight from the repo. (`run_demo.html` is regenerated output and deliberately not committed, same as `data/fixtures/` — everything reproducible from a seed stays out of git.)
+**Want to look before running anything?** [`benchmarks/freeze_10000.html`](benchmarks/freeze_10000.html) and [`freeze_2000.html`](benchmarks/freeze_2000.html) are the same dashboard, committed — identical engine, fixture, and numbers. Open either straight from the repo; the screenshots on this page are unmodified crops of them. (`run_demo.html` is regenerated output and deliberately not committed, same as `data/fixtures/` — everything reproducible from a seed stays out of git.)
 
 ```bash
 make freeze              # regenerate all 3 scales + phase benchmarks
@@ -216,6 +264,7 @@ tests/            257 tests, incl. adversarial suite and frozen regression basel
 benchmarks/       committed reports at every phase + the 3-scale freeze + real agent traces
 api/              post-freeze stretch goal: FastAPI layer over eval.report.run_eval
 dashboard/        post-freeze stretch goal: Next.js + Recharts interactive dashboard
+docs/             the report screenshots used on this page
 ```
 
 Full design rationale, and every bug with the reasoning that caught it, in [`ARCHITECTURE.md`](ARCHITECTURE.md).
@@ -232,7 +281,7 @@ make api          # FastAPI on :8000
 make dashboard    # Next.js on :3000, second terminal
 ```
 
-The dashboard does one thing the static report can't: a **live-triggered run** — pick engine, record count, seed, months, click *Run live*, watch a real `generate → reconcile → score` pass complete, then render the same four panels. It's a thin wrapper around the exact same `eval.report.run_eval` the CLI calls — no second implementation to drift.
+The dashboard does one thing the static report can't: a **live-triggered run** — pick engine, record count, seed, months, click *Run live*, watch a real `generate → reconcile → score` pass complete, then render the same four panels. Measured end to end through the API: **0.13 s at 2,000 records, 0.60 s at 10,000.** It's a thin wrapper around the exact same `eval.report.run_eval` the CLI calls — no second implementation to drift.
 
 - At `seed=42, records=2000, engine=full` the live run reproduces `run_2000` byte-for-byte, so its drill-down links resolve to the **actual committed live-model agent traces** — not placeholders.
 - The costed live-LLM path is **never reachable** from the API — `ENGINE_ALLOWLIST` restricts every request to deterministic engines, the same invariant the CLI has always enforced, tested directly.
@@ -243,7 +292,7 @@ Local-only by design: CORS restricted to the dashboard's own origin, nothing dep
 
 ## Why we generate our own data
 
-You cannot measure precision, recall, or false-match rate against real production data, because you don't have ground truth for real data — **that is the reconciliation problem itself**. So Kosh generates its own three-way dataset with **injected, labelled defects** spanning 14 realistic failure modes (203 defects in `run_2000`): wrong MDR tier, GST variance, misallocated refunds, orphan chargebacks, FX drift, split settlements, consolidated payouts, and more — each labelled in `ground_truth.json` with its expected exception category and whether a deterministic engine should resolve it silently or flag it.
+You cannot measure precision, recall, or false-match rate against real production data, because you don't have ground truth for real data — **that is the reconciliation problem itself**. So Kosh generates its own three-way dataset with **injected, labelled defects** spanning 14 realistic failure modes (203 defects in `run_2000`, 722 in `run_10000`): wrong MDR tier, GST variance, misallocated refunds, orphan chargebacks, FX drift, split settlements, consolidated payouts, and more — each labelled in `ground_truth.json` with its expected exception category and whether a deterministic engine should resolve it silently or flag it.
 
 Realistic on purpose, not uniform: UPI/RuPay carry zero MDR (the real regulatory position), so most volume reconciles trivially and the interesting failures concentrate in card and international volume — same as a real merchant's exception queue.
 
@@ -259,8 +308,9 @@ Same `--seed` → byte-identical output, every time. A small committed fixture, 
 
 Written plainly, because an honest limitations list *is* the deliverable — a shorter list with something suppressed would be a worse submission.
 
-- **Recall is 99.95% on `run_2000`, not 100%.** Two settlements net to exactly ₹0, so a bank credit genuinely cannot evidence whether they rode along in a consolidated payout — a zero-value term is degenerate in a subset-sum. Refusing costs 2 links; guessing would risk the false-match rate this project exists to protect.
-- **L3's category for a compound fee+GST error can be a single-cause label** when the model's investigation surfaces only one unexplained leg. At full scale — `run_10000`'s 29-record residual — it scored **25/29 (86%)**; three of the four misses named one cause instead of "undecomposable" while getting the money *exactly* right, and one exhausted its 12-turn budget into `AGENT_INCOMPLETE`. On this specific class the deterministic fallback actually scores better (29/29), because blanket-labelling everything `UNEXPLAINED_VARIANCE` is definitionally correct for a defect defined by being undecomposable. L3 earns its place on residuals that *can* be decomposed, not this one. Sources: [`phase5_live_residual_10k.json`](benchmarks/phase5_live_residual_10k.json), [`sample_traces_live_10k/`](benchmarks/sample_traces_live_10k/).
+- **Per-defect classification is not perfect at 10,000 records** — 717 of 722 (99.31%). Three `fx_variance` and one `gst_variance` land in a neighbouring fee category, and one boundary-case `period_cutoff` is missed. It *is* exact at 500 and 2,000 records, which is why all three are reported rather than only the flattering ones.
+- **Recall is 99.95% on `run_2000`, not 100%.** Two settlements net to exactly ₹0, so a bank credit genuinely cannot evidence whether they rode along in a consolidated payout — a zero-value term is degenerate in a subset-sum. Refusing costs 2 links; guessing would risk the false-match rate this project exists to protect. (At 10,000 records this case doesn't arise, and recall is 100.00%.)
+- **L3's category for a compound fee+GST error can be a single-cause label** when the model's investigation surfaces only one unexplained leg. At full scale — `run_10000`'s 29-record residual — it scored **25/29 (86%)**; three of the four misses named one cause instead of "undecomposable" while getting the money *exactly* right, and one exhausted its 12-turn budget into `AGENT_INCOMPLETE`. On this specific class the deterministic fallback actually scores better (29/29), because blanket-labelling everything `UNEXPLAINED_VARIANCE` is definitionally correct for a defect defined by being undecomposable. L3 earns its place on residuals that *can* be decomposed, not this one.
 - **The brief specifies Anthropic's Claude**; the real agent ran against NVIDIA NIM's Nemotron, because that's the key that was available. `AnthropicClient` is spec-complete and unit-tested against a mock, never run live. Documented, not hidden.
 - **`PERIOD_CUTOFF`'s >4-day threshold is tuned to this fixture's distribution**, not a law — on a different merchant's cycle it needs re-derivation, and one boundary case at exactly 3 days is genuinely indistinguishable from a slow weekend.
 - **Defect rates are tuned so all 14 types appear at N=2000**; at N=500 some fire once or twice, so per-class recall at that scale is a small-sample number.
@@ -273,7 +323,6 @@ Written plainly, because an honest limitations list *is* the deliverable — a s
 
 ---
 
-
 ```bash
 pip install -e ".[dev]"                                                        # +.[llm] for SDK-backed tests, +.[api] for the API
 python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
@@ -283,3 +332,9 @@ python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultr
 ```
 
 `make gen`, `sample`, `test`, `trace`, `eval-null`, `eval-oracle`, `eval-l0l1`, `eval-l0l1l2`, `eval-full`, `l2-profile`, `l3-profile`, `demo`, `demo-cash`, `multiseed`, `adversarial`, `verify-deterministic`, `freeze`, `api`, `dashboard` wrap the same commands.
+
+---
+
+<div align="center">
+<sub>MIT licensed · Built by <a href="https://github.com/bodapatisaikrishna">Sai Krishna Bodapati</a> for the Razorpay AI Buildathon 2026</sub>
+</div>
