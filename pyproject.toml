@@ -1,5 +1,6 @@
 [build-system]
-requires = ["setuptools>=68"]
+# >=77 for PEP 639 license metadata (license = "MIT" + license-files).
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +8,8 @@ name = "kosh"
 version = "0.1.0"
 description = "Kosh - AI Finance Controller: three-way payment settlement reconciliation with verifiable ground truth"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
 # Kosh's engine, generator, eval harness and cash forecast run on the standard
 # library alone - stdlib csv/json/dataclasses throughout, deliberately (see
 # data/generator/emit.py, which uses csv rather than pandas specifically to

@@ -1,5 +1,10 @@
 # Kosh — AI Finance Controller
 
+[![CI](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml/badge.svg)](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml)
+[![Python 3.11 | 3.12](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](pyproject.toml)
+[![Tests](https://img.shields.io/badge/tests-257%20passing-brightgreen)](tests/)
+[![False-match rate](https://img.shields.io/badge/false--match%20rate-0.00%25-brightgreen)](benchmarks/)
+
 **Three-way payment settlement reconciliation for an Indian online merchant** — Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa, plus a forward cash position.
 
 Built for the **Razorpay AI Buildathon 2026, Track 04** — *"Run the books and the cash position."*
