@@ -118,7 +118,7 @@ Measured, not asserted — share of correctly-matched links contributed by each 
 | L2 subset-sum | **1.47%** | **0.41%** | **0.12%** | consolidated payouts — one credit, 2–4 settlements, no per-settlement UTR |
 | L3 agent | 1 record | 6 records | 29 records | variances no deterministic rule can decompose |
 
-L3 saw **6 of 1,858 records (0.32%)** on `run_2000` and **29 of 9,317 (0.31%)** on `run_10000`. That ratio holding flat across a 20× scale increase is the deterministic-first thesis quantified: the residual grows linearly, not explosively, so LLM cost stays a rounding error at any scale. The other 99.7% of records cost zero tokens.
+L3 saw **6 of 1,858 records (0.32%)** on `run_2000` and **29 of 9,317 (0.31%)** on `run_10000`. That ratio holding flat across a 5× scale increase is the deterministic-first thesis quantified: the residual grows linearly, not explosively, so LLM cost stays a rounding error at any scale. The other 99.7% of records cost zero tokens.
 
 ### Throughput scales linearly to 10× the frozen benchmark
 
