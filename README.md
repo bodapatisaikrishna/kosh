@@ -240,9 +240,6 @@ Written plainly, because an honest limitations list *is* the deliverable — a s
 |---|---|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | *Why it's built this way* — design rationale, every bug and the reasoning that caught it |
 | [`RESULTS.md`](RESULTS.md) | *What's true right now* — every measured number, each naming its source file |
-| [`ENGINEERING_LOG.md`](ENGINEERING_LOG.md) | *What happened when* — the chronological build, one commit at a time |
-| [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) | The 5-minute walkthrough, every figure pulled from a committed file |
-| [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md) | The original 7-phase build plan this repo follows |
 
 ```bash
 pip install -e ".[dev]"                                                        # +.[llm] for SDK-backed tests, +.[api] for the API

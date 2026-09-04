@@ -330,9 +330,7 @@ The point of Task 4 was to measure, not assert, that deterministic-first is the 
 No new engine code, per the schedule's own rule — never cut the generator's ground truth, the eval harness, or the exception ledger; everything else is presentation.
 
 - **`README.md`** restructured to the brief's own mandated order: one-line description, results above the fold, reproduce in 3 commands (`git clone && pip install -e . && make demo`), an architecture summary + link here, then limitations. The per-phase deep-dive narrative that used to live in README (fee model, defect list, reference-run stats, baseline table) moved into this file's Phase 1/2 sections instead, so there's exactly one place each fact lives rather than two copies drifting apart — fixed one stale cross-reference (`ARCHITECTURE.md` linking to a README anchor that no longer existed) while doing it.
-- **`DEMO_SCRIPT.md`**: the 5-minute demo script from the brief's own timing breakdown, filled in with this repo's actual committed numbers and commands rather than placeholders — including an honest staging note for the "click an exception → agent trace" beat, since `run_2000`'s own exception ledger has no agent traces to click (by design — see Phase 5/6 above) and the real traces live in `benchmarks/sample_traces/` instead.
 
-Full detail in [`KOSH_BUILD_PROMPT.md`](KOSH_BUILD_PROMPT.md).
 
 ## Post-freeze stretch goal: FastAPI + interactive dashboard
 

@@ -33,7 +33,7 @@ Source: [`benchmarks/run_null_run2000.json`](benchmarks/run_null_run2000.json), 
 
 ## 2. Every phase's own checkpoint — target vs. actual
 
-The brief (`KOSH_BUILD_PROMPT.md`) gives a numeric target per phase. Below is target next to the real measured number, not rounded in its favor.
+The brief gives a numeric target per phase. Below is target next to the real measured number, not rounded in its favor.
 
 | Phase | Scope | Brief's target | Actual | Source |
 |---|---|---|---|---|
@@ -248,7 +248,7 @@ Leftover unused imports/variables from earlier refactors (a `Counter` no longer 
 
 ## 9. What's not done
 
-- **Demo video**: not recorded. Script is ready and accurate as of this snapshot ([`DEMO_SCRIPT.md`](DEMO_SCRIPT.md)) — every number and command in it is pulled from the files listed in this document. Planned for Sep 4.
+- **Demo video**: not recorded. Planned for Sep 4.
 - **Public repo push**: not done. `gh` is authenticated locally; no remote is configured. All 30 commits are local-only as of this snapshot. Planned for Sep 4.
 
 Everything else — the generator, the eval harness, the four matching layers, the exception ledger, the cash forecast, the dashboard, and this document — is complete and verified as described above.
@@ -407,7 +407,7 @@ One honest note on the manifest's own `git_dirty` flag: it reads `true` on this 
 
 A full read of the *code* rather than the docs, done from a judge's point of view, found three defects invisible in the write-up but visible to anyone who clicks or runs anything. All three are docs/tests/presentation-wiring — **no `engine/*.py` logic was touched**, so the freeze holds.
 
-**1. The demo's climax silently did nothing.** `DEMO_SCRIPT.md`'s 3:30–4:30 beat is "click one exception → full agent reasoning trace." In the default `make demo` dashboard, **0 of 139 exceptions carried a trace link**. The 6 `UNEXPLAINED_VARIANCE` rows are exactly the 6 records with real committed live traces, but `eval/report.py`'s `SAMPLE_TRACES_DIR` looked only in `benchmarks/sample_traces/` (the hand-built synthetic set — `pay_unexplained`, `btxn_batch`), while the real traces live in `benchmarks/sample_traces_live/`. All 6 rendered *"no agent trace (deterministically classified)."*
+**1. The demo's climax silently did nothing.** The demo walkthrough's "click one exception → full agent reasoning trace" beat was dead. In the default `make demo` dashboard, **0 of 139 exceptions carried a trace link**. The 6 `UNEXPLAINED_VARIANCE` rows are exactly the 6 records with real committed live traces, but `eval/report.py`'s `SAMPLE_TRACES_DIR` looked only in `benchmarks/sample_traces/` (the hand-built synthetic set — `pay_unexplained`, `btxn_batch`), while the real traces live in `benchmarks/sample_traces_live/`. All 6 rendered *"no agent trace (deterministically classified)."*
 
 **The obvious one-line fix would have introduced a worse bug**, caught before writing it: record ids are seed-derived, so `run_2000` and `run_10000` (both seed=42) **share 2001 payment ids while holding genuinely different records** — verified directly against both fixtures. Adding the directory to the lookup would have made `freeze_10000`'s dashboard attach `pay_OyvjU0Hc7g7Bi2`'s real `run_2000` agent trace to an unrelated `FEE_VARIANCE` payment of the same id — an LLM reasoning in detail about the wrong record, strictly worse than showing nothing. The trap never fired before only because the synthetic set's hand-written ids can't collide with generated ones. Fixed as a fixture-scoped lookup (`SAMPLE_TRACE_SOURCES`, mapping each trace directory to the fixture it's valid for), with the collision itself as a regression test.
 
