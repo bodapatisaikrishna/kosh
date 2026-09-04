@@ -43,7 +43,7 @@ The brief gives a numeric target per phase. Below is target next to the real mea
 | 2 | Eval harness + baselines | Null → 0%/0%/0%/100%; oracle → ~100% precision/recall | Exact match, see table above | `tests/baselines/` |
 | 3 | L0 + L1 | Auto-match ≥88%; false-match 0.00%; <5s @ 2,000 records | **92.84%**, **0.00%**, **4.09ms** | `benchmarks/phase3.json` |
 | 4 | L2 subset-sum | Auto-match ≥94%; false-match 0.00%; p99 solve <250ms | **97.74%**, **0.00%**, **49.82ms** p99 | `benchmarks/phase4.json`, `phase4_solver_perf.json` |
-| 5 | L3 agent + L4 ledger | Auto-match ≥96%; false-match ≤0.1%; cost <$0.50/1000 records; every exception has a recommended action | **97.74%**, **0.00%**, **$0.0549/1000 records** (real live run) | `benchmarks/phase5.json`, `phase5_live_residual.json` |
+| 5 | L3 agent + L4 ledger | Auto-match ≥96%; false-match ≤0.1%; cost <$0.50/1000 records; every exception has a recommended action | **97.74%**, **0.00%**, **$0.056/1000 records** (real live run) | `benchmarks/phase5.json`, `phase5_live_residual.json` |
 | 6 | Cash + dashboard + freeze | 3-scale freeze committed; results above the fold; fresh-clone `make demo` works | Done, verified in isolated clone + clean venv | §1 above |
 | 7 | Submission | README/ARCHITECTURE/demo script ready; public repo; 5-min video | Docs + script done. **Repo push and video recording are the user's, planned Sep 4** | — |
 
@@ -104,7 +104,7 @@ L3 saw **6 of 1,858 records (0.32%)** on `run_2000` — the other 99.68% cost ze
 | `pay_dGxUjmPIxeeXo4` | **Match** → `payment_settlement` → `setl_WCpMEdv6RwTwIE` | Confirmed against `ground_truth.json` directly — correct. |
 
 - **5 of 6 exception amounts exact to the paisa** against the generator's own labelled defect amount. Zero false matches. Zero `AGENT_INCOMPLETE`.
-- **Numbers**: 53 LLM calls, 135,444 input tokens, 15,598 output tokens, 489.7s wall clock, **$0.102 total, $0.0549 per 1000 records** (against the full 1,858-record dataset, matching `eval/metrics.py`'s own convention — not the 6 records L3 actually touched).
+- **Numbers**: 51 LLM calls, 137,644 input tokens, 16,122 output tokens, 486.7s wall clock, **$0.104 total, $0.056 per 1000 records** (against the full 1,858-record dataset, matching `eval/metrics.py`'s own convention — not the 6 records L3 actually touched).
 - **The one remaining imprecision, documented rather than hidden**: `compute_defect_confusion` shows `compound_fee_tax_error: {detected: 1, misclassified: 4, missed: 1}` for this run. The 4 "misclassified" are cases where the model correctly raised an exception with the correct money and the correct record, but labelled it `FEE_VARIANCE` where the generator's own expected label is `UNEXPLAINED_VARIANCE` (a defensible call — the model named the anomalous leg it found rather than the fact that multiple legs are simultaneously unexplained). The 1 "missed" is the genuinely-immaterial ₹0.90 case, judged not worth a standalone exception alongside its correct settlement match. See the `defect_confusion_note` field in the committed JSON for the full reasoning.
 
 ### Synthetic exercise set (supplementary, not `run_2000` residual)
@@ -488,7 +488,7 @@ Both are recorded because the run produced them, not because they help.
 
 Four claims were each proven at exactly one scale. All four were re-tested at the largest scale available, deterministic-only, free to run.
 
-**14.1 — Cash identity ties at 10,000.** The brief's own test: *"reconciled cash vs book cash, with the delta fully explained — if those don't tie, you have a bug."* Previously verified on `run_2000` and `sample_200` only. At `run_10000`: book ₹69,42,78,266 vs reconciled ₹65,27,72,733, a gap of ₹4,15,05,533 — **named to the paisa, remainder exactly 0**.
+**14.1 — Cash identity ties at 10,000.** The brief's own test: *"reconciled cash vs book cash, with the delta fully explained — if those don't tie, you have a bug."* Previously verified on `run_2000` and `sample_200` only. At `run_10000`: book ₹6,94,27,826.66 vs reconciled ₹6,52,77,273.37, a gap of ₹41,50,553.29 — **named to the paisa, remainder exactly 0**.
 
 **14.2 — Determinism holds at 10,000.** `tests/test_determinism.py` runs on `run_2000`. Re-run at 10k: two passes produced identical output across **19,610 links and 550 exceptions**, no duplicates.
 
