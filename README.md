@@ -207,7 +207,7 @@ The freeze stops at 9,317 records, so the pipeline was run out to 93,030 to chec
 
 The final doubling has a scaling exponent of **1.006**, linear to three decimal places, and the rate plateaus around 146k records/sec. The higher rate at small N is amortisation, not a faster path: **146k/sec is the honest sustained figure**, not the 231k a 9,317-record run reports. L2's subset-sum is the only superlinear component, and it stays bounded by design (≤40 candidates, 250 ms deadline), which is why the curve flattens rather than exploding. Source: [`scaling_100k.json`](benchmarks/scaling_100k.json).
 
-**Seed-robustness and scale, tested together.** The 6-seed sweep is at 2,000 records and the original 10,000 result was a single seed, so "0.00% at scale" rested on one seed. Five more seeds at 10,000 records each: 97.83–97.84% auto-match, 100% recall on every seed, 0.00% false-match on every seed, a tighter spread than at 2,000, as a larger sample should be. Source: [`multiseed_10k.json`](benchmarks/multiseed_10k.json).
+**Seed-robustness and scale, tested together.** The 6-seed sweep is at 2,000 records and the original 10,000 result was a single seed, so "0.00% at scale" rested on one seed. Five seeds at 10,000 records each (one of them the original `seed=42`): 97.83–97.84% auto-match, 100% recall on every seed, 0.00% false-match on every seed, a tighter spread than at 2,000, as a larger sample should be. Source: [`multiseed_10k.json`](benchmarks/multiseed_10k.json).
 
 ### Ablation: what each layer, and an all-LLM alternative, actually buys you
 
