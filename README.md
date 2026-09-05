@@ -40,11 +40,11 @@ Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that act
 >
 > Every number on this page is measured against a machine-readable `ground_truth.json` with injected, labelled defects — never asserted, never hand-picked. The scale requirement is 50+ records; Kosh is frozen at 500 / 2,000 / 10,000 and validated out to 93,030.
 
-**Contents** — [Reproduce](#reproduce) · [Architecture](#architecture) · [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
+**Contents** — [Quick Start](#quick-start) · [Architecture](#architecture) · [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
 
 ---
 
-## Reproduce
+## Quick Start
 
 ```bash
 git clone https://github.com/bodapatisaikrishna/kosh && cd kosh
@@ -99,6 +99,8 @@ L4  Exception ledger      (honest remainder)   → 139 exceptions, every categor
 The generator is **deliberately adversarial to its own engine**: it injects consolidated payouts (one credit, several settlements, no per-settlement reference — solvable only by subset-sum) and compound fee+tax errors (two overlapping causes, so no single-cause hypothesis can decompose them — genuinely unexplained, real work for L3). That's what makes the layer shares above real measurements rather than a diagram.
 
 **Stack**: Python 3.11+ and **zero runtime dependencies** — plain dataclasses, stdlib `csv`/`json` throughout (deliberately, so no float formatting ever gets near money), integer paise everywhere (enforced by an AST lint). `pytest` is a dev extra; the `anthropic`/`openai` SDKs are an optional extra behind a provider-agnostic `LLMClient` interface, needed only for a live L3 run. `pip install -e .` pulls in nothing at all.
+
+### Project structure
 
 ```
 data/generator/   synthetic dataset generator + injected, labelled defects
@@ -161,7 +163,7 @@ Full breakdown on `run_2000`, where every class is exact:
 
 <sub>\* `compound_fee_tax_error` is L3's live residual, not deterministic, so it varies run to run. The best evidence is the larger sample: against `run_10000`'s 29-record residual, L3 scored <b>25/29 (86%)</b> — see <a href="#l3-at-full-scale-29-records">L3 at full scale</a>. The four `run_2000` runs (6, 4, 5, 3 out of 6) are the same behaviour on a sample too small to draw a rate from.</sub>
 
-### The money
+### Financial impact
 
 ![Fee leakage, exception aging, and the cash position](docs/report-cash.png)
 
@@ -171,7 +173,7 @@ Always reported as a **lower bound**: a compound error coerced to `UNEXPLAINED_V
 
 **And the cash position, decomposed to the paisa.** Book cash ₹6,94,27,826.66; reconciled cash — money actually evidenced end to end — ₹6,52,77,273.37. The **₹41,50,553.29 gap is not a rounding difference**: it's named component by component (settled-but-not-credited, refunds, chargebacks, unidentified credits). **₹12,44,126.19 is stuck** across **198 named payment IDs** — captured, past SLA, not yet in the bank. Those are IDs a human can chase this afternoon, not an aggregate.
 
-### The honest remainder
+### Exception intelligence
 
 ![Exception queue — 550 exceptions with category, severity, owner and age](docs/report-exceptions.png)
 
