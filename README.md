@@ -82,6 +82,10 @@ python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultr
 
 Deterministic first, LLM last — five layers, each seeing only what the one above couldn't resolve (shares from `run_2000`):
 
+![Kosh architecture overview — data layer, the L0-L4 layer cake, and consumer fan-out, each box citing its real source file](docs/architecture-overview.png)
+
+<sub>Every box names the file that implements it. An interactive, clickable version with guided views is at [`docs/kosh-architecture.html`](docs/kosh-architecture.html).</sub>
+
 ```
 L0  Deterministic joins   (exact keys)         → 99.33% of matched links
 L1  Tolerance matching    (±amount, ±date)     → 0.26%
@@ -105,7 +109,7 @@ tests/            257 tests, incl. adversarial suite and frozen regression basel
 benchmarks/       committed reports at every phase + the 3-scale freeze + real agent traces
 api/              post-freeze stretch goal: FastAPI layer over eval.report.run_eval
 dashboard/        post-freeze stretch goal: Next.js + Recharts interactive dashboard
-docs/             the report screenshots used on this page
+docs/             report screenshots + the architecture diagrams used on this page
 ```
 
 Full design rationale, and every bug with the reasoning that caught it, in [`ARCHITECTURE.md`](ARCHITECTURE.md).
