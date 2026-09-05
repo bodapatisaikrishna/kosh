@@ -40,7 +40,7 @@ Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that act
 >
 > Every number on this page is measured against a machine-readable `ground_truth.json` with injected, labelled defects — never asserted, never hand-picked. The scale requirement is 50+ records; Kosh is frozen at 500 / 2,000 / 10,000 and validated out to 93,030.
 
-**Contents** — [Reproduce](#reproduce) · [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Architecture](#architecture) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
+**Contents** — [Reproduce](#reproduce) · [Architecture](#architecture) · [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
 
 ---
 
@@ -75,6 +75,40 @@ python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultr
 ```
 
 `make gen`, `sample`, `test`, `trace`, `eval-null`, `eval-oracle`, `eval-l0l1`, `eval-l0l1l2`, `eval-full`, `l2-profile`, `l3-profile`, `demo`, `demo-cash`, `multiseed`, `adversarial`, `verify-deterministic`, `freeze`, `api`, `dashboard` wrap the same commands.
+
+---
+
+## Architecture
+
+Deterministic first, LLM last — five layers, each seeing only what the one above couldn't resolve (shares from `run_2000`):
+
+```
+L0  Deterministic joins   (exact keys)         → 99.33% of matched links
+L1  Tolerance matching    (±amount, ±date)     → 0.26%
+L2  Combinatorial solver  (subset-sum)         → 0.41%
+L3  LLM agent             (residual only)      → 6 records (0.32%) — 29 (0.31%) at 10k
+L4  Exception ledger      (honest remainder)   → 139 exceptions, every category covered
+```
+
+**Each layer refuses rather than guesses when evidence is ambiguous — that's what holds false-match at zero.** L0 won't pick between two settlements sharing a UTR prefix. L1 won't pick the "closest" of two candidates in tolerance. L2 returns `AMBIGUOUS` rather than choosing one of several valid subsets. L3's tool layer structurally rejects any ID it didn't hand the model, any match under 0.85 confidence, and recomputes severity itself rather than trusting the model — the prompt asks, the tool layer enforces.
+
+The generator is **deliberately adversarial to its own engine**: it injects consolidated payouts (one credit, several settlements, no per-settlement reference — solvable only by subset-sum) and compound fee+tax errors (two overlapping causes, so no single-cause hypothesis can decompose them — genuinely unexplained, real work for L3). That's what makes the layer shares above real measurements rather than a diagram.
+
+**Stack**: Python 3.11+ and **zero runtime dependencies** — plain dataclasses, stdlib `csv`/`json` throughout (deliberately, so no float formatting ever gets near money), integer paise everywhere (enforced by an AST lint). `pytest` is a dev extra; the `anthropic`/`openai` SDKs are an optional extra behind a provider-agnostic `LLMClient` interface, needed only for a live L3 run. `pip install -e .` pulls in nothing at all.
+
+```
+data/generator/   synthetic dataset generator + injected, labelled defects
+engine/           L0-L4: matching layers, the LLM adapter, the exception ledger
+eval/             scoring against ground truth, the 4-panel HTML dashboard
+cash/             forward cash position: SLA forecast, stuck cash, book-vs-reconciled
+tests/            257 tests, incl. adversarial suite and frozen regression baselines
+benchmarks/       committed reports at every phase + the 3-scale freeze + real agent traces
+api/              post-freeze stretch goal: FastAPI layer over eval.report.run_eval
+dashboard/        post-freeze stretch goal: Next.js + Recharts interactive dashboard
+docs/             the report screenshots used on this page
+```
+
+Full design rationale, and every bug with the reasoning that caught it, in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
@@ -245,40 +279,6 @@ A 0.00% false-match rate is exactly the kind of claim that should invite suspici
 Every frozen benchmark reproduces **byte-for-byte from a clean clone against the committed lockfile** — accuracy, exceptions, fee leakage, and aging all verified identical, not assumed.
 
 **And the failures are on the record too.** [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`RESULTS.md`](RESULTS.md) document every bug found and how it was caught — including two genuine false-match bugs (one surfaced by a live model mid-run), a settlement double-claim whose *first* fix broke a working feature and was reverted, a cost field that silently reported $0 while a real account was being billed, a 10-hour live-run hang, and a healthy process killed on stale evidence during that investigation. Nothing here was smoothed over after the fact.
-
----
-
-## Architecture
-
-Deterministic first, LLM last — five layers, each seeing only what the one above couldn't resolve (shares from `run_2000`):
-
-```
-L0  Deterministic joins   (exact keys)         → 99.33% of matched links
-L1  Tolerance matching    (±amount, ±date)     → 0.26%
-L2  Combinatorial solver  (subset-sum)         → 0.41%
-L3  LLM agent             (residual only)      → 6 records (0.32%) — 29 (0.31%) at 10k
-L4  Exception ledger      (honest remainder)   → 139 exceptions, every category covered
-```
-
-**Each layer refuses rather than guesses when evidence is ambiguous — that's what holds false-match at zero.** L0 won't pick between two settlements sharing a UTR prefix. L1 won't pick the "closest" of two candidates in tolerance. L2 returns `AMBIGUOUS` rather than choosing one of several valid subsets. L3's tool layer structurally rejects any ID it didn't hand the model, any match under 0.85 confidence, and recomputes severity itself rather than trusting the model — the prompt asks, the tool layer enforces.
-
-The generator is **deliberately adversarial to its own engine**: it injects consolidated payouts (one credit, several settlements, no per-settlement reference — solvable only by subset-sum) and compound fee+tax errors (two overlapping causes, so no single-cause hypothesis can decompose them — genuinely unexplained, real work for L3). That's what makes the layer shares above real measurements rather than a diagram.
-
-**Stack**: Python 3.11+ and **zero runtime dependencies** — plain dataclasses, stdlib `csv`/`json` throughout (deliberately, so no float formatting ever gets near money), integer paise everywhere (enforced by an AST lint). `pytest` is a dev extra; the `anthropic`/`openai` SDKs are an optional extra behind a provider-agnostic `LLMClient` interface, needed only for a live L3 run. `pip install -e .` pulls in nothing at all.
-
-```
-data/generator/   synthetic dataset generator + injected, labelled defects
-engine/           L0-L4: matching layers, the LLM adapter, the exception ledger
-eval/             scoring against ground truth, the 4-panel HTML dashboard
-cash/             forward cash position: SLA forecast, stuck cash, book-vs-reconciled
-tests/            257 tests, incl. adversarial suite and frozen regression baselines
-benchmarks/       committed reports at every phase + the 3-scale freeze + real agent traces
-api/              post-freeze stretch goal: FastAPI layer over eval.report.run_eval
-dashboard/        post-freeze stretch goal: Next.js + Recharts interactive dashboard
-docs/             the report screenshots used on this page
-```
-
-Full design rationale, and every bug with the reasoning that caught it, in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ---
 
