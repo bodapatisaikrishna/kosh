@@ -45,7 +45,7 @@ The brief gives a numeric target per phase. Below is target next to the real mea
 | 4 | L2 subset-sum | Auto-match ≥94%; false-match 0.00%; p99 solve <250ms | **97.74%**, **0.00%**, **49.82ms** p99 | `benchmarks/phase4.json`, `phase4_solver_perf.json` |
 | 5 | L3 agent + L4 ledger | Auto-match ≥96%; false-match ≤0.1%; cost <$0.50/1000 records; every exception has a recommended action | **97.74%**, **0.00%**, **$0.056/1000 records** (real live run) | `benchmarks/phase5.json`, `phase5_live_residual.json` |
 | 6 | Cash + dashboard + freeze | 3-scale freeze committed; results above the fold; fresh-clone `make demo` works | Done, verified in isolated clone + clean venv | §1 above |
-| 7 | Submission | README/ARCHITECTURE/demo script ready; public repo; 5-min video | Docs + script done. **Repo push and video recording are the user's, planned Sep 4** | — |
+| 7 | Submission | README/ARCHITECTURE/demo script ready; public repo; 5-min video | Done. Public repo pushed, video recorded, submission form filed on 2026-09-05 | ✅ |
 
 **Every one of these targets is met.** The one caveat: Phase 5's cost checkpoint had *no real number behind it* until a bug fix on 2026-08-31 (§6.13) — the number above is the first one that was ever actually computed rather than silently hardcoded to 0.
 
@@ -250,10 +250,9 @@ Leftover unused imports/variables from earlier refactors (a `Counter` no longer 
 
 ## 9. What's not done
 
-- **Demo video**: not recorded. This is the one outstanding item.
-- ~~**Public repo push**~~: done — [github.com/bodapatisaikrishna/kosh](https://github.com/bodapatisaikrishna/kosh), public, CI green on Python 3.11–3.14.
+Nothing. ~~**Demo video**~~: recorded. ~~**Public repo push**~~: done, [github.com/bodapatisaikrishna/kosh](https://github.com/bodapatisaikrishna/kosh), public, CI green on Python 3.11–3.14. ~~**Submission**~~: filed on 2026-09-05.
 
-Everything else — the generator, the eval harness, the four matching layers, the exception ledger, the cash forecast, the dashboard, and this document — is complete and verified as described above.
+Everything described above is complete, verified, and submitted.
 
 ---
 

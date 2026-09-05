@@ -32,21 +32,7 @@ An LLM doing arithmetic across thousands of rows is slow, expensive, and wrong. 
 
 The agent never sees the ~97% that deterministic code already handled. That's the whole competitive story, and it's also just correct engineering: cheap, fast, auditable layers absorb everything they can before anything nondeterministic runs.
 
-## Status
-
-Every checkpoint below is the brief's own stated target for that phase, checked against the actual committed benchmark for that phase — not eyeballed, not rounded in its favor. Source file named per row; regenerate any of them yourself with the commands in `README.md`'s "Everything else" section.
-
-| Phase | Scope | Checkpoint (brief's target) | Actual | |
-|---|---|---|---|---|
-| 1 | Data generator + ground truth | Byte-identical regen; every amount an integer; ~200 defects across all types; one full chain hand-verified | Verified; 14/14 defect types present (12 in the original brief, 2 added during hardening — see below) | ✅ |
-| 2 | Eval harness + baselines | Null baseline → 0% match/recall, 100% exceptioned; oracle → ~100% precision/recall | `tests/baselines/{null,oracle}_baseline.json` — exact match | ✅ |
-| 3 | L0 + L1 | Auto-match ≥88%; false-match 0.00%; <5s at 2,000 records | **92.84%** auto-match, **0.00%** false-match, **4.1ms** ([`phase3.json`](benchmarks/phase3.json)) | ✅ |
-| 4 | L2 subset-sum | Auto-match ≥94%; false-match 0.00%; p99 solve <250ms | **97.74%** auto-match, **0.00%** false-match, **49.8ms** p99 ([`phase4.json`](benchmarks/phase4.json), [`phase4_solver_perf.json`](benchmarks/phase4_solver_perf.json)) | ✅ |
-| 5 | L3 agent + L4 ledger | Auto-match ≥96%; false-match ≤0.1%; cost <$0.50/1000 records; every exception has a recommended action | **97.74%** auto-match, **0.00%** false-match, **$0.056**/1000 records on the real live run ([`phase5.json`](benchmarks/phase5.json), [`phase5_live_residual.json`](benchmarks/phase5_live_residual.json)) | ✅ |
-| 6 | Cash + dashboard + freeze | 3-scale freeze committed; results above the fold; fresh-clone `make demo` works | 500/2,000/10,000 committed; verified in an isolated clone + clean venv | ✅ |
-| 7 | Submission | README/ARCHITECTURE/demo script ready; public repo; 5-min video | Docs and script done; **repo push and video recording are yours**, planned for Sep 4 | ⏳ |
-
-Phase 5's cost checkpoint deserves a caveat most tables like this wouldn't show: `cost_usd_micros` was silently hardcoded to `0` in every benchmark through Phase 6 — the checkpoint had no real number behind it until the fix documented below. The $0.056 above is the first real one.
+Every phase's own numeric checkpoint against the brief's stated target, and the full submission ledger, live in `RESULTS.md` rather than here, so a number never has two homes to drift apart in. What follows is the narrative: why each phase is built the way it is, and every bug that shaped it.
 
 ## Phase 1: the data generator
 
