@@ -301,6 +301,7 @@ python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data
 Same `--seed` → byte-identical output, every time. A small committed fixture, `data/fixtures/sample_200`, lets you inspect real output without running anything.
 
 ---
+
 ## Live API + interactive dashboard (post-freeze stretch goal)
 
 The brief's two optional *"if time allows"* items (a FastAPI layer and an interactive Next.js dashboard) built after the code freeze as a deliberate, dated addition. **Additive, not a replacement**: `make demo`'s static report stays the primary deliverable and needs nothing but Python.

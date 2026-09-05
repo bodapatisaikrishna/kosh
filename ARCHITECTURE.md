@@ -104,7 +104,7 @@ Two baseline "engines" (`engine/baselines.py`) exist purely to validate the harn
 | Baseline | What it does | auto-match | precision / recall | false-match | exceptions |
 |---|---|---|---|---|---|
 | `null` | asserts nothing | 0.00% | 0.00% / 0.00% | 0.00% | 100% of records |
-| `oracle` | reads `ground_truth.json` directly | 97.85%* | 100.00% / 100.00% | **0.00%** | 133 (exactly the unresolvable defects) |
+| `oracle` | reads `ground_truth.json` directly | 97.85%* | 100.00% / 100.00% | **0.00%** | 139 (exactly the unresolvable defects) |
 
 \* Not 100%: payments hit by `missing_settlement` or `duplicate_payment` have no true settlement link to match — they correctly land on the exception ledger instead.
 
@@ -125,7 +125,7 @@ A subtlety worth naming: a bank row is excluded from settlement-matching only wh
 
 `engine/fees.py` re-exports the generator's `compute_expected_fee` unchanged and adds `explain_variance(observed, expected, ...)`, which decomposes a paise delta into `MATCH` / `ROUNDING` / `FEE_TIER` / `GST_RATE` / `REFUND`, or honestly returns `UNEXPLAINED` when none of those hypotheses fit. This function does no matching itself — Phase 3's pipeline (`engine/pipeline.py`) doesn't call it yet — but it's the piece Phase 5's exception ledger and Phase 5's agent tools both build on, so it's built and tested now.
 
-Result on `data/fixtures/run_2000`: 97.85% auto-match, 100.00%/100.00% precision/recall, **0.00% false-match**, ~4ms wall clock — see [`benchmarks/phase3.json`](benchmarks/phase3.json). Phase 3's pipeline doesn't raise any exceptions yet (L2/L3/L4 don't exist), so whatever L0/L1 can't place is simply absent from the match list for now, not silently claimed as reconciled.
+Result on `data/fixtures/run_2000`: 92.84% auto-match, 100.00%/99.54% precision/recall, **0.00% false-match**, ~4ms wall clock — see [`benchmarks/phase3.json`](benchmarks/phase3.json). (The 97.85%-and-100%-recall figure once here described an earlier, 12-defect-type fixture; `phase3.json` has since been regenerated against the current 14-type suite, and this line is now the number that file actually holds.) Phase 3's pipeline doesn't raise any exceptions yet (L2/L3/L4 don't exist), so whatever L0/L1 can't place is simply absent from the match list for now, not silently claimed as reconciled.
 
 ## Phase 4: L2 subset-sum solver
 
