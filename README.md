@@ -1,6 +1,6 @@
 <div align="center">
 
-# Kosh — AI Finance Controller
+# Kosh: AI Finance Controller
 
 **Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa. Automatically.**
 Three-way payment settlement reconciliation for an Indian online merchant, plus a forward cash position.
@@ -12,17 +12,17 @@ Three-way payment settlement reconciliation for an Indian online merchant, plus 
 [![False-match rate](https://img.shields.io/badge/false--match%20rate-0.00%25-brightgreen)](benchmarks/)
 [![Runtime deps](https://img.shields.io/badge/runtime%20deps-0-blue)](pyproject.toml)
 
-Built for the **Razorpay AI Buildathon 2026, Track 04** — *"Run the books and the cash position."*
+Built for the **Razorpay AI Buildathon 2026, Track 04**: *"Run the books and the cash position."*
 
 </div>
 
 ---
 
-One bank credit is rarely one payment. It's a *batch* — several settlements, minus refunds, minus chargebacks, plus adjustments. The one reference number that could tie it back? Usually mangled, truncated, or missing. Today someone untangles this by hand, in a spreadsheet, every settlement cycle.
+**The problem.** One bank credit is rarely one payment. It's a *batch*: several settlements, minus refunds, minus chargebacks, plus adjustments. The one reference number that could tie it back? Usually mangled, truncated, or missing. Today someone untangles this by hand, in a spreadsheet, every settlement cycle.
 
-Kosh does it in **40 milliseconds, for 10,000 records**. More important than the speed: when the evidence doesn't add up, **it says so instead of guessing.**
+**The solution.** Kosh does it in **40 milliseconds, for 10,000 records**. More important than the speed: when the evidence doesn't add up, **it says so instead of guessing.**
 
-![Kosh eval report — headline metrics at 10,000 records](docs/report-headline.png)
+![Kosh eval report: headline metrics at 10,000 records](docs/report-headline.png)
 
 <sub>`make demo` output, unmodified. Every panel shown on this page is a crop of the same committed report.</sub>
 
