@@ -18,9 +18,9 @@ Built for the **Razorpay AI Buildathon 2026, Track 04**: *"Run the books and the
 
 ---
 
-**The problem.** One bank credit is rarely one payment. It's a *batch*: several settlements, minus refunds, minus chargebacks, plus adjustments. The one reference number that could tie it back? Usually mangled, truncated, or missing. Today someone untangles this by hand, in a spreadsheet, every settlement cycle.
+**The problem.** In payment reconciliation, one bank credit is rarely one payment. It's usually a *batch*: the combined settlement of several transactions, minus refunds that were issued, minus chargebacks that came in, plus or minus whatever adjustments the gateway applied along the way. The UTR or reference number that's supposed to tie that credit back to the original orders is often mangled by the bank's own systems, truncated to a handful of characters, or missing from the narration entirely. Today, a finance team works through this by hand in a spreadsheet, every settlement cycle, trying to reconstruct which payments actually landed and which didn't.
 
-**The solution.** Kosh does it in **40 milliseconds, for 10,000 records**. More important than the speed: when the evidence doesn't add up, **it says so instead of guessing.**
+**The solution.** Kosh automates that reconstruction end to end, tying orders, the payment gateway ledger, and the bank statement out to the paisa in **40 milliseconds for 10,000 records**. But speed isn't the part that matters most. Kosh is built to refuse rather than guess: when the evidence for a match is genuinely ambiguous, it declines to assert a link and raises an honest exception for a human to review, instead of risking a wrong match that would quietly corrupt the books.
 
 ![Kosh eval report: headline metrics at 10,000 records](docs/report-headline.png)
 
