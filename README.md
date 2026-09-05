@@ -40,7 +40,41 @@ Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that act
 >
 > Every number on this page is measured against a machine-readable `ground_truth.json` with injected, labelled defects — never asserted, never hand-picked. The scale requirement is 50+ records; Kosh is frozen at 500 / 2,000 / 10,000 and validated out to 93,030.
 
-**Contents** — [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Reproduce](#reproduce) · [Architecture](#architecture) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
+**Contents** — [Reproduce](#reproduce) · [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Architecture](#architecture) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
+
+---
+
+## Reproduce
+
+```bash
+git clone https://github.com/bodapatisaikrishna/kosh && cd kosh
+pip install -e .
+make demo
+```
+
+Opens `benchmarks/run_demo.html` — the full 4-panel dashboard (headline strip, layer waterfall, exception queue with evidence-chain and agent-trace drill-down, cash position) from a fresh 2,000-record run. Verified in an isolated clone on a clean venv, not assumed.
+
+**Want to look before running anything?** [`benchmarks/freeze_10000.html`](benchmarks/freeze_10000.html) and [`freeze_2000.html`](benchmarks/freeze_2000.html) are the same dashboard, committed — identical engine, fixture, and numbers. Open either straight from the repo; the screenshots on this page are unmodified crops of them. (`run_demo.html` is regenerated output and deliberately not committed, same as `data/fixtures/` — everything reproducible from a seed stays out of git.)
+
+```bash
+make freeze              # regenerate all 3 scales + phase benchmarks
+make multiseed           # the 6-seed sweep
+make adversarial         # the 7 attacks
+make verify-deterministic
+make demo-cash           # cash forecast from an operator-chosen viewpoint
+pytest                   # 257 tests
+```
+
+**Deeper dives**, once the extras are installed (`pip install -e ".[dev]"` — add `.[llm]` for SDK-backed tests, `.[api]` for the API):
+
+```bash
+python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
+python -m engine.l2_subset --profile --trials 2000 --seed 42                   # L2 solver timing
+export NIM_API_KEY=...
+python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultra-550b-a55b
+```
+
+`make gen`, `sample`, `test`, `trace`, `eval-null`, `eval-oracle`, `eval-l0l1`, `eval-l0l1l2`, `eval-full`, `l2-profile`, `l3-profile`, `demo`, `demo-cash`, `multiseed`, `adversarial`, `verify-deterministic`, `freeze`, `api`, `dashboard` wrap the same commands.
 
 ---
 
@@ -211,40 +245,6 @@ A 0.00% false-match rate is exactly the kind of claim that should invite suspici
 Every frozen benchmark reproduces **byte-for-byte from a clean clone against the committed lockfile** — accuracy, exceptions, fee leakage, and aging all verified identical, not assumed.
 
 **And the failures are on the record too.** [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`RESULTS.md`](RESULTS.md) document every bug found and how it was caught — including two genuine false-match bugs (one surfaced by a live model mid-run), a settlement double-claim whose *first* fix broke a working feature and was reverted, a cost field that silently reported $0 while a real account was being billed, a 10-hour live-run hang, and a healthy process killed on stale evidence during that investigation. Nothing here was smoothed over after the fact.
-
----
-
-## Reproduce
-
-```bash
-git clone https://github.com/bodapatisaikrishna/kosh && cd kosh
-pip install -e .
-make demo
-```
-
-Opens `benchmarks/run_demo.html` — the full 4-panel dashboard (headline strip, layer waterfall, exception queue with evidence-chain and agent-trace drill-down, cash position) from a fresh 2,000-record run. Verified in an isolated clone on a clean venv, not assumed.
-
-**Want to look before running anything?** [`benchmarks/freeze_10000.html`](benchmarks/freeze_10000.html) and [`freeze_2000.html`](benchmarks/freeze_2000.html) are the same dashboard, committed — identical engine, fixture, and numbers. Open either straight from the repo; the screenshots on this page are unmodified crops of them. (`run_demo.html` is regenerated output and deliberately not committed, same as `data/fixtures/` — everything reproducible from a seed stays out of git.)
-
-```bash
-make freeze              # regenerate all 3 scales + phase benchmarks
-make multiseed           # the 6-seed sweep
-make adversarial         # the 7 attacks
-make verify-deterministic
-make demo-cash           # cash forecast from an operator-chosen viewpoint
-pytest                   # 257 tests
-```
-
-**Deeper dives**, once the extras are installed (`pip install -e ".[dev]"` — add `.[llm]` for SDK-backed tests, `.[api]` for the API):
-
-```bash
-python -m data.generator.trace --fixtures data/fixtures/run_2000 --pick-clean   # hand-verify one full chain
-python -m engine.l2_subset --profile --trials 2000 --seed 42                   # L2 solver timing
-export NIM_API_KEY=...
-python -m engine.l3_agent --profile --backend nim --model nvidia/nemotron-3-ultra-550b-a55b
-```
-
-`make gen`, `sample`, `test`, `trace`, `eval-null`, `eval-oracle`, `eval-l0l1`, `eval-l0l1l2`, `eval-full`, `l2-profile`, `l3-profile`, `demo`, `demo-cash`, `multiseed`, `adversarial`, `verify-deterministic`, `freeze`, `api`, `dashboard` wrap the same commands.
 
 ---
 
