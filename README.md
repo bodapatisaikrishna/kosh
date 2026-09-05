@@ -40,7 +40,7 @@ Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that act
 >
 > Every number on this page is measured against a machine-readable `ground_truth.json` with injected, labelled defects — never asserted, never hand-picked. The scale requirement is 50+ records; Kosh is frozen at 500 / 2,000 / 10,000 and validated out to 93,030.
 
-**Contents** — [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Reproduce](#reproduce) · [Architecture](#architecture) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Why we generate our own data](#why-we-generate-our-own-data) · [Limitations](#limitations)
+**Contents** — [Results](#results) · [Why you can trust these numbers](#why-you-can-trust-these-numbers) · [Reproduce](#reproduce) · [Architecture](#architecture) · [Why we generate our own data](#why-we-generate-our-own-data) · [Live API + dashboard](#live-api--interactive-dashboard-post-freeze-stretch-goal) · [Limitations](#limitations)
 
 ---
 
@@ -282,6 +282,19 @@ Full design rationale, and every bug with the reasoning that caught it, in [`ARC
 
 ---
 
+## Why we generate our own data
+
+You cannot measure precision, recall, or false-match rate against real production data, because you don't have ground truth for real data — **that is the reconciliation problem itself**. So Kosh generates its own three-way dataset with **injected, labelled defects** spanning 14 realistic failure modes (203 defects in `run_2000`, 722 in `run_10000`): wrong MDR tier, GST variance, misallocated refunds, orphan chargebacks, FX drift, split settlements, consolidated payouts, and more — each labelled in `ground_truth.json` with its expected exception category and whether a deterministic engine should resolve it silently or flag it.
+
+Realistic on purpose, not uniform: UPI/RuPay carry zero MDR (the real regulatory position), so most volume reconciles trivially and the interesting failures concentrate in card and international volume — same as a real merchant's exception queue.
+
+```bash
+python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
+```
+
+Same `--seed` → byte-identical output, every time. A small committed fixture, `data/fixtures/sample_200`, lets you inspect real output without running anything.
+
+---
 ## Live API + interactive dashboard (post-freeze stretch goal)
 
 The brief's two optional *"if time allows"* items — a FastAPI layer and an interactive Next.js dashboard — built after the code freeze as a deliberate, dated addition. **Additive, not a replacement**: `make demo`'s static report stays the primary deliverable and needs nothing but Python.
@@ -298,20 +311,6 @@ The dashboard does one thing the static report can't: a **live-triggered run** �
 - The costed live-LLM path is **never reachable** from the API — `ENGINE_ALLOWLIST` restricts every request to deterministic engines, the same invariant the CLI has always enforced, tested directly.
 
 Local-only by design: CORS restricted to the dashboard's own origin, nothing deployed or publicly exposed.
-
----
-
-## Why we generate our own data
-
-You cannot measure precision, recall, or false-match rate against real production data, because you don't have ground truth for real data — **that is the reconciliation problem itself**. So Kosh generates its own three-way dataset with **injected, labelled defects** spanning 14 realistic failure modes (203 defects in `run_2000`, 722 in `run_10000`): wrong MDR tier, GST variance, misallocated refunds, orphan chargebacks, FX drift, split settlements, consolidated payouts, and more — each labelled in `ground_truth.json` with its expected exception category and whether a deterministic engine should resolve it silently or flag it.
-
-Realistic on purpose, not uniform: UPI/RuPay carry zero MDR (the real regulatory position), so most volume reconciles trivially and the interesting failures concentrate in card and international volume — same as a real merchant's exception queue.
-
-```bash
-python -m data.generator.generate --records 2000 --seed 42 --months 3 --out data/fixtures/run_2000/
-```
-
-Same `--seed` → byte-identical output, every time. A small committed fixture, `data/fixtures/sample_200`, lets you inspect real output without running anything.
 
 ---
 
