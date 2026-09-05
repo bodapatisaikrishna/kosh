@@ -2,8 +2,8 @@
 
 # Kosh — AI Finance Controller
 
-**Three-way payment settlement reconciliation for an Indian online merchant.**
-Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa — plus a forward cash position.
+**Orders ↔ PG ledger ↔ Bank statement, tied out to the paisa. Automatically.**
+Three-way payment settlement reconciliation for an Indian online merchant, plus a forward cash position.
 
 [![CI](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml/badge.svg)](https://github.com/bodapatisaikrishna/kosh/actions/workflows/ci.yml)
 [![Python 3.11 – 3.14](https://img.shields.io/badge/python-3.11%20%E2%80%93%203.14-blue)](pyproject.toml)
@@ -18,9 +18,9 @@ Built for the **Razorpay AI Buildathon 2026, Track 04** — *"Run the books and 
 
 ---
 
-One bank credit is rarely one payment. It's a *batch*: the sum of several settlements, minus refunds, minus chargebacks, plus or minus adjustments — and the reference number that would tie it back is often mangled, truncated, or absent entirely. Today a human solves that in a spreadsheet.
+One bank credit is rarely one payment. It's a *batch* — several settlements, minus refunds, minus chargebacks, plus adjustments. The one reference number that could tie it back? Usually mangled, truncated, or missing. Today someone untangles this by hand, in a spreadsheet, every settlement cycle.
 
-Kosh reconciles **10,000 records in 40 milliseconds**, and — the part that actually matters — it **refuses to guess** when the evidence is ambiguous.
+Kosh does it in **40 milliseconds, for 10,000 records**. More important than the speed: when the evidence doesn't add up, **it says so instead of guessing.**
 
 ![Kosh eval report — headline metrics at 10,000 records](docs/report-headline.png)
 
