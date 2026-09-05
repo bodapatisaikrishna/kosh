@@ -84,7 +84,7 @@ Deterministic first, LLM last — five layers, each seeing only what the one abo
 
 ![Kosh architecture overview — data layer, the L0-L4 layer cake, and consumer fan-out, each box citing its real source file](docs/architecture-overview.png)
 
-<sub>Every box names the file that implements it. An interactive, clickable version with guided views is at [`docs/kosh-architecture.html`](docs/kosh-architecture.html).</sub>
+<sub>Every box names the file that implements it. An interactive, clickable version with guided views is at [`docs/kosh-architecture.html`](https://htmlpreview.github.io/?https://github.com/bodapatisaikrishna/kosh/blob/master/docs/kosh-architecture.html) — GitHub shows raw source for `.html` files by default, so this link renders it as a page instead.</sub>
 
 ```
 L0  Deterministic joins   (exact keys)         → 99.33% of matched links
