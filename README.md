@@ -334,5 +334,5 @@ Written plainly, because an honest limitations list *is* the deliverable — a s
 ---
 
 <div align="center">
-<sub>MIT licensed · Built by <a href="https://github.com/bodapatisaikrishna">Sai Krishna Bodapati</a> for the Razorpay AI Buildathon 2026</sub>
+<sub><a href="LICENSE">MIT licensed</a> · Built by <a href="https://github.com/bodapatisaikrishna">Sai Krishna Bodapati</a> for the Razorpay AI Buildathon 2026</sub>
 </div>
